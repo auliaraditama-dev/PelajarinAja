@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
 import { generateMixedQuestions, generateQuestionsForTopic } from "../data/questionGenerators.js";
+import { buildMasterContent } from "../data/masterContent.js";
 
 const QUESTIONS_PER_TOPIC = 25;
 const SIMULATION_QUESTIONS = 25;
@@ -43,6 +44,67 @@ function Pill({ children }) {
 
 function SectionTitle({ number, title, subtitle, danger = false }) {
   return <div className={`section-title ${danger ? "danger" : ""}`}><span>{number}</span><div><h2>{title}</h2><p>{subtitle}</p></div></div>;
+}
+
+function MasterLearningBlocks({ topic, master }) {
+  const implementationLines = String(master.implementation.code ?? "").split("\n");
+  const isCode = topic.subjectId === "serkom";
+  const isMath = topic.subjectId === "matematika";
+  return <section className="master-learning">
+    <article className="master-card card">
+      <div className="master-kicker">1 · 🏷️ KONSEPTUAL DASAR</div>
+      <h1 className="master-title">{master.conceptual.title}</h1>
+      <div className="master-two-col">
+        <div className="master-panel"><h3>Analogi untuk awam</h3><p>{master.conceptual.analogy}</p></div>
+        <div className="master-panel"><h3>Cara kerja utama</h3><ul>{master.conceptual.workflow.map((item, index) => <li key={index}>{item}</li>)}</ul></div>
+      </div>
+    </article>
+
+    <article className="master-card card">
+      <div className="master-kicker">2 · 🧠 ANALISIS KRITIS &amp; TEORITIS</div>
+      <div className="critical-grid">
+        <div><h3>Mengapa penting?</h3><p>{master.critical.whyImportant}</p></div>
+        <div><h3>Latar belakang</h3><p>{master.critical.background}</p></div>
+      </div>
+      <div className="theory-stack">{master.critical.theory.map((item, index) => <div key={index}><b>Analisis {index + 1}</b><p>{item}</p></div>)}</div>
+      <div className="limitation-box"><h3>Batasan dan kelemahan yang harus disadari</h3><ul>{master.critical.limitations.map((item, index) => <li key={index}>{item}</li>)}</ul></div>
+    </article>
+
+    <article className="master-card card">
+      <div className="master-kicker">3 · 🖥️ IMPLEMENTASI &amp; CONTOH {isCode ? "KODE" : isMath ? "TERSTRUKTUR" : "NYATA"}</div>
+      <h2>{master.implementation.title}</h2>
+      <p className="master-intro">{isCode ? "Baca kode dari atas ke bawah. Setiap baris di bawahnya dijelaskan terpisah agar fungsi sintaks tidak hanya dihafal." : isMath ? "Gunakan pola berikut setelah mengidentifikasi data, syarat, dan apa yang ditanyakan." : "Gunakan studi kasus ini untuk menghubungkan strategi membaca dengan bukti di dalam teks."}</p>
+      <div className={`learning-code ${isCode ? "code-mode" : "content-mode"}`}>
+        <div className="code-window">
+          <div className="code-window-head"><span>{isCode ? master.implementation.language : isMath ? "Rumus / strategi" : "Studi kasus"}</span><span>{implementationLines.length} baris</span></div>
+          <pre>{implementationLines.map((line, index) => <code key={index}><span>{String(index + 1).padStart(2, "0")}</span>{line || " "}</code>)}</pre>
+        </div>
+        <div className="line-explanations">
+          <h3>{isCode ? "Penjelasan baris demi baris" : "Penjelasan penerapan"}</h3>
+          {(master.implementation.explanations ?? []).map((item, index) => <div key={index}><b>{isCode ? `Baris ${index + 1}` : `Langkah ${index + 1}`}</b><p>{item}</p></div>)}
+        </div>
+      </div>
+    </article>
+
+    <article className="master-card card">
+      <div className="master-kicker">4 · ✍️ PEMBAHASAN SOAL LATIHAN</div>
+      <div className="exam-box"><span>Contoh soal</span><h2>{master.exam.question}</h2></div>
+      <div className="exam-steps"><h3>Bedah langkah demi langkah</h3><ol>{master.exam.steps.map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ol></div>
+      <div className="answer-box"><b>Jawaban akhir</b><p>{master.exam.answer}</p></div>
+    </article>
+
+    <article className="master-card card">
+      <div className="master-kicker">5 · 💡 KESIMPULAN &amp; HIGHLIGHT</div>
+      <div className="highlight-grid">{master.highlights.map((item, index) => <div key={index}><strong>{index + 1}</strong><p>{item}</p></div>)}</div>
+    </article>
+
+    <article className="master-card card interactive-card">
+      <div className="master-kicker">6 · 💬 PENUTUP INTERAKTIF</div>
+      <h2>Uji pemahamanmu sebelum lanjut ke 25 soal</h2>
+      <p>{master.prompt}</p>
+      <div className="interactive-actions"><button className="secondary" onClick={() => document.getElementById("catatan-pribadi")?.scrollIntoView({ behavior: "smooth" })}><Icon name="note" /> Tulis jawaban di catatan</button></div>
+    </article>
+  </section>;
 }
 
 function abilityFromScore(score) {
@@ -141,6 +203,7 @@ export default function Home() {
   const subjectTopics = useMemo(() => topics.filter((item) => item.subjectId === subjectId), [subjectId]);
   const topic = topics.find((item) => item.id === selected) ?? subjectTopics[0] ?? topics[0];
   const topicIndexInSubject = subjectTopics.findIndex((item) => item.id === topic.id);
+  const masterContent = useMemo(() => buildMasterContent(topic), [topic]);
 
   useEffect(() => {
     setCompleted(readJSON(["pelajarinaja-completed", "tka-completed"], []));
@@ -428,7 +491,11 @@ export default function Home() {
           <div className="hero-actions"><button className={`secondary ${bookmarks.includes(topic.id) ? "selected" : ""}`} onClick={() => toggleBookmark(topic.id)}><Icon name="star" /> {bookmarks.includes(topic.id) ? "Tersimpan" : "Simpan"}</button><button className="secondary" onClick={() => window.print()}><Icon name="print" /> Cetak</button><button className={`primary ${completed.includes(topic.id) ? "completed" : ""}`} onClick={() => toggleComplete(topic.id)}><Icon name="check" /> {completed.includes(topic.id) ? "Sudah dipelajari" : "Tandai selesai"}</button></div>
         </section>
 
-        {subjectId === "serkom" && <div className="source-notice card"><Icon name="code" size={24}/><div><b>Materi persiapan SERKOM RPL</b><p>Konten ini mengikuti jobsheet dan rangkuman Laravel 12 yang Anda lampirkan. Materi berfungsi untuk pembelajaran dan simulasi; keputusan kompeten resmi tetap mengikuti asesor, LSP, skema, serta MUK yang berlaku.</p></div></div>}
+        {subjectId === "serkom" && <div className="source-notice card"><Icon name="code" size={24}/><div><b>Materi persiapan SERKOM RPL</b><p>Konten ini mengikuti jobsheet Laravel 12 yang Anda lampirkan. Materi berfungsi untuk pembelajaran dan simulasi; keputusan kompeten resmi tetap mengikuti asesor, LSP, skema, serta MUK yang berlaku.</p></div></div>}
+
+        <MasterLearningBlocks topic={topic} master={masterContent} />
+
+        <div className="supporting-label"><span>Materi pendukung lengkap</span><p>Bagian berikut mempertahankan seluruh fitur lama: tujuan, prasyarat, glosarium, contoh tambahan, jebakan, catatan, serta navigasi.</p></div>
 
         <div className="study-grid">
           <article className="card span-2"><SectionTitle number="01" title="Tujuan belajar" subtitle="Kemampuan yang diharapkan setelah menyelesaikan materi."/><div className="objective-grid">{(topic.objectives ?? []).map((item, index) => <div key={index}><Icon name="target" size={18}/><p>{item}</p></div>)}</div></article>
@@ -440,7 +507,7 @@ export default function Home() {
           <article className="card span-2"><SectionTitle number="07" title="Contoh bertahap" subtitle="Pelajari cara berpikir, bukan hanya hasil akhir."/><div className="examples-grid">{(topic.workedExamples ?? []).map((item, index) => <div className="worked-card" key={index}><div className="worked-label">{item.title}</div><h3>{item.problem}</h3><ol>{(item.steps ?? []).map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}</ol><div className="worked-result"><b>Hasil:</b> {item.result}</div></div>)}</div></article>
           <article className="card span-2"><SectionTitle number="08" title="Jebakan yang sering muncul" subtitle="Kesalahan yang perlu dihindari." danger/><div className="trap-grid">{(topic.traps ?? []).map((item, index) => <div key={index}><b>0{index + 1}</b><p>{item}</p></div>)}</div></article>
           <article className="card"><SectionTitle number="09" title="Glosarium" subtitle="Istilah penting pada materi ini."/><div className="glossary-list">{(topic.glossary ?? []).map((item, index) => <div key={index}><b>{item.term}</b><p>{item.meaning}</p></div>)}</div></article>
-          <article className="card"><SectionTitle number="10" title="Catatan pribadi" subtitle="Tersimpan otomatis di browser perangkat ini."/><textarea className="note-area" rows={10} value={notes[topic.id] ?? ""} onChange={(event) => setNotes((state) => ({ ...state, [topic.id]: event.target.value }))} placeholder="Tulis ringkasan, hal yang masih membingungkan, atau strategi yang ingin diingat..."/></article>
+          <article id="catatan-pribadi" className="card"><SectionTitle number="10" title="Catatan pribadi" subtitle="Tersimpan otomatis di browser perangkat ini."/><textarea className="note-area" rows={10} value={notes[topic.id] ?? ""} onChange={(event) => setNotes((state) => ({ ...state, [topic.id]: event.target.value }))} placeholder="Tulis ringkasan, hal yang masih membingungkan, atau strategi yang ingin diingat..."/></article>
           <article className="card span-2 callout"><div><div className="eyebrow">Penilaian kemampuan</div><h2>Kerjakan 25 soal untuk {topic.title}</h2><p>Setiap soal bernilai 4 poin. Total nilai 100. Paket baru dibuat secara acak tetapi tetap sesuai materi.</p></div><button className="primary" onClick={() => setView("latihan")}>Mulai 25 soal <Icon name="chevron" /></button></article>
           <article className="card span-2 topic-nav"><button className="secondary" disabled={topicIndexInSubject <= 0} onClick={() => goTopic(-1)}><Icon name="back" /> Materi sebelumnya</button><span>{topicIndexInSubject + 1} / {subjectTopics.length}</span><button className="secondary" disabled={topicIndexInSubject >= subjectTopics.length - 1} onClick={() => goTopic(1)}>Materi berikutnya <Icon name="chevron" /></button></article>
         </div>

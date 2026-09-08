@@ -1,6 +1,7 @@
 import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
 import { generateMixedQuestions, generateQuestionsForTopic } from "../data/questionGenerators.js";
+import { buildMasterContent } from "../data/masterContent.js";
 
 const fail = (message) => { throw new Error(message); };
 const ids = new Set();
@@ -16,6 +17,16 @@ for (const topic of topics) {
   for (const field of ["title", "group", "summary", "level", "sourceLabel"]) if (!topic[field]) fail(`${topic.id} tidak memiliki ${field}`);
   for (const field of ["objectives", "prerequisites", "concepts", "deepDive", "steps", "workedExamples", "traps", "glossary"]) if (!Array.isArray(topic[field]) || topic[field].length === 0) fail(`${topic.id} tidak memiliki isi ${field}`);
   if (!topic.essay?.q || !topic.essay?.answer) fail(`${topic.id} tidak memiliki esai dan pembahasan`);
+  const master = buildMasterContent(topic);
+  if (!master?.conceptual?.title || !master?.conceptual?.analogy || !master?.conceptual?.workflow?.length) fail(`${topic.id} tidak memiliki konseptual dasar Full-Features`);
+  if (!master?.critical?.whyImportant || !master?.critical?.background || !master?.critical?.theory?.length || !master?.critical?.limitations?.length) fail(`${topic.id} tidak memiliki analisis kritis Full-Features`);
+  if (!master?.implementation?.title || !master?.implementation?.code || !master?.implementation?.explanations?.length) fail(`${topic.id} tidak memiliki implementasi Full-Features`);
+  if (!master?.exam?.question || !master?.exam?.answer || !master?.exam?.steps?.length) fail(`${topic.id} tidak memiliki bedah soal Full-Features`);
+  if (!master?.highlights?.length || !master?.prompt) fail(`${topic.id} tidak memiliki kesimpulan/interaktif Full-Features`);
+  if (topic.subjectId === "serkom") {
+    const lineCount = String(master.implementation.code).split("\n").length;
+    if (lineCount !== master.implementation.explanations.length) fail(`${topic.id} jumlah baris kode dan penjelasan tidak sama`);
+  }
   const questions = generateQuestionsForTopic(topic.id, 25);
   if (questions.length !== 25) fail(`${topic.id} tidak menghasilkan 25 soal`);
   if (new Set(questions.map((item) => item.q)).size < 25) fail(`${topic.id} menghasilkan soal duplikat dalam satu paket`);
@@ -46,4 +57,4 @@ const universal = generateMixedQuestions(topics, 25);
 if (universal.length !== 25) fail("Simulasi universal tidak menghasilkan 25 soal");
 if (Math.abs(universal.reduce((sum, item) => sum + item.points, 0) - 100) > 0.001) fail("Simulasi universal tidak bernilai 100");
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, 25 unique questions per topic, 100 points per assessment.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, Full-Features material, SERKOM line-by-line code explanations, 25 unique questions per topic, 100 points per assessment.`);

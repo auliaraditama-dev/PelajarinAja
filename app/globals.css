@@ -320,3 +320,72 @@ footer{grid-column:1/3;border-top:1px solid var(--line);background:var(--panel);
 .system-card h1{margin:7px 0 8px;font-size:28px}
 .system-card p{margin:0 0 16px;color:var(--muted);font-size:12px;line-height:1.6}
 .system-card button,.system-card a{display:inline-flex;border:1px solid var(--accent-2);background:var(--accent-2);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700;font-size:11px}
+.master-learning{display:grid;gap:16px;margin:0 0 26px}
+.master-card{padding:24px}
+.master-kicker{font-size:10px;letter-spacing:.11em;font-weight:800;color:var(--accent);margin-bottom:10px}
+.master-title{font-size:clamp(26px,3vw,38px);letter-spacing:-.03em;line-height:1.1;margin:0 0 18px}
+.master-two-col,.critical-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.master-panel,.critical-grid>div{border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:16px}
+.master-panel h3,.critical-grid h3,.line-explanations h3,.exam-steps h3,.limitation-box h3{margin:0 0 8px;font-size:13px}
+.master-panel p,.critical-grid p,.master-intro,.exam-steps p,.answer-box p,.interactive-card>p{font-size:12px;line-height:1.72;color:var(--muted);margin:0}
+.master-panel ul,.limitation-box ul{margin:0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.7}
+.master-panel li+li,.limitation-box li+li{margin-top:6px}
+.theory-stack{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.theory-stack>div{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel)}
+.theory-stack b{font-size:10px;color:var(--accent)}
+.theory-stack p{font-size:11px;line-height:1.65;color:var(--muted);margin:6px 0 0}
+.limitation-box{margin-top:12px;border-left:3px solid var(--danger);background:var(--danger-soft);border-radius:10px;padding:15px}
+.limitation-box h3{color:var(--danger)}
+.master-card>h2{margin:0 0 8px;font-size:18px}
+.learning-code{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:14px;margin-top:16px;align-items:start}
+.code-window{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0d141b;color:#e8eef4;min-width:0}
+.code-window-head{display:flex;justify-content:space-between;gap:14px;padding:9px 12px;border-bottom:1px solid #27323c;background:#121c25;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;font-size:9px;font-weight:800}
+.code-window pre{margin:0;padding:12px 0;overflow:auto;font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:11px;line-height:1.7}
+.code-window pre code{display:grid;grid-template-columns:42px minmax(max-content,1fr);padding:0 14px;white-space:pre}
+.code-window pre code>span{color:#657482;user-select:none;border-right:1px solid #27323c;margin-right:12px}
+.content-mode .code-window{background:var(--panel-2);color:var(--text)}
+.content-mode .code-window-head{background:var(--accent-soft);color:var(--accent-2);border-bottom-color:var(--line)}
+.content-mode .code-window pre code>span{color:var(--muted);border-right-color:var(--line)}
+.line-explanations{display:grid;gap:7px}
+.line-explanations>h3{margin-bottom:3px}
+.line-explanations>div{display:grid;grid-template-columns:70px 1fr;gap:10px;border:1px solid var(--line);background:var(--panel-2);padding:10px 11px;border-radius:9px}
+.line-explanations b{font-size:9px;color:var(--accent);padding-top:2px}
+.line-explanations p{margin:0;color:var(--muted);font-size:10px;line-height:1.55}
+.exam-box{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:16px;margin-top:5px}
+.exam-box>span{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:800}
+.exam-box h2{font-size:15px;line-height:1.55;margin:5px 0 0}
+.exam-steps{margin-top:15px}
+.exam-steps ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.exam-steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;border:1px solid var(--line);background:var(--panel-2);padding:10px;border-radius:10px}
+.exam-steps li>span{width:26px;height:26px;border-radius:7px;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-size:9px;font-weight:800;color:var(--accent)}
+.answer-box{margin-top:12px;border-left:3px solid var(--success);background:var(--success-soft);border-radius:10px;padding:14px}
+.answer-box b{font-size:10px;color:var(--success);text-transform:uppercase;letter-spacing:.08em}
+.answer-box p{color:var(--text);margin-top:4px}
+.highlight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.highlight-grid>div{border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:14px}
+.highlight-grid strong{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-2);font-size:11px;margin-bottom:9px}
+.highlight-grid p{margin:0;color:var(--muted);font-size:11px;line-height:1.62}
+.interactive-card{background:linear-gradient(135deg,var(--panel),var(--accent-soft))}
+.interactive-card h2{margin:0 0 7px;font-size:18px}
+.interactive-actions{margin-top:14px}
+.supporting-label{margin:30px 0 12px;padding-top:22px;border-top:1px solid var(--line)}
+.supporting-label span{text-transform:uppercase;letter-spacing:.11em;font-size:10px;font-weight:800;color:var(--muted)}
+.supporting-label p{margin:5px 0 0;color:var(--muted);font-size:11px}
+@media (max-width:980px){
+  .learning-code{grid-template-columns:1fr}
+  .theory-stack{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .master-card{padding:18px}
+  .master-two-col,.critical-grid,.theory-stack,.highlight-grid{grid-template-columns:1fr}
+  .line-explanations>div{grid-template-columns:58px 1fr}
+  .code-window pre{font-size:10px}
+  .code-window pre code{grid-template-columns:34px minmax(max-content,1fr);padding:0 10px}
+}
+@media print{
+  .interactive-card,.supporting-label{display:none!important}
+  .learning-code{grid-template-columns:1fr}
+  .code-window{background:#fff;color:#000;border-color:#bbb}
+  .code-window-head{background:#eee;color:#111;border-color:#bbb}
+  .code-window pre code>span{color:#666;border-color:#ccc}
+}
