@@ -2,11 +2,35 @@ import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
 import { difficultyPlan, generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
 import { getSerkomLesson } from "../data/serkomLessons.js";
+import { existsSync } from "node:fs";
+import { subjectPath, topicPath } from "../lib/site.js";
 
 const fail = (message) => { throw new Error(message); };
 const ids = new Set();
 const subjectIds = new Set(subjects.map((item) => item.id));
 const expectedPlan = difficultyPlan(25);
+
+const seoFiles = [
+  "app/robots.js",
+  "app/sitemap.js",
+  "app/opengraph-image.js",
+  "app/twitter-image.js",
+  "app/mapel/page.js",
+  "app/mapel/[subjectId]/page.js",
+  "app/materi/page.js",
+  "app/materi/[subjectId]/[topicId]/page.js",
+  "app/tentang/page.js",
+  "app/kebijakan-privasi/page.js",
+  "lib/site.js",
+  "lib/seo.js"
+];
+
+for (const file of seoFiles) if (!existsSync(new URL(`../${file}`, import.meta.url))) fail(`File SEO tidak ditemukan: ${file}`);
+
+const subjectUrls = subjects.map((item) => subjectPath(item.id));
+if (new Set(subjectUrls).size !== subjects.length) fail("URL mapel tidak unik");
+const topicUrls = topics.map((item) => topicPath(item.subjectId, item.id));
+if (new Set(topicUrls).size !== topics.length) fail("URL materi tidak unik");
 
 function validateQuestionSet(label, questions) {
   if (questions.length !== 25) fail(`${label} tidak menghasilkan 25 soal`);
@@ -77,4 +101,4 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   universalHistory = [...signatures, ...universalHistory].slice(0, 100);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, 25 unique questions, 8 easy, 9 medium, 8 hard, recent-history repeat protection, 100 points, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, sitemap and robots routes, 25 unique questions, 8 easy, 9 medium, 8 hard, recent-history repeat protection, 100 points, formal solution steps, SERKOM line-by-line tutorials.`);

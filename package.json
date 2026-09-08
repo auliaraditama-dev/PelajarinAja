@@ -1,6 +1,6 @@
 {
-  "name": "pelajarinaja-universal-formal",
-  "version": "9.0.0",
+  "name": "pelajarinaja-universal-seo",
+  "version": "10.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

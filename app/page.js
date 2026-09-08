@@ -188,17 +188,24 @@ export default function Home() {
     setNotes(readJSON(["pelajarinaja-notes", "tka-notes"], {}));
     setTopicScores(readJSON(["pelajarinaja-topic-scores", "tka-topic-scores"], {}));
     setSimulationHistory(readJSON(["pelajarinaja-simulation-history", "tka-simulation-history"], []));
+    const params = new URLSearchParams(window.location.search);
+    const requestedSubject = params.get("subject");
+    const requestedTopic = params.get("topic");
+    const requestedView = params.get("view");
     const savedSubject = readText(["pelajarinaja-subject"], "matematika");
-    const validSubject = subjects.some((item) => item.id === savedSubject) ? savedSubject : "matematika";
+    const initialSubject = subjects.some((item) => item.id === requestedSubject) ? requestedSubject : savedSubject;
+    const validSubject = subjects.some((item) => item.id === initialSubject) ? initialSubject : "matematika";
     setSubjectId(validSubject);
     const savedTopic = readText(["pelajarinaja-selected-topic", "tka-selected-topic"], "");
-    if (savedTopic && topics.some((item) => item.id === savedTopic)) {
-      setSelected(savedTopic);
-      const storedTopic = topics.find((item) => item.id === savedTopic);
+    const initialTopic = requestedTopic && topics.some((item) => item.id === requestedTopic) ? requestedTopic : savedTopic;
+    if (initialTopic && topics.some((item) => item.id === initialTopic)) {
+      setSelected(initialTopic);
+      const storedTopic = topics.find((item) => item.id === initialTopic);
       if (storedTopic) setSubjectId(storedTopic.subjectId);
     }
     const savedView = readText(["pelajarinaja-view", "tka-view"], "beranda");
-    if (["beranda", "materi", "latihan", "simulasi", "progress"].includes(savedView)) setView(savedView);
+    const initialView = ["beranda", "materi", "latihan", "simulasi", "progress"].includes(requestedView) ? requestedView : savedView;
+    if (["beranda", "materi", "latihan", "simulasi", "progress"].includes(initialView)) setView(initialView);
     if (readText(["pelajarinaja-theme", "tka-theme"], "") === "dark") setDark(true);
     const savedReadingSize = readText(["pelajarinaja-reading-size"], "normal");
     if (["small", "normal", "large"].includes(savedReadingSize)) setReadingSize(savedReadingSize);
@@ -574,6 +581,6 @@ export default function Home() {
       </section>}
     </section>
 
-    <footer><span>PelajarinAja · Matematika · Bahasa Indonesia · Bahasa Inggris · SERKOM RPL</span><span>25 soal unik · 8 mudah · 9 sedang · 8 sulit · nilai 0–100 · responsif</span></footer>
+    <footer className="app-footer"><span>PelajarinAja · Matematika · Bahasa Indonesia · Bahasa Inggris · SERKOM RPL</span><nav><a href="/mapel">Mata Pelajaran</a><a href="/materi">Indeks Materi</a><a href="/tentang">Tentang</a><a href="/kebijakan-privasi">Privasi</a></nav><span>25 soal unik · 8 mudah · 9 sedang · 8 sulit · nilai 0–100 · responsif</span></footer>
   </main>;
 }
