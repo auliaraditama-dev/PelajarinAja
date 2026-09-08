@@ -1,6 +1,8 @@
 import { generateMathQuestion } from "./mathQuestionGenerators.js";
 import { generateLanguageQuestion } from "./languageQuestionGenerators.js";
 import { generateSerkomQuestion } from "./serkomQuestionGenerators.js";
+import { topics } from "./topics.js";
+import { questionSolutionSteps } from "./pedagogy.js";
 
 export function shuffle(items) {
   const values = [...items];
@@ -12,11 +14,16 @@ export function shuffle(items) {
 }
 
 export function generateQuestion(topicId) {
-  if (topicId.startsWith("serkom-")) return generateSerkomQuestion(topicId);
-  if (topicId.startsWith("bi-") || topicId.startsWith("en-")) return generateLanguageQuestion(topicId);
-  const result = generateMathQuestion(topicId);
-  const prefixes = ["", "Latihan konsep: ", "Uji cepat: ", "Cermati soal berikut. ", "Paket variasi: "];
-  return { ...result, q: `${prefixes[Math.floor(Math.random() * prefixes.length)]}${result.q}` };
+  let result;
+  if (topicId.startsWith("serkom-")) result = generateSerkomQuestion(topicId);
+  else if (topicId.startsWith("bi-") || topicId.startsWith("en-")) result = generateLanguageQuestion(topicId);
+  else {
+    const generated = generateMathQuestion(topicId);
+    const prefixes = ["", "Latihan konsep: ", "Uji cepat: ", "Cermati soal berikut. ", "Paket variasi: "];
+    result = { ...generated, q: `${prefixes[Math.floor(Math.random() * prefixes.length)]}${generated.q}` };
+  }
+  const topic = topics.find((item) => item.id === topicId);
+  return { ...result, solutionSteps: topic ? questionSolutionSteps(result, topic) : [result.explain] };
 }
 
 export function generateQuestionsForTopic(topicId, count = 25) {

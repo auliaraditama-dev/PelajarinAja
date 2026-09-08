@@ -1,172 +1,158 @@
-# PelajarinAja Universal Full-Features v6
+# PelajarinAja Universal v7
 
-PelajarinAja adalah platform belajar Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL Laravel 12.
+PelajarinAja adalah platform belajar multi-mapel berbasis Next.js untuk Matematika, Bahasa Indonesia, Bahasa Inggris, dan SERKOM RPL.
 
-## Fitur pembelajaran
+## Fokus v7
 
-Setiap materi memiliki struktur Full-Features:
+Versi ini mempertahankan seluruh fitur lama dan menambahkan pengalaman belajar yang lebih manusiawi seperti guru yang menjelaskan di kelas.
 
-1. Konseptual Dasar
-   - judul materi
-   - analogi untuk awam
-   - cara kerja atau alur utama
-2. Analisis Kritis & Teoritis
-   - alasan konsep penting
-   - latar belakang
-   - pembahasan mendalam
-   - batasan dan kelemahan
-3. Implementasi & Contoh
-   - Matematika: rumus dan penerapan terstruktur
-   - Bahasa Indonesia/Bahasa Inggris: studi kasus membaca
-   - SERKOM: code snippet nyata dan penjelasan baris demi baris
-4. Pembahasan Soal Latihan
-   - contoh soal
-   - jawaban
-   - bedah langkah demi langkah
-5. Kesimpulan & Highlight
-   - tiga poin inti yang wajib diingat
-6. Penutup Interaktif
-   - pertanyaan pemantik yang dapat dijawab melalui catatan pribadi
+- Penjelasan pembuka dengan bahasa sehari-hari.
+- Analogi sederhana untuk membantu membayangkan konsep.
+- Bagian khusus tentang alasan materi penting.
+- Langkah pengerjaan soal yang lebih terstruktur.
+- Pembahasan setelah menjawab berisi langkah memahami soal, bukan hanya jawaban akhir.
+- SERKOM memakai pola tutorial bertahap: syntax, contoh kode, nomor baris, penjelasan setiap baris, dan latihan "coba sendiri".
+- Kontrol ukuran huruf A−, A, A+ untuk bacaan materi.
+- Preferensi ukuran huruf disimpan di localStorage.
+- 25 soal dinamis per materi.
+- 4 poin per soal dan nilai maksimum 100.
+- Simulasi 25 soal selama 40 menit.
+- Penilaian kemampuan dan riwayat lokal.
+- Bookmark, catatan, dark mode, print, progress, dan navigasi materi.
+- Responsive desktop, tablet, dan mobile.
+- Source code aplikasi tanpa komentar source.
 
-Seluruh fitur lama tetap tersedia:
+## Mata pelajaran
 
-- 4 mata pelajaran
-- 60 materi
-- 25 soal dinamis per materi
-- 4 poin per soal dan total nilai 100
-- pengacakan paket saat refresh dan melalui tombol paket baru
-- pilihan ganda biasa dan pilihan ganda kompleks
-- pembahasan setelah jawaban dikunci
-- nilai terakhir, nilai terbaik, percobaan, dan klasifikasi kemampuan
-- simulasi 25 soal dengan timer 40 menit
-- simulasi per mapel dan campuran universal
-- riwayat simulasi
-- progress per materi, per mapel, dan keseluruhan
-- bookmark
-- catatan pribadi
-- dark mode
-- print mode
-- pencarian dan filter materi
-- responsive desktop, tablet, dan mobile
-- penyimpanan localStorage tanpa akun dan database
-- custom loading, error, 404, manifest, security headers
-- GitHub Actions CI
-- validator production sebelum build
+- Matematika
+- Bahasa Indonesia
+- Bahasa Inggris
+- SERKOM RPL
+
+Total: 60 materi.
 
 ## SERKOM RPL
 
-Materi SERKOM mengikuti jobsheet persiapan Pemrogram Junior Laravel 12 yang dilampirkan pengguna. Cakupan utamanya meliputi:
+Materi SERKOM difokuskan pada pembelajaran Pemrogram Junior Laravel 12:
 
-- posisi SKKNI, MUK, unit, dan bukti
+- SKKNI, MUK, dan bukti kompetensi
 - MVC dan request-response
-- IPO dan spesifikasi proyek
-- PHP, Composer, Artisan, MySQL, dan .env
-- migration dan data dictionary
-- Eloquent, fillable, casts, dan Route Model Binding
-- seeder
-- controller CRUD dan validation
-- resource routing
-- Blade dan landing page dinamis
-- form CRUD, CSRF, method spoofing, old(), dan error
-- CSS responsif
-- workflow CRUD
-- debugging dan troubleshooting
-- pengujian manual dan Feature Test
-- README, portofolio, presentasi, dan bukti
-- pertanyaan lisan asesor
-- cheat sheet latihan
+- IPO dan analisis kebutuhan
+- PHP, Laravel, Blade, HTML, CSS, dan HTTP
+- Composer, Artisan, MySQL, dan .env
+- Migration
+- Eloquent model, fillable, casts, Route Model Binding
+- Seeder
+- Controller CRUD
+- Validation
+- Routing
+- Blade
+- Form CRUD
+- CSS responsive
+- Workflow CRUD
+- Debugging
+- Manual testing dan Feature Test
+- README, portofolio, presentasi
+- Pertanyaan lisan asesor
+- Cheat sheet kesiapan
 
-Pada seluruh materi SERKOM, bagian Implementasi menampilkan kode dengan nomor baris dan panel penjelasan setiap baris. Source code aplikasi platform tetap tanpa komentar kode.
+Setiap topik SERKOM memiliki tutorial seperti referensi langkah demi langkah:
 
-Materi SERKOM merupakan bahan pembelajaran dan simulasi. Keputusan kompeten/belum kompeten resmi mengikuti asesor, LSP, skema, dan MUK yang disahkan.
+1. Pola atau syntax inti
+2. Contoh kode atau perintah
+3. Nomor baris
+4. Penjelasan tiap baris
+5. Latihan "coba sendiri"
 
 ## Menjalankan lokal
 
-Persyaratan:
-
-- Node.js 20.9 atau lebih baru
-- npm
-
-Jalankan:
-
 ```bash
 npm install
-npm run check
 npm run dev
 ```
 
 Buka `http://localhost:3000`.
 
-## Production build
+## Pemeriksaan data dan bank soal
 
 ```bash
-npm install
-npm run build
-npm start
+npm run check
 ```
-
-`npm run build` otomatis menjalankan `npm run check` melalui `prebuild`.
 
 Validator memeriksa:
 
 - minimal 4 mapel
 - minimal 60 materi
-- seluruh struktur Full-Features tersedia
-- setiap materi SERKOM memiliki jumlah baris kode dan penjelasan yang sama
-- 25 soal unik per paket materi
-- opsi dan indeks jawaban valid
-- total nilai 100
-- simulasi per mapel dan universal valid
+- struktur materi lengkap
+- 25 soal unik per materi
+- total 100 poin
+- jawaban valid
+- langkah pembahasan soal
+- tutorial SERKOM tersedia
+- jumlah baris kode SERKOM sama dengan jumlah penjelasan baris
+- simulasi per mapel
+- simulasi universal
 
-## Deploy Vercel
+## Production build
 
-1. Push project ke GitHub.
-2. Import repository di Vercel.
-3. Vercel mendeteksi Next.js dari `package.json`.
-4. Build command: `npm run build`.
-5. Deploy.
-
-Tidak ada environment variable yang wajib karena progress belajar menggunakan localStorage.
-
-## GitHub Actions
-
-Workflow `.github/workflows/ci.yml` menjalankan:
-
-```text
-npm install
-npm run check
+```bash
 npm run build
 ```
 
-pada push ke `main`/`master` dan pull request.
+`prebuild` menjalankan validator terlebih dahulu.
+
+## Deploy ke Vercel
+
+1. Push project ke GitHub.
+2. Import repository ke Vercel.
+3. Pastikan framework terdeteksi sebagai Next.js.
+4. Deploy.
+
+Vercel akan menginstal dependency dan menjalankan production build secara otomatis.
+
+## Penyimpanan
+
+Aplikasi tidak memerlukan database untuk progress pengguna. Data belajar disimpan di browser menggunakan localStorage:
+
+- mapel aktif
+- materi aktif
+- bookmark
+- materi selesai
+- catatan pribadi
+- nilai per materi
+- riwayat simulasi
+- tema
+- ukuran huruf bacaan
 
 ## Struktur utama
 
 ```text
 app/
-  error.js
+  page.js
   globals.css
   layout.js
+  error.js
   loading.js
-  manifest.js
   not-found.js
-  page.js
+  manifest.js
+
 data/
-  languageQuestionGenerators.js
-  languageTopics.js
-  masterContent.js
-  mathQuestionGenerators.js
-  mathTopics.js
-  questionGenerators.js
-  serkomQuestionGenerators.js
-  serkomTopics.js
   subjects.js
   topics.js
+  mathTopics.js
+  languageTopics.js
+  serkomTopics.js
+  pedagogy.js
+  serkomLessons.js
+  questionGenerators.js
+  mathQuestionGenerators.js
+  languageQuestionGenerators.js
+  serkomQuestionGenerators.js
+
 scripts/
   validate.mjs
-.github/workflows/
-  ci.yml
-package.json
-next.config.mjs
-vercel.json
 ```
+
+## Catatan SERKOM
+
+Materi SERKOM pada platform ini adalah bahan pembelajaran dan simulasi. Keputusan kompeten atau belum kompeten resmi tetap mengikuti asesor, LSP, skema, dan MUK yang berlaku.

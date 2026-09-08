@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
 import { generateMixedQuestions, generateQuestionsForTopic } from "../data/questionGenerators.js";
-import { buildMasterContent } from "../data/masterContent.js";
+import { everydayAnalogy, examChecklist, problemSolvingGuide, teacherLead, teacherWhy } from "../data/pedagogy.js";
+import { getSerkomLesson } from "../data/serkomLessons.js";
 
 const QUESTIONS_PER_TOPIC = 25;
 const SIMULATION_QUESTIONS = 25;
@@ -44,67 +45,6 @@ function Pill({ children }) {
 
 function SectionTitle({ number, title, subtitle, danger = false }) {
   return <div className={`section-title ${danger ? "danger" : ""}`}><span>{number}</span><div><h2>{title}</h2><p>{subtitle}</p></div></div>;
-}
-
-function MasterLearningBlocks({ topic, master }) {
-  const implementationLines = String(master.implementation.code ?? "").split("\n");
-  const isCode = topic.subjectId === "serkom";
-  const isMath = topic.subjectId === "matematika";
-  return <section className="master-learning">
-    <article className="master-card card">
-      <div className="master-kicker">1 · 🏷️ KONSEPTUAL DASAR</div>
-      <h1 className="master-title">{master.conceptual.title}</h1>
-      <div className="master-two-col">
-        <div className="master-panel"><h3>Analogi untuk awam</h3><p>{master.conceptual.analogy}</p></div>
-        <div className="master-panel"><h3>Cara kerja utama</h3><ul>{master.conceptual.workflow.map((item, index) => <li key={index}>{item}</li>)}</ul></div>
-      </div>
-    </article>
-
-    <article className="master-card card">
-      <div className="master-kicker">2 · 🧠 ANALISIS KRITIS &amp; TEORITIS</div>
-      <div className="critical-grid">
-        <div><h3>Mengapa penting?</h3><p>{master.critical.whyImportant}</p></div>
-        <div><h3>Latar belakang</h3><p>{master.critical.background}</p></div>
-      </div>
-      <div className="theory-stack">{master.critical.theory.map((item, index) => <div key={index}><b>Analisis {index + 1}</b><p>{item}</p></div>)}</div>
-      <div className="limitation-box"><h3>Batasan dan kelemahan yang harus disadari</h3><ul>{master.critical.limitations.map((item, index) => <li key={index}>{item}</li>)}</ul></div>
-    </article>
-
-    <article className="master-card card">
-      <div className="master-kicker">3 · 🖥️ IMPLEMENTASI &amp; CONTOH {isCode ? "KODE" : isMath ? "TERSTRUKTUR" : "NYATA"}</div>
-      <h2>{master.implementation.title}</h2>
-      <p className="master-intro">{isCode ? "Baca kode dari atas ke bawah. Setiap baris di bawahnya dijelaskan terpisah agar fungsi sintaks tidak hanya dihafal." : isMath ? "Gunakan pola berikut setelah mengidentifikasi data, syarat, dan apa yang ditanyakan." : "Gunakan studi kasus ini untuk menghubungkan strategi membaca dengan bukti di dalam teks."}</p>
-      <div className={`learning-code ${isCode ? "code-mode" : "content-mode"}`}>
-        <div className="code-window">
-          <div className="code-window-head"><span>{isCode ? master.implementation.language : isMath ? "Rumus / strategi" : "Studi kasus"}</span><span>{implementationLines.length} baris</span></div>
-          <pre>{implementationLines.map((line, index) => <code key={index}><span>{String(index + 1).padStart(2, "0")}</span>{line || " "}</code>)}</pre>
-        </div>
-        <div className="line-explanations">
-          <h3>{isCode ? "Penjelasan baris demi baris" : "Penjelasan penerapan"}</h3>
-          {(master.implementation.explanations ?? []).map((item, index) => <div key={index}><b>{isCode ? `Baris ${index + 1}` : `Langkah ${index + 1}`}</b><p>{item}</p></div>)}
-        </div>
-      </div>
-    </article>
-
-    <article className="master-card card">
-      <div className="master-kicker">4 · ✍️ PEMBAHASAN SOAL LATIHAN</div>
-      <div className="exam-box"><span>Contoh soal</span><h2>{master.exam.question}</h2></div>
-      <div className="exam-steps"><h3>Bedah langkah demi langkah</h3><ol>{master.exam.steps.map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ol></div>
-      <div className="answer-box"><b>Jawaban akhir</b><p>{master.exam.answer}</p></div>
-    </article>
-
-    <article className="master-card card">
-      <div className="master-kicker">5 · 💡 KESIMPULAN &amp; HIGHLIGHT</div>
-      <div className="highlight-grid">{master.highlights.map((item, index) => <div key={index}><strong>{index + 1}</strong><p>{item}</p></div>)}</div>
-    </article>
-
-    <article className="master-card card interactive-card">
-      <div className="master-kicker">6 · 💬 PENUTUP INTERAKTIF</div>
-      <h2>Uji pemahamanmu sebelum lanjut ke 25 soal</h2>
-      <p>{master.prompt}</p>
-      <div className="interactive-actions"><button className="secondary" onClick={() => document.getElementById("catatan-pribadi")?.scrollIntoView({ behavior: "smooth" })}><Icon name="note" /> Tulis jawaban di catatan</button></div>
-    </article>
-  </section>;
 }
 
 function abilityFromScore(score) {
@@ -198,12 +138,13 @@ export default function Home() {
   const [simSaved, setSimSaved] = useState(false);
   const [simulationScope, setSimulationScope] = useState("subject");
   const [seconds, setSeconds] = useState(SIMULATION_SECONDS);
+  const [readingSize, setReadingSize] = useState("normal");
 
   const subject = subjects.find((item) => item.id === subjectId) ?? subjects[0];
   const subjectTopics = useMemo(() => topics.filter((item) => item.subjectId === subjectId), [subjectId]);
   const topic = topics.find((item) => item.id === selected) ?? subjectTopics[0] ?? topics[0];
   const topicIndexInSubject = subjectTopics.findIndex((item) => item.id === topic.id);
-  const masterContent = useMemo(() => buildMasterContent(topic), [topic]);
+  const serkomLesson = subjectId === "serkom" ? getSerkomLesson(topic.id) : null;
 
   useEffect(() => {
     setCompleted(readJSON(["pelajarinaja-completed", "tka-completed"], []));
@@ -223,6 +164,8 @@ export default function Home() {
     const savedView = readText(["pelajarinaja-view", "tka-view"], "beranda");
     if (["beranda", "materi", "latihan", "simulasi", "progress"].includes(savedView)) setView(savedView);
     if (readText(["pelajarinaja-theme", "tka-theme"], "") === "dark") setDark(true);
+    const savedReadingSize = readText(["pelajarinaja-reading-size"], "normal");
+    if (["small", "normal", "large"].includes(savedReadingSize)) setReadingSize(savedReadingSize);
     setStorageReady(true);
   }, []);
 
@@ -239,6 +182,7 @@ export default function Home() {
   useEffect(() => { if (storageReady) saveLocal("pelajarinaja-subject", subjectId); }, [subjectId, storageReady]);
   useEffect(() => { if (storageReady) saveLocal("pelajarinaja-selected-topic", selected); }, [selected, storageReady]);
   useEffect(() => { if (storageReady) saveLocal("pelajarinaja-view", view); }, [view, storageReady]);
+  useEffect(() => { if (storageReady) saveLocal("pelajarinaja-reading-size", readingSize); }, [readingSize, storageReady]);
 
   useEffect(() => {
     if (!subjectTopics.some((item) => item.id === selected)) {
@@ -464,7 +408,7 @@ export default function Home() {
 
     {sidebar && <button className="overlay mobile-only" onClick={() => setSidebar(false)} aria-label="Tutup menu" />}
 
-    <section className="content">
+    <section className={`content reading-${readingSize}`}>
       {view === "beranda" && <section className="dashboard-page">
         <div className="dashboard-hero card">
           <div><div className="eyebrow">Platform belajar universal</div><h1>TKA dan persiapan SERKOM dalam satu tempat.</h1><p>Pilih mata pelajaran, pelajari materi secara bertahap, kerjakan 25 soal untuk nilai kemampuan 0–100, lalu gunakan simulasi untuk menguji kesiapan.</p></div>
@@ -488,14 +432,28 @@ export default function Home() {
       {view === "materi" && <>
         <section className="hero">
           <div><div className="eyebrow">{subject.name} · {topic.group}</div><h1>{topic.title}</h1><p>{topic.summary}</p><div className="hero-meta"><Pill>{topic.pages}</Pill><Pill>{topic.level}</Pill><Pill>{topic.sourceLabel}</Pill></div></div>
-          <div className="hero-actions"><button className={`secondary ${bookmarks.includes(topic.id) ? "selected" : ""}`} onClick={() => toggleBookmark(topic.id)}><Icon name="star" /> {bookmarks.includes(topic.id) ? "Tersimpan" : "Simpan"}</button><button className="secondary" onClick={() => window.print()}><Icon name="print" /> Cetak</button><button className={`primary ${completed.includes(topic.id) ? "completed" : ""}`} onClick={() => toggleComplete(topic.id)}><Icon name="check" /> {completed.includes(topic.id) ? "Sudah dipelajari" : "Tandai selesai"}</button></div>
+          <div className="hero-actions"><div className="reading-controls" aria-label="Ukuran huruf materi"><button className={readingSize === "small" ? "active" : ""} onClick={() => setReadingSize("small")} aria-label="Perkecil huruf">A−</button><button className={readingSize === "normal" ? "active" : ""} onClick={() => setReadingSize("normal")} aria-label="Ukuran huruf normal">A</button><button className={readingSize === "large" ? "active" : ""} onClick={() => setReadingSize("large")} aria-label="Perbesar huruf">A+</button></div><button className={`secondary ${bookmarks.includes(topic.id) ? "selected" : ""}`} onClick={() => toggleBookmark(topic.id)}><Icon name="star" /> {bookmarks.includes(topic.id) ? "Tersimpan" : "Simpan"}</button><button className="secondary" onClick={() => window.print()}><Icon name="print" /> Cetak</button><button className={`primary ${completed.includes(topic.id) ? "completed" : ""}`} onClick={() => toggleComplete(topic.id)}><Icon name="check" /> {completed.includes(topic.id) ? "Sudah dipelajari" : "Tandai selesai"}</button></div>
         </section>
 
-        {subjectId === "serkom" && <div className="source-notice card"><Icon name="code" size={24}/><div><b>Materi persiapan SERKOM RPL</b><p>Konten ini mengikuti jobsheet Laravel 12 yang Anda lampirkan. Materi berfungsi untuk pembelajaran dan simulasi; keputusan kompeten resmi tetap mengikuti asesor, LSP, skema, serta MUK yang berlaku.</p></div></div>}
+        {subjectId === "serkom" && <div className="source-notice card"><Icon name="code" size={24}/><div><b>Materi persiapan SERKOM RPL</b><p>Konten ini mengikuti jobsheet dan rangkuman Laravel 12 yang Anda lampirkan. Materi berfungsi untuk pembelajaran dan simulasi; keputusan kompeten resmi tetap mengikuti asesor, LSP, skema, serta MUK yang berlaku.</p></div></div>}
 
-        <MasterLearningBlocks topic={topic} master={masterContent} />
+        <div className="teacher-intro card">
+          <div className="teacher-badge">Mulai dari sini</div>
+          <h2>Penjelasan seperti guru di kelas</h2>
+          <p>{teacherLead(topic)}</p>
+          <div className="teacher-analogy"><b>Bayangkan seperti ini:</b><span>{everydayAnalogy(topic)}</span></div>
+          <div className="teacher-why"><b>Kenapa materi ini penting?</b><span>{teacherWhy(topic)}</span></div>
+        </div>
 
-        <div className="supporting-label"><span>Materi pendukung lengkap</span><p>Bagian berikut mempertahankan seluruh fitur lama: tujuan, prasyarat, glosarium, contoh tambahan, jebakan, catatan, serta navigasi.</p></div>
+        {serkomLesson && <div className="w3-lesson card">
+          <div className="w3-head"><div><div className="eyebrow">Gaya belajar langkah demi langkah</div><h2>Pelajari → lihat contoh → bedah baris → coba sendiri</h2><p>Bagian ini dibuat seperti referensi tutorial: singkat di awal, lalu semakin detail ketika kamu membaca kode.</p></div><Pill>SERKOM RPL</Pill></div>
+          <div className="w3-grid">
+            <div className="w3-panel"><h3>Syntax / pola inti</h3><div className="syntax-stack">{serkomLesson.syntax.map((line, index) => <code key={index}>{line}</code>)}</div></div>
+            <div className="w3-panel"><h3>Contoh kode / perintah</h3><div className="code-table">{serkomLesson.code.map((line, index) => <div key={index}><span>{index + 1}</span><code>{line}</code></div>)}</div></div>
+          </div>
+          <div className="line-explain"><h3>Penjelasan setiap baris</h3>{serkomLesson.explain.map((line, index) => <div key={index}><b>Baris {index + 1}</b><p>{line}</p></div>)}</div>
+          <div className="try-box"><div><b>Coba sendiri</b><p>{serkomLesson.tryIt}</p></div><Icon name="code" size={22}/></div>
+        </div>}
 
         <div className="study-grid">
           <article className="card span-2"><SectionTitle number="01" title="Tujuan belajar" subtitle="Kemampuan yang diharapkan setelah menyelesaikan materi."/><div className="objective-grid">{(topic.objectives ?? []).map((item, index) => <div key={index}><Icon name="target" size={18}/><p>{item}</p></div>)}</div></article>
@@ -503,11 +461,11 @@ export default function Home() {
           <article className="card"><SectionTitle number="03" title="Konsep dasar" subtitle="Poin inti yang harus dikuasai."/><ul className="numbered-list">{(topic.concepts ?? []).map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ul></article>
           <article className="card span-2"><SectionTitle number="04" title="Pembahasan mendalam" subtitle="Hubungan antar konsep dan cara memahaminya secara utuh."/><div className="deep-list">{(topic.deepDive ?? []).map((item, index) => <div key={index}><b>0{index + 1}</b><p>{item}</p></div>)}</div></article>
           <article className="card span-2"><SectionTitle number="05" title="Rumus, strategi, atau pola penting" subtitle="Ringkasan yang dapat dipakai saat menyelesaikan soal atau praktik."/><div className="formula-list">{(topic.formulas?.length ? topic.formulas : ["Fokus pada alur konsep, bukti, dan langkah penyelesaian."]).map((item, index) => <code key={index}>{item}</code>)}</div></article>
-          <article className="card span-2"><SectionTitle number="06" title="Langkah penyelesaian" subtitle="Urutan kerja yang dapat diikuti saat menghadapi soal atau praktik."/><ol className="steps-list">{(topic.steps ?? []).map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ol></article>
+          <article className="card span-2"><SectionTitle number="06" title="Langkah penyelesaian" subtitle="Urutan kerja yang dapat diikuti saat menghadapi soal atau praktik."/><div className="teacher-step-note"><b>Cara guru menyarankan mengerjakannya:</b><p>Jangan lompat ke jawaban. Ikuti urutan ini sampai menjadi kebiasaan.</p></div><ol className="steps-list teacher-steps">{problemSolvingGuide(topic).map((item, index) => <li key={`teacher-${index}`}><span>{index + 1}</span><p>{item}</p></li>)}</ol><div className="original-steps"><b>Langkah khusus materi ini</b><ol className="steps-list">{(topic.steps ?? []).map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ol></div></article>
           <article className="card span-2"><SectionTitle number="07" title="Contoh bertahap" subtitle="Pelajari cara berpikir, bukan hanya hasil akhir."/><div className="examples-grid">{(topic.workedExamples ?? []).map((item, index) => <div className="worked-card" key={index}><div className="worked-label">{item.title}</div><h3>{item.problem}</h3><ol>{(item.steps ?? []).map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}</ol><div className="worked-result"><b>Hasil:</b> {item.result}</div></div>)}</div></article>
           <article className="card span-2"><SectionTitle number="08" title="Jebakan yang sering muncul" subtitle="Kesalahan yang perlu dihindari." danger/><div className="trap-grid">{(topic.traps ?? []).map((item, index) => <div key={index}><b>0{index + 1}</b><p>{item}</p></div>)}</div></article>
-          <article className="card"><SectionTitle number="09" title="Glosarium" subtitle="Istilah penting pada materi ini."/><div className="glossary-list">{(topic.glossary ?? []).map((item, index) => <div key={index}><b>{item.term}</b><p>{item.meaning}</p></div>)}</div></article>
-          <article id="catatan-pribadi" className="card"><SectionTitle number="10" title="Catatan pribadi" subtitle="Tersimpan otomatis di browser perangkat ini."/><textarea className="note-area" rows={10} value={notes[topic.id] ?? ""} onChange={(event) => setNotes((state) => ({ ...state, [topic.id]: event.target.value }))} placeholder="Tulis ringkasan, hal yang masih membingungkan, atau strategi yang ingin diingat..."/></article>
+          <article className="card"><SectionTitle number="09" title="Glosarium" subtitle="Istilah penting pada materi ini."/><div className="glossary-list">{(topic.glossary ?? []).map((item, index) => <div key={index}><b>{item.term}</b><p>{item.meaning}</p></div>)}</div><div className="exam-check"><h3>Checklist sebelum lanjut</h3>{examChecklist(topic).map((item, index) => <label key={index}><input type="checkbox"/><span>{item}</span></label>)}</div></article>
+          <article className="card"><SectionTitle number="10" title="Catatan pribadi" subtitle="Tersimpan otomatis di browser perangkat ini."/><textarea className="note-area" rows={10} value={notes[topic.id] ?? ""} onChange={(event) => setNotes((state) => ({ ...state, [topic.id]: event.target.value }))} placeholder="Tulis ringkasan, hal yang masih membingungkan, atau strategi yang ingin diingat..."/></article>
           <article className="card span-2 callout"><div><div className="eyebrow">Penilaian kemampuan</div><h2>Kerjakan 25 soal untuk {topic.title}</h2><p>Setiap soal bernilai 4 poin. Total nilai 100. Paket baru dibuat secara acak tetapi tetap sesuai materi.</p></div><button className="primary" onClick={() => setView("latihan")}>Mulai 25 soal <Icon name="chevron" /></button></article>
           <article className="card span-2 topic-nav"><button className="secondary" disabled={topicIndexInSubject <= 0} onClick={() => goTopic(-1)}><Icon name="back" /> Materi sebelumnya</button><span>{topicIndexInSubject + 1} / {subjectTopics.length}</span><button className="secondary" disabled={topicIndexInSubject >= subjectTopics.length - 1} onClick={() => goTopic(1)}>Materi berikutnya <Icon name="chevron" /></button></article>
         </div>
@@ -531,7 +489,7 @@ export default function Home() {
                 return <button disabled={state?.locked || quizFinalized} key={optionIndex} className={cls} onClick={() => selectQuizOption(question, optionIndex)}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}</button>;
               })}</div>
               {multiple && !state?.locked && <button className="lock-answer" disabled={!selectedOptions.length} onClick={() => lockQuizQuestion(question)}><Icon name="check" size={16}/> Kunci jawaban soal ini</button>}
-              {state?.locked && <div className={`feedback ${isCorrect(question, state) ? "ok" : "bad"}`}><b>{isCorrect(question, state) ? `Benar. +${question.points} poin.` : "Belum tepat. +0 poin."}</b> {question.explain}</div>}
+              {state?.locked && <div className={`feedback ${isCorrect(question, state) ? "ok" : "bad"}`}><b>{isCorrect(question, state) ? `Benar. +${question.points} poin.` : "Belum tepat. +0 poin."}</b><p>{question.explain}</p><div className="solution-walkthrough"><strong>Langkah memahami soal:</strong><ol>{(question.solutionSteps ?? [question.explain]).map((step, index) => <li key={index}>{step}</li>)}</ol></div></div>}
             </article>;
           })}
           <article className="card question-card"><div className="q-number">Esai Pendek · Tidak memengaruhi nilai</div><h2>{topic.essay?.q}</h2><textarea placeholder="Tulis jawabanmu sebelum membuka pembahasan..." rows={5}/><button className="secondary" onClick={() => setEssayVisible((state) => ({ ...state, [topic.id]: !state[topic.id] }))}>{essayVisible[topic.id] ? "Sembunyikan pembahasan" : "Lihat pembahasan"}</button>{essayVisible[topic.id] && <div className="feedback ok"><b>Pembahasan:</b> {topic.essay?.answer}</div>}</article>
@@ -549,7 +507,7 @@ export default function Home() {
             const selectedOptions = answerSelected(state);
             const multiple = Array.isArray(question.answer);
             const sourceSubject = subjects.find((item) => item.id === question.subjectId)?.short ?? "";
-            return <article className="card question-card compact" key={question.key}><div className="question-meta"><div className="q-number">Soal {index + 1} · {sourceSubject} · {question.topicTitle}</div><div className="meta-pills"><Pill>{question.difficulty}</Pill><Pill>{question.points} poin</Pill>{multiple && <Pill>Kompleks</Pill>}</div></div><h2>{question.q}</h2><div className="option-list">{question.options.map((option, optionIndex) => { const chosen = selectedOptions.includes(optionIndex); const correctOption = Array.isArray(question.answer) ? question.answer.includes(optionIndex) : question.answer === optionIndex; const cls = !simFinished ? chosen ? "chosen" : "" : correctOption ? "correct" : chosen ? "wrong" : ""; return <button disabled={simFinished || state?.locked} key={optionIndex} className={cls} onClick={() => selectSimulationOption(question, optionIndex)}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}</button>; })}</div>{multiple && !state?.locked && !simFinished && <button className="lock-answer" disabled={!selectedOptions.length} onClick={() => lockSimulationQuestion(question)}><Icon name="check" size={16}/> Kunci jawaban soal ini</button>}{simFinished && <div className={`feedback ${isCorrect(question, state) ? "ok" : "bad"}`}><b>{isCorrect(question, state) ? `Benar. +${question.points} poin.` : "Jawaban belum tepat."}</b> {question.explain}</div>}</article>;
+            return <article className="card question-card compact" key={question.key}><div className="question-meta"><div className="q-number">Soal {index + 1} · {sourceSubject} · {question.topicTitle}</div><div className="meta-pills"><Pill>{question.difficulty}</Pill><Pill>{question.points} poin</Pill>{multiple && <Pill>Kompleks</Pill>}</div></div><h2>{question.q}</h2><div className="option-list">{question.options.map((option, optionIndex) => { const chosen = selectedOptions.includes(optionIndex); const correctOption = Array.isArray(question.answer) ? question.answer.includes(optionIndex) : question.answer === optionIndex; const cls = !simFinished ? chosen ? "chosen" : "" : correctOption ? "correct" : chosen ? "wrong" : ""; return <button disabled={simFinished || state?.locked} key={optionIndex} className={cls} onClick={() => selectSimulationOption(question, optionIndex)}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}</button>; })}</div>{multiple && !state?.locked && !simFinished && <button className="lock-answer" disabled={!selectedOptions.length} onClick={() => lockSimulationQuestion(question)}><Icon name="check" size={16}/> Kunci jawaban soal ini</button>}{simFinished && <div className={`feedback ${isCorrect(question, state) ? "ok" : "bad"}`}><b>{isCorrect(question, state) ? `Benar. +${question.points} poin.` : "Jawaban belum tepat."}</b><p>{question.explain}</p><div className="solution-walkthrough"><strong>Cara berpikir:</strong><ol>{(question.solutionSteps ?? [question.explain]).map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}</ol></div></div>}</article>;
           })}</div>
           <div className="sim-footer">{!simFinished ? <button className="primary" onClick={() => setSimFinished(true)}>Selesai & nilai</button> : <div className="ability-card card"><div className="ability-score"><span>Nilai</span><strong>{simPoints}</strong><small>/100</small></div><div className="ability-copy"><div className="eyebrow">Kemampuan simulasi</div><h2>{simAbility.label}</h2><p>{simAbility.description}</p><div className="ability-meta"><Pill>{simCorrect}/{SIMULATION_QUESTIONS} benar</Pill><Pill>{simAnsweredCount}/{SIMULATION_QUESTIONS} dijawab</Pill></div></div><button className="secondary" onClick={startSimulation}><Icon name="shuffle" /> Simulasi baru</button></div>}</div>
         </>}

@@ -1,6 +1,6 @@
 {
   "name": "pelajarinaja-universal",
-  "version": "6.0.0-next15",
+  "version": "5.0.0-next15",
   "private": true,
   "scripts": {
     "dev": "next dev",
