@@ -276,7 +276,7 @@ export const indonesianTopics = [
       "Klaim adalah pernyataan yang ingin diyakinkan penulis, sedangkan bukti adalah informasi yang membuat klaim lebih dapat dipercaya.",
       "Bukti kuat harus relevan langsung dengan klaim dan berasal dari sumber atau pengamatan yang memadai.",
       "Informasi yang melemahkan argumen biasanya merusak asumsi penting atau menunjukkan kondisi yang berlawanan.",
-      "Jangan menilai apakah kita setuju secara pribadi; nilai apakah alasan dan bukti mendukung kesimpulan teks."
+      "Penilaian tidak didasarkan pada persetujuan pribadi, melainkan pada kekuatan alasan dan bukti yang mendukung kesimpulan teks."
     ],
     "deepDive": [
       "Pisahkan “apa yang dikatakan penulis” dari “mengapa penulis menganggapnya benar”.",

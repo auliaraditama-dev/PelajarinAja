@@ -236,7 +236,7 @@ export const mathTopics = [
       "Setelah itu substitusikan nilai yang diketahui ke rumus definisi.",
       "Jika diminta mencari variabel, hasil substitusi biasanya membentuk persamaan biasa."
     ],
-    "analogy": "Simbol operasi baru seperti tombol khusus pada kalkulator buatan sendiri. Kita tidak bisa menebak fungsinya; kita harus membaca manual tombol tersebut.",
+    "analogy": "Simbol operasi baru dapat dianalogikan sebagai tombol khusus pada kalkulator. Fungsinya tidak boleh diasumsikan dan harus ditentukan dari definisi yang diberikan.",
     "formulas": [
       "Contoh: a ⊙ b = ((a-b)² + 2ab)/(a+b)"
     ],
@@ -903,7 +903,7 @@ export const mathTopics = [
       "Dalam soal cerita, tentukan arti tiap variabel sebelum membuat persamaan.",
       "Periksa kembali hasil dengan memasukkan nilai variabel ke semua persamaan."
     ],
-    "analogy": "Jika dua paket makanan memiliki kombinasi item berbeda tetapi total harga diketahui, kita bisa memakai SPL untuk mencari harga masing-masing item.",
+    "analogy": "Jika dua paket memiliki kombinasi item berbeda tetapi total harga diketahui, SPL dapat digunakan untuk menentukan harga setiap item.",
     "formulas": [
       "a₁x+b₁y=c₁",
       "a₂x+b₂y=c₂"
@@ -1781,7 +1781,7 @@ export const mathTopics = [
       "Jumlah benda yang muat idealnya dihitung dari banyak susunan pada setiap dimensi.",
       "Orientasi benda dapat memengaruhi jumlah yang muat."
     ],
-    "analogy": "Menyusun kardus ke dalam truk seperti mengisi kotak besar dengan kotak-kotak kecil. Kita hitung berapa yang masuk sepanjang tiap arah.",
+    "analogy": "Penyusunan kardus ke dalam truk dapat dipandang sebagai pengisian ruang besar oleh balok-balok kecil. Banyak susunan dihitung pada setiap arah lalu dikalikan.",
     "formulas": [
       "V_balok = p×l×t",
       "Jumlah kotak = (p_besar/p_kecil)×(l_besar/l_kecil)×(t_besar/t_kecil), jika ukuran membagi tepat"
@@ -2113,7 +2113,7 @@ export const mathTopics = [
       "Bandingkan titik data yang tepat, jangan hanya melihat kemiringan garis secara umum.",
       "Untuk pernyataan 'selalu', satu pengecualian saja sudah membuatnya salah."
     ],
-    "analogy": "Grafik nilai rapor seperti rekaman perjalanan. Kita tidak cukup melihat titik akhir; perlu membaca tiap titik untuk tahu kapan naik atau turun.",
+    "analogy": "Grafik nilai dapat dipandang sebagai rekaman perubahan dari waktu ke waktu. Kesimpulan harus dibuat dengan membaca setiap titik, bukan hanya nilai awal dan akhir.",
     "formulas": [
       "Perubahan = nilai baru - nilai lama",
       "Persentase perubahan = perubahan/nilai lama × 100%"

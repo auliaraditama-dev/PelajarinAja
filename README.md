@@ -1,22 +1,30 @@
-# PelajarinAja Universal v7
+# PelajarinAja Universal Formal v9
 
 PelajarinAja adalah platform belajar multi-mapel berbasis Next.js untuk Matematika, Bahasa Indonesia, Bahasa Inggris, dan SERKOM RPL.
 
-## Fokus v7
+## Fokus v9
 
-Versi ini mempertahankan seluruh fitur lama dan menambahkan pengalaman belajar yang lebih manusiawi seperti guru yang menjelaskan di kelas.
+Versi ini mempertahankan seluruh fitur sebelumnya dan memperkuat sistem bank soal agar setiap paket benar-benar unik, bertingkat, dan terstruktur.
 
-- Penjelasan pembuka dengan bahasa sehari-hari.
-- Analogi sederhana untuk membantu membayangkan konsep.
-- Bagian khusus tentang alasan materi penting.
-- Langkah pengerjaan soal yang lebih terstruktur.
-- Pembahasan setelah menjawab berisi langkah memahami soal, bukan hanya jawaban akhir.
-- SERKOM memakai pola tutorial bertahap: syntax, contoh kode, nomor baris, penjelasan setiap baris, dan latihan "coba sendiri".
+- Ringkasan konseptual dengan bahasa formal dan jelas.
+- Ilustrasi konsep untuk membantu memahami hubungan antar gagasan.
+- Bagian khusus mengenai signifikansi materi.
+- Langkah pengerjaan soal yang terstruktur.
+- Pembahasan setelah menjawab memuat langkah analisis dan verifikasi jawaban.
+- SERKOM memakai pola tutorial bertahap: sintaks, contoh kode, nomor baris, analisis setiap baris, dan latihan mandiri.
 - Kontrol ukuran huruf A−, A, A+ untuk bacaan materi.
 - Preferensi ukuran huruf disimpan di localStorage.
-- 25 soal dinamis per materi.
-- 4 poin per soal dan nilai maksimum 100.
-- Simulasi 25 soal selama 40 menit.
+- 25 soal unik per materi.
+- Urutan tingkat kesulitan tetap: 8 mudah, 9 sedang, 8 sulit.
+- Soal 1–8 berfokus pada konsep dasar dan penerapan langsung.
+- Soal 9–17 berfokus pada penerapan dan analisis beberapa informasi.
+- Soal 18–25 berfokus pada analisis terpadu dua bagian.
+- Setiap soal bernilai 4 poin dan nilai maksimum 100.
+- Tidak ada soal duplikat di dalam satu paket.
+- Riwayat soal terbaru disimpan secara lokal dan digunakan untuk menghindari pengulangan pada pengacakan berikutnya.
+- Sistem tetap menyediakan mekanisme aman bila variasi suatu topik telah mendekati batas riwayat tersimpan.
+- Simulasi 25 soal selama 40 menit memakai pola kesulitan yang sama.
+- Penilaian hasil memuat ringkasan kemampuan per tingkat kesulitan.
 - Penilaian kemampuan dan riwayat lokal.
 - Bookmark, catatan, dark mode, print, progress, dan navigasi materi.
 - Responsive desktop, tablet, dan mobile.
@@ -30,6 +38,16 @@ Versi ini mempertahankan seluruh fitur lama dan menambahkan pengalaman belajar y
 - SERKOM RPL
 
 Total: 60 materi.
+
+## Komposisi penilaian 25 soal
+
+| Nomor | Tingkat | Jumlah | Fokus |
+| --- | --- | ---: | --- |
+| 1–8 | Mudah | 8 | Konsep dasar dan penerapan langsung |
+| 9–17 | Sedang | 9 | Penerapan konsep dan analisis beberapa informasi |
+| 18–25 | Sulit | 8 | Analisis terpadu dan evaluasi dua bagian |
+
+Setiap paket memiliki total 100 poin. Sistem menggunakan signature soal yang mempertimbangkan teks pertanyaan dan opsi jawaban untuk mencegah duplikasi dalam paket. Riwayat signature terbaru juga digunakan ketika membuat paket berikutnya.
 
 ## SERKOM RPL
 
@@ -56,13 +74,13 @@ Materi SERKOM difokuskan pada pembelajaran Pemrogram Junior Laravel 12:
 - Pertanyaan lisan asesor
 - Cheat sheet kesiapan
 
-Setiap topik SERKOM memiliki tutorial seperti referensi langkah demi langkah:
+Setiap topik SERKOM memiliki tutorial teknis langkah demi langkah:
 
-1. Pola atau syntax inti
+1. Pola atau sintaks inti
 2. Contoh kode atau perintah
 3. Nomor baris
-4. Penjelasan tiap baris
-5. Latihan "coba sendiri"
+4. Analisis tiap baris
+5. Latihan mandiri
 
 ## Menjalankan lokal
 
@@ -85,8 +103,12 @@ Validator memeriksa:
 - minimal 60 materi
 - struktur materi lengkap
 - 25 soal unik per materi
+- tidak ada pengulangan pada beberapa paket berurutan selama riwayat tersedia
+- komposisi 8 mudah, 9 sedang, 8 sulit
+- urutan tingkat kesulitan soal 1 sampai 25
 - total 100 poin
 - jawaban valid
+- opsi jawaban tidak ganda
 - langkah pembahasan soal
 - tutorial SERKOM tersedia
 - jumlah baris kode SERKOM sama dengan jumlah penjelasan baris
@@ -121,6 +143,8 @@ Aplikasi tidak memerlukan database untuk progress pengguna. Data belajar disimpa
 - catatan pribadi
 - nilai per materi
 - riwayat simulasi
+- riwayat soal terbaru per materi
+- riwayat soal simulasi terbaru
 - tema
 - ukuran huruf bacaan
 

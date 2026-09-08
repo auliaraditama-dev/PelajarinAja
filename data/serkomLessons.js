@@ -3,13 +3,13 @@ const lessons = {
     syntax: ["Aktivitas → Bukti → Unit Kompetensi", "Latihan ≠ Keputusan K/BK resmi"],
     code: ["Baca skema dan MUK", "Kerjakan aktivitas", "Simpan bukti", "Jelaskan keterkaitan bukti dengan unit"],
     explain: ["Mulai dari dokumen yang benar-benar dipakai pada latihan atau asesmen.", "Lakukan pekerjaan yang menghasilkan kemampuan teramati.", "Bukti dapat berupa source code, output terminal, screenshot, log debugging, atau hasil test.", "Saat ditanya asesor, jelaskan mengapa bukti tersebut menunjukkan kompetensi yang dimaksud."],
-    tryIt: "Pilih satu aktivitas proyek, misalnya debugging. Sebutkan bukti yang harus kamu tunjukkan dan unit apa yang diperkuat."
+    tryIt: "Pilih satu aktivitas proyek, misalnya debugging. Sebutkan bukti yang harus ditunjukkan dan unit yang diperkuat."
   },
   "serkom-inti-mvc": {
     syntax: ["Browser → Route → Controller → Model → Database", "Database → Model → Controller → Blade → Browser"],
     code: ["Route::get('/produk', [ProductController::class, 'index']);", "$products = Product::query()->latest()->get();", "return view('produk.index', compact('products'));"],
     explain: ["Route menerima request GET ke /produk lalu memilih method index pada ProductController.", "Controller meminta data produk melalui model Product dan Eloquent.", "Controller mengirim collection products ke Blade agar dapat ditampilkan sebagai HTML."],
-    tryIt: "Jelaskan dengan kata sendiri apa yang terjadi saat pengguna membuka /produk."
+    tryIt: "Jelaskan secara runtut proses yang terjadi saat pengguna membuka /produk."
   },
   "serkom-skenario-ipo": {
     syntax: ["Input → Process → Output"],
@@ -27,7 +27,7 @@ const lessons = {
     syntax: ["php -v", "composer --version", "php artisan --version"],
     code: ["composer install", "php artisan key:generate", "php artisan config:clear", "php artisan migrate:status", "php artisan serve"],
     explain: ["Memasang dependency PHP sesuai composer.lock/composer.json.", "Membuat APP_KEY untuk aplikasi Laravel.", "Membersihkan cache konfigurasi setelah .env berubah.", "Memeriksa migration yang sudah atau belum dijalankan.", "Menjalankan server development lokal Laravel."],
-    tryIt: "Jika aplikasi menampilkan No application encryption key, perintah apa yang kamu jalankan dan mengapa?"
+    tryIt: "Jika aplikasi menampilkan No application encryption key, tentukan perintah yang perlu dijalankan dan jelaskan alasannya."
   },
   "serkom-migration": {
     syntax: ["Schema::create('products', function (Blueprint $table) { ... });"],
@@ -60,10 +60,10 @@ const lessons = {
     tryIt: "Sebutkan route yang menangani form tambah dan route yang menangani proses menyimpan."
   },
   "serkom-blade-landing": {
-    syntax: ["@extends → pakai layout", "@section → isi bagian layout", "@forelse → loop + kondisi kosong"],
+    syntax: ["@extends → menggunakan layout", "@section → mengisi bagian layout", "@forelse → perulangan + kondisi data kosong"],
     code: ["@extends('layouts.app')", "@section('content')", "@forelse ($products as $produk)", "<h3>{{ $produk->nama_produk }}</h3>", "@empty", "<p>Belum ada produk.</p>", "@endforelse", "@endsection"],
-    explain: ["View memakai layout utama.", "Membuka section content.", "Melakukan loop collection products.", "Menampilkan nama produk dengan escaping Blade.", "Masuk ke cabang jika collection kosong.", "Menampilkan pesan kosong.", "Menutup forelse.", "Menutup section."],
-    tryIt: "Mengapa @forelse lebih praktis daripada @foreach jika kita juga ingin menangani data kosong?"
+    explain: ["View menggunakan layout utama.", "Membuka section content.", "Melakukan perulangan terhadap collection products.", "Menampilkan nama produk dengan escaping Blade.", "Masuk ke cabang jika collection kosong.", "Menampilkan pesan kosong.", "Menutup forelse.", "Menutup section."],
+    tryIt: "Jelaskan alasan @forelse lebih sesuai daripada @foreach ketika data kosong juga harus ditangani."
   },
   "serkom-form-crud": {
     syntax: ["POST + @csrf", "PUT/DELETE memakai @method"],
@@ -72,7 +72,7 @@ const lessons = {
     tryIt: "Mengapa HTML form masih memakai POST walaupun operasi Laravel-nya PUT?"
   },
   "serkom-css": {
-    syntax: ["Mobile-first thinking: layout harus tetap terbaca pada layar kecil"],
+    syntax: ["Prinsip responsif: layout harus tetap terbaca dan dapat digunakan pada layar kecil"],
     code: [".product-grid {", "display: grid;", "grid-template-columns: repeat(3, 1fr);", "gap: 24px;", "}", "@media (max-width: 800px) {", ".product-grid { grid-template-columns: 1fr; }", "}"],
     explain: ["Memilih elemen product-grid.", "Mengaktifkan CSS Grid.", "Desktop memakai tiga kolom sama lebar.", "Memberi jarak antar kartu.", "Menutup selector.", "Membuat aturan khusus layar maksimal 800px.", "Pada layar kecil grid berubah menjadi satu kolom.", "Menutup media query."],
     tryIt: "Apa masalah yang mungkin muncul jika tabel atau grid tidak diberi penyesuaian untuk layar kecil?"
@@ -87,7 +87,7 @@ const lessons = {
     syntax: ["Reproduce → Read → Hypothesize → Change small → Retest → Record"],
     code: ["php artisan route:list", "php artisan optimize:clear", "php artisan migrate:status", "php artisan test"],
     explain: ["Memeriksa method, URI, action, dan nama route ketika ada masalah routing.", "Membersihkan cache aplikasi ketika perubahan belum terbaca.", "Memeriksa status migration saat tabel/kolom bermasalah.", "Menjalankan test agar kegagalan dapat dilihat secara konsisten."],
-    tryIt: "Jika muncul Route not defined, apa dua pemeriksaan pertama yang kamu lakukan?"
+    tryIt: "Jika muncul Route not defined, tentukan dua pemeriksaan pertama yang perlu dilakukan."
   },
   "serkom-testing": {
     syntax: ["Arrange → Act → Assert"],
@@ -99,19 +99,19 @@ const lessons = {
     syntax: ["Bukti yang baik = valid + autentik + terkini + memadai"],
     code: ["README.md", "01_Source_Code/", "03_Screenshot/", "04_Debugging/", "05_Testing/"],
     explain: ["README menjelaskan cara menjalankan dan struktur proyek.", "Folder source menyimpan implementasi.", "Screenshot menunjukkan tampilan atau hasil penting.", "Catatan debugging menunjukkan proses menemukan dan memperbaiki masalah.", "Laporan testing menunjukkan skenario dan hasil uji."],
-    tryIt: "Sebutkan tiga bukti yang menunjukkan bahwa kamu bukan hanya menyalin proyek jadi."
+    tryIt: "Sebutkan tiga bukti yang menunjukkan bahwa proyek dipahami dan dikerjakan secara autentik."
   },
   "serkom-asesor": {
     syntax: ["Jawaban kuat: fungsi → alasan → contoh/bukti"],
     code: ["Pertanyaan: Apa fungsi $fillable?", "Fungsi: menentukan field yang boleh diisi massal.", "Alasan: melindungi atribut model dari mass assignment yang tidak diinginkan.", "Bukti: field dipakai saat create() dan update()."],
-    explain: ["Mulai dengan inti pertanyaan.", "Jawab fungsi dalam satu kalimat.", "Tambahkan alasan teknis singkat.", "Tutup dengan contoh dari proyek agar jawaban terasa nyata."],
+    explain: ["Identifikasi inti pertanyaan.", "Jelaskan fungsi secara ringkas dan tepat.", "Tambahkan alasan teknis yang relevan.", "Sertakan contoh atau bukti dari proyek untuk memperkuat jawaban."],
     tryIt: "Jawab pertanyaan 'Apa beda create() dan store()?' dengan pola fungsi → alasan → contoh."
   },
   "serkom-cheatsheet": {
     syntax: ["Setup → DB → Backend → View → Debug → Test → Evidence"],
     code: ["composer install", "php artisan key:generate", "php artisan migrate --seed", "php artisan route:list", "php artisan serve", "php artisan test"],
     explain: ["Menyiapkan dependency proyek.", "Menyiapkan APP_KEY.", "Membangun skema dan data awal.", "Memeriksa route sebelum demo.", "Menjalankan aplikasi lokal.", "Memverifikasi fitur dengan test."],
-    tryIt: "Tanpa melihat catatan, jelaskan urutan minimal menyalakan starter project sampai aplikasi bisa diuji."
+    tryIt: "Jelaskan urutan minimum untuk menjalankan starter project hingga aplikasi siap diuji tanpa mengandalkan catatan."
   }
 };
 

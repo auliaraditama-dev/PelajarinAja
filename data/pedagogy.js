@@ -1,112 +1,112 @@
-export function teacherLead(topic) {
+export function materialOverview(topic) {
   const title = topic.title.toLowerCase();
   if (topic.subjectId === "serkom") {
-    return `Bayangkan kamu sedang duduk di depan asesor dan diminta menjelaskan ${title}. Targetnya bukan sekadar bisa mengetik kode, tetapi bisa menjelaskan apa yang terjadi, file mana yang bekerja, mengapa langkah itu diperlukan, dan bagaimana membuktikan hasilnya benar.`;
+    return `Materi ${title} menekankan pemahaman fungsi komponen, keterkaitan antar file, alur data, alasan teknis, serta bukti verifikasi. Penguasaan dinilai dari kemampuan menerapkan konsep dan menjelaskan proses kerja secara runtut.`;
   }
   if (topic.subjectId === "matematika") {
-    return `Kita pelajari ${title} dengan cara yang sederhana: pahami dulu ceritanya, cari informasi yang benar-benar dipakai, pilih konsep yang cocok, lalu hitung pelan-pelan. Jangan buru-buru memasukkan angka ke rumus sebelum tahu apa yang sedang dicari.`;
+    return `Materi ${title} perlu dipahami melalui urutan yang sistematis: identifikasi yang ditanyakan, pilih data yang relevan, tentukan konsep atau rumus, lakukan perhitungan secara bertahap, lalu verifikasi hasil.`;
   }
   if (topic.subjectId === "bahasa-indonesia") {
-    return `Pada materi ${title}, yang paling penting bukan membaca cepat, tetapi membaca dengan tujuan. Kita cari apa yang ditanyakan, tandai bukti di teks, lalu pilih jawaban yang paling didukung bacaan, bukan yang hanya terasa masuk akal.`;
+    return `Materi ${title} berfokus pada pembacaan terarah. Pertanyaan perlu diidentifikasi terlebih dahulu, kemudian bukti yang relevan dicari dalam teks sebelum menentukan jawaban yang paling sesuai.`;
   }
-  return `Pada materi ${title}, kita tidak perlu menerjemahkan setiap kata. Fokus dulu pada tujuan pertanyaan, kata kunci, hubungan antar kalimat, lalu gunakan bukti dari teks untuk memastikan jawaban.`;
+  return `Materi ${title} berfokus pada pemahaman isi teks secara terarah. Tidak setiap kata harus diterjemahkan; prioritasnya adalah tujuan pertanyaan, kata kunci, hubungan antar kalimat, dan bukti yang mendukung jawaban.`;
 }
 
-export function teacherWhy(topic) {
+export function materialImportance(topic) {
   if (topic.subjectId === "serkom") {
-    return `Materi ini penting karena di SERKOM kamu perlu menunjukkan dua hal sekaligus: aplikasi bekerja dan kamu memahami alasan teknis di balik pekerjaanmu. Kode yang berjalan tetapi tidak bisa dijelaskan akan sulit menjadi bukti pemahaman yang kuat.`;
+    return `Materi ini penting karena asesmen SERKOM menilai hasil kerja sekaligus pemahaman terhadap proses teknis. Implementasi perlu dapat dijelaskan, diverifikasi, diuji, dan didukung bukti yang sesuai.`;
   }
   if (topic.subjectId === "matematika") {
-    return `Konsep ini penting karena soal TKA sering mengubah bentuk cerita, angka, atau konteks. Kalau kamu hanya menghafal satu contoh, kamu mudah bingung. Kalau konsepnya paham, bentuk soal boleh berubah tetapi langkah berpikirnya tetap bisa dipakai.`;
+    return `Konsep ini penting karena bentuk soal dapat berubah tanpa mengubah prinsip penyelesaiannya. Pemahaman konsep memungkinkan strategi yang sama diterapkan pada angka, konteks, dan representasi yang berbeda.`;
   }
-  return `Materi ini penting karena soal membaca sering memberi pilihan yang semuanya tampak masuk akal. Pembeda utamanya adalah bukti. Jawaban terbaik harus paling sesuai dengan isi, maksud, atau hubungan informasi di dalam teks.`;
+  return `Materi ini penting karena beberapa pilihan jawaban dapat terlihat masuk akal. Jawaban yang tepat harus memiliki dukungan paling kuat dari isi, maksud, hubungan informasi, atau bukti yang terdapat dalam teks.`;
 }
 
-export function everydayAnalogy(topic) {
+export function conceptIllustration(topic) {
   if (topic.analogy) return topic.analogy;
-  if (topic.subjectId === "serkom") return "Anggap aplikasi seperti restoran: pelanggan mengirim pesanan, pelayan meneruskan, dapur memproses, gudang menyimpan bahan, lalu hasil kembali ke pelanggan.";
-  if (topic.subjectId === "matematika") return "Anggap soal seperti petunjuk perjalanan. Angka adalah rambu, rumus adalah peta, dan jawaban adalah tujuan. Peta baru berguna setelah kita tahu posisi awal dan tujuan.";
-  return "Anggap teks seperti percakapan. Kita tidak menebak maksud orang dari satu kata saja, tetapi dari kalimat sebelum-sesudah dan tujuan pembicaraannya.";
+  if (topic.subjectId === "serkom") return "Alur aplikasi dapat disamakan dengan sistem layanan: request diterima, diarahkan ke komponen pemroses, data diakses atau disimpan, lalu hasil dikembalikan sebagai response.";
+  if (topic.subjectId === "matematika") return "Soal dapat dipandang sebagai proses navigasi: data berperan sebagai informasi awal, konsep atau rumus sebagai metode, dan hasil akhir sebagai tujuan yang perlu diverifikasi.";
+  return "Teks dapat dipahami sebagai rangkaian informasi yang saling terhubung. Makna suatu bagian ditentukan oleh konteks, hubungan dengan kalimat lain, dan tujuan keseluruhan bacaan.";
 }
 
 export function problemSolvingGuide(topic) {
   if (topic.subjectId === "matematika") {
     return [
-      "Baca pertanyaan terakhir dulu agar tahu apa yang harus dicari.",
-      "Tulis data penting dan buang informasi yang tidak diperlukan.",
-      "Tentukan konsep atau rumus yang paling sesuai.",
-      "Substitusikan angka secara rapi satu langkah per baris.",
-      "Periksa tanda, satuan, dan kewajaran hasil.",
-      "Cocokkan hasil dengan pilihan jawaban jika bentuknya pilihan ganda."
+      "Identifikasi secara tepat besaran atau nilai yang diminta.",
+      "Catat data yang relevan dan pisahkan informasi yang tidak diperlukan.",
+      "Tentukan konsep, sifat, atau rumus yang paling sesuai.",
+      "Substitusikan data secara runtut dan kerjakan satu tahap pada satu waktu.",
+      "Periksa tanda operasi, satuan, domain, dan kewajaran hasil.",
+      "Cocokkan hasil dengan pilihan jawaban apabila soal berbentuk pilihan ganda."
     ];
   }
   if (topic.subjectId === "serkom") {
     return [
-      "Tentukan fitur atau masalah yang sedang dibahas.",
-      "Tunjuk file, class, method, route, atau perintah yang bertanggung jawab.",
-      "Jelaskan alur input → proses → data → output dengan kalimat sendiri.",
-      "Baca kode dari luar ke dalam: nama komponen, parameter, proses, lalu hasil.",
-      "Verifikasi dengan browser, database, route:list, migrate:status, atau test sesuai kebutuhan.",
-      "Jika error, catat gejala dan ubah bagian terkecil yang paling relevan.",
-      "Simpan bukti hasil supaya proses dapat dijelaskan kembali saat asesmen."
+      "Identifikasi fitur, kebutuhan, atau masalah teknis yang dibahas.",
+      "Tentukan file, class, method, route, model, view, atau perintah yang bertanggung jawab.",
+      "Uraikan alur input, proses, akses data, dan output secara berurutan.",
+      "Analisis kode berdasarkan komponen, parameter, operasi, nilai balik, dan efeknya terhadap aplikasi.",
+      "Lakukan verifikasi menggunakan browser, database, route:list, migrate:status, atau test sesuai konteks.",
+      "Jika terjadi error, catat gejala, lokasi, dugaan penyebab, lalu ubah bagian terkecil yang relevan.",
+      "Simpan bukti hasil agar proses dapat ditelusuri dan dijelaskan kembali pada asesmen."
     ];
   }
   return [
-    "Baca pertanyaan sebelum membaca ulang teks.",
-    "Tandai kata kunci pada pertanyaan.",
-    "Cari kalimat atau bagian teks yang menjadi bukti.",
-    "Bedakan informasi eksplisit, kesimpulan tersirat, dan opini.",
-    "Eliminasi pilihan yang terlalu umum, bertentangan, atau tidak didukung teks.",
-    "Pilih jawaban yang paling dekat dengan bukti, bukan yang sekadar terdengar bagus."
+    "Identifikasi jenis informasi yang diminta oleh pertanyaan.",
+    "Tandai kata kunci atau batasan penting pada pertanyaan.",
+    "Temukan kalimat atau bagian teks yang menjadi bukti utama.",
+    "Bedakan informasi eksplisit, inferensi, opini, dan evaluasi.",
+    "Eliminasi pilihan yang bertentangan, terlalu umum, atau tidak didukung teks.",
+    "Pilih jawaban dengan dukungan bukti paling kuat dari bacaan."
   ];
 }
 
 export function questionSolutionSteps(question, topic) {
   if (topic.subjectId === "matematika") {
     return [
-      `Apa yang dicari: fokus pada inti pertanyaan “${question.q.replace(/^(Latihan konsep: |Uji cepat: |Cermati soal berikut\. |Paket variasi: )/, "").slice(0, 120)}${question.q.length > 120 ? "…" : ""}”.`,
-      "Ambil data yang berhubungan langsung dengan yang ditanyakan.",
-      "Gunakan konsep pada materi aktif, kerjakan operasi secara berurutan, lalu sederhanakan hasil.",
-      `Periksa hasil dengan pembahasan: ${question.explain}`
+      `Fokus pertanyaan: “${question.q.replace(/^(Latihan konsep: |Uji cepat: |Cermati soal berikut\. |Paket variasi: )/, "").slice(0, 120)}${question.q.length > 120 ? "…" : ""}”.`,
+      "Identifikasi data yang berkaitan langsung dengan nilai yang diminta.",
+      "Terapkan konsep pada materi aktif dan lakukan operasi secara berurutan.",
+      `Verifikasi hasil menggunakan pembahasan berikut: ${question.explain}`
     ];
   }
   if (topic.subjectId === "serkom") {
     return [
-      "Kenali kata kunci teknis pada soal, misalnya route, controller, model, migration, Blade, validation, atau testing.",
-      "Hubungkan kata kunci itu dengan fungsi komponen yang benar di alur Laravel.",
-      "Eliminasi pilihan yang mencampur tanggung jawab antar komponen.",
-      `Cek alasan akhirnya: ${question.explain}`
+      "Identifikasi kata kunci teknis, misalnya route, controller, model, migration, Blade, validation, atau testing.",
+      "Hubungkan kata kunci dengan tanggung jawab komponen yang tepat pada arsitektur Laravel.",
+      "Eliminasi pilihan yang mencampurkan fungsi antar komponen atau tidak sesuai alur request-response.",
+      `Verifikasi kesimpulan menggunakan alasan berikut: ${question.explain}`
     ];
   }
   return [
-    "Lihat dulu apa yang diminta: informasi langsung, inferensi, makna kata, tujuan penulis, atau evaluasi.",
-    "Temukan bukti paling dekat di teks atau konteks.",
-    "Bandingkan setiap pilihan dengan bukti tersebut.",
-    `Gunakan penjelasan ini sebagai pengecekan akhir: ${question.explain}`
+    "Tentukan apakah soal meminta informasi eksplisit, inferensi, makna kata, tujuan penulis, atau evaluasi.",
+    "Cari bukti yang paling dekat dan paling relevan di dalam teks.",
+    "Bandingkan setiap pilihan dengan bukti tersebut dan eliminasi yang tidak sesuai.",
+    `Gunakan pembahasan berikut sebagai verifikasi akhir: ${question.explain}`
   ];
 }
 
-export function examChecklist(topic) {
+export function masteryChecklist(topic) {
   if (topic.subjectId === "serkom") {
     return [
-      "Saya bisa menjelaskan fungsi komponen tanpa membaca hafalan.",
-      "Saya bisa menunjukkan file atau perintah yang terkait.",
-      "Saya bisa menjelaskan input, proses, output, dan cara verifikasi.",
-      "Saya tahu gejala error umum dan langkah awal menelusurinya."
+      "Fungsi komponen dapat dijelaskan secara mandiri dan tepat.",
+      "File atau perintah yang berkaitan dapat ditunjukkan dengan benar.",
+      "Alur input, proses, output, dan verifikasi dapat dijelaskan secara runtut.",
+      "Gejala error umum dan langkah penelusuran awal dapat diidentifikasi."
     ];
   }
   if (topic.subjectId === "matematika") {
     return [
-      "Saya tahu apa yang ditanyakan sebelum menghitung.",
-      "Saya bisa memilih rumus tanpa menebak.",
-      "Saya menulis langkah hitung satu per satu.",
-      "Saya selalu memeriksa satuan dan kewajaran hasil."
+      "Besaran yang ditanyakan dapat diidentifikasi sebelum perhitungan dimulai.",
+      "Rumus atau konsep dapat dipilih berdasarkan kondisi soal.",
+      "Perhitungan dapat ditulis secara bertahap dan konsisten.",
+      "Satuan, domain, dan kewajaran hasil selalu diperiksa."
     ];
   }
   return [
-    "Saya bisa menunjukkan bukti teks untuk jawaban.",
-    "Saya tidak memilih jawaban hanya karena terdengar masuk akal.",
-    "Saya bisa membedakan fakta eksplisit dan kesimpulan tersirat.",
-    "Saya mengecek kata kunci pada pertanyaan sebelum menjawab."
+    "Bukti teks yang mendukung jawaban dapat ditunjukkan.",
+    "Pilihan jawaban tidak ditentukan hanya berdasarkan kesan umum.",
+    "Informasi eksplisit dan kesimpulan tersirat dapat dibedakan.",
+    "Kata kunci pertanyaan diperiksa sebelum menentukan jawaban."
   ];
 }

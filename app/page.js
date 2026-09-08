@@ -3,13 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
-import { generateMixedQuestions, generateQuestionsForTopic } from "../data/questionGenerators.js";
-import { everydayAnalogy, examChecklist, problemSolvingGuide, teacherLead, teacherWhy } from "../data/pedagogy.js";
+import { generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
+import { conceptIllustration, masteryChecklist, materialImportance, materialOverview, problemSolvingGuide } from "../data/pedagogy.js";
 import { getSerkomLesson } from "../data/serkomLessons.js";
 
 const QUESTIONS_PER_TOPIC = 25;
 const SIMULATION_QUESTIONS = 25;
 const SIMULATION_SECONDS = 40 * 60;
+const QUESTION_HISTORY_LIMIT = 100;
 
 function Icon({ name, size = 18 }) {
   const paths = {
@@ -113,6 +114,41 @@ function subjectIcon(subjectId) {
   return "grid";
 }
 
+function difficultySummary(questions, states) {
+  const levels = ["Mudah", "Sedang", "Sulit"];
+  return levels.map((level) => {
+    const list = questions.filter((item) => item.difficulty === level);
+    const correct = list.reduce((sum, item) => sum + (isCorrect(item, states[item.key]) ? 1 : 0), 0);
+    return { level, correct, total: list.length };
+  });
+}
+
+function questionHistoryKey(topicId) {
+  return `pelajarinaja-question-history-${topicId}`;
+}
+
+function readQuestionHistory(topicId) {
+  return readJSON([questionHistoryKey(topicId)], []);
+}
+
+function saveQuestionHistory(topicId, questions) {
+  const previous = readQuestionHistory(topicId);
+  const current = questions.map(questionSignature);
+  const merged = [...current, ...previous.filter((value) => !current.includes(value))].slice(0, QUESTION_HISTORY_LIMIT);
+  saveLocal(questionHistoryKey(topicId), JSON.stringify(merged));
+}
+
+function readSimulationQuestionHistory() {
+  return readJSON(["pelajarinaja-simulation-question-history"], []);
+}
+
+function saveSimulationQuestionHistory(questions) {
+  const previous = readSimulationQuestionHistory();
+  const current = questions.map(questionSignature);
+  const merged = [...current, ...previous.filter((value) => !current.includes(value))].slice(0, QUESTION_HISTORY_LIMIT);
+  saveLocal("pelajarinaja-simulation-question-history", JSON.stringify(merged));
+}
+
 export default function Home() {
   const [subjectId, setSubjectId] = useState("matematika");
   const [selected, setSelected] = useState(topics[0].id);
@@ -192,11 +228,15 @@ export default function Home() {
   }, [subjectId, subjectTopics, selected, subject.groups, group]);
 
   useEffect(() => {
-    setTopicQuestions(generateQuestionsForTopic(selected, QUESTIONS_PER_TOPIC));
+    if (!storageReady) return;
+    const history = readQuestionHistory(selected);
+    const questions = generateQuestionsForTopic(selected, QUESTIONS_PER_TOPIC, history);
+    setTopicQuestions(questions);
+    saveQuestionHistory(selected, questions);
     setAnswers({});
     setQuizFinalized(false);
     setEssayVisible((state) => ({ ...state, [selected]: false }));
-  }, [selected, quizVersion]);
+  }, [selected, quizVersion, storageReady]);
 
   useEffect(() => {
     if (view !== "simulasi" || simFinished || simQuestions.length === 0 || seconds <= 0) return;
@@ -217,10 +257,12 @@ export default function Home() {
   const answeredCount = topicQuestions.filter((item) => answers[item.key]?.locked).length;
   const quizCorrect = topicQuestions.reduce((sum, item) => sum + (isCorrect(item, answers[item.key]) ? 1 : 0), 0);
   const quizPoints = Math.round(topicQuestions.reduce((sum, item) => sum + (isCorrect(item, answers[item.key]) ? item.points : 0), 0));
+  const quizDifficultySummary = difficultySummary(topicQuestions, answers);
   const topicAbility = abilityFromScore(quizPoints);
   const simAnsweredCount = simQuestions.filter((item) => simAnswers[item.key]?.locked).length;
   const simCorrect = simQuestions.reduce((sum, item) => sum + (isCorrect(item, simAnswers[item.key]) ? 1 : 0), 0);
   const simPoints = Math.round(simQuestions.reduce((sum, item) => sum + (isCorrect(item, simAnswers[item.key]) ? item.points : 0), 0));
+  const simDifficultySummary = difficultySummary(simQuestions, simAnswers);
   const simAbility = abilityFromScore(simPoints);
   const overallProgress = Math.round((completed.length / topics.length) * 100);
   const subjectCompleted = subjectTopics.filter((item) => completed.includes(item.id)).length;
@@ -330,7 +372,10 @@ export default function Home() {
 
   function startSimulation() {
     const pool = simulationScope === "subject" ? subjectTopics : topics;
-    setSimQuestions(generateMixedQuestions(pool, SIMULATION_QUESTIONS));
+    const history = readSimulationQuestionHistory();
+    const questions = generateMixedQuestions(pool, SIMULATION_QUESTIONS, history);
+    setSimQuestions(questions);
+    saveSimulationQuestionHistory(questions);
     setSimAnswers({});
     setSimFinished(false);
     setSimSaved(false);
@@ -420,7 +465,7 @@ export default function Home() {
             const done = list.filter((topicItem) => completed.includes(topicItem.id)).length;
             const scored = list.filter((topicItem) => topicScores[topicItem.id]?.best !== undefined).length;
             const pct = list.length ? Math.round(done / list.length * 100) : 0;
-            return <article className="subject-card card" key={item.id}><div className="subject-icon"><Icon name={subjectIcon(item.id)} size={24} /></div><div><div className="eyebrow">{item.short}</div><h2>{item.name}</h2><p>{item.description}</p></div><div className="subject-stats"><span>{list.length} materi</span><span>{done} selesai</span><span>{scored} dinilai</span></div><div className="bar"><i style={{ width: `${pct}%` }} /></div><button className="primary" onClick={() => chooseSubject(item.id, "materi")}>Mulai belajar <Icon name="chevron" /></button></article>;
+            return <article className="subject-card card" key={item.id}><div className="subject-icon"><Icon name={subjectIcon(item.id)} size={24} /></div><div><div className="eyebrow">{item.short}</div><h2>{item.name}</h2><p>{item.description}</p></div><div className="subject-stats"><span>{list.length} materi</span><span>{done} selesai</span><span>{scored} dinilai</span></div><div className="bar"><i style={{ width: `${pct}%` }} /></div><button className="primary" onClick={() => chooseSubject(item.id, "materi")}>Buka materi <Icon name="chevron" /></button></article>;
           })}
         </div>
         <div className="dashboard-grid">
@@ -437,22 +482,22 @@ export default function Home() {
 
         {subjectId === "serkom" && <div className="source-notice card"><Icon name="code" size={24}/><div><b>Materi persiapan SERKOM RPL</b><p>Konten ini mengikuti jobsheet dan rangkuman Laravel 12 yang Anda lampirkan. Materi berfungsi untuk pembelajaran dan simulasi; keputusan kompeten resmi tetap mengikuti asesor, LSP, skema, serta MUK yang berlaku.</p></div></div>}
 
-        <div className="teacher-intro card">
-          <div className="teacher-badge">Mulai dari sini</div>
-          <h2>Penjelasan seperti guru di kelas</h2>
-          <p>{teacherLead(topic)}</p>
-          <div className="teacher-analogy"><b>Bayangkan seperti ini:</b><span>{everydayAnalogy(topic)}</span></div>
-          <div className="teacher-why"><b>Kenapa materi ini penting?</b><span>{teacherWhy(topic)}</span></div>
+        <div className="material-overview card">
+          <div className="material-badge">Ringkasan materi</div>
+          <h2>Pemahaman Konseptual</h2>
+          <p>{materialOverview(topic)}</p>
+          <div className="concept-illustration"><b>Ilustrasi konsep</b><span>{conceptIllustration(topic)}</span></div>
+          <div className="material-importance"><b>Signifikansi materi</b><span>{materialImportance(topic)}</span></div>
         </div>
 
-        {serkomLesson && <div className="w3-lesson card">
-          <div className="w3-head"><div><div className="eyebrow">Gaya belajar langkah demi langkah</div><h2>Pelajari → lihat contoh → bedah baris → coba sendiri</h2><p>Bagian ini dibuat seperti referensi tutorial: singkat di awal, lalu semakin detail ketika kamu membaca kode.</p></div><Pill>SERKOM RPL</Pill></div>
-          <div className="w3-grid">
-            <div className="w3-panel"><h3>Syntax / pola inti</h3><div className="syntax-stack">{serkomLesson.syntax.map((line, index) => <code key={index}>{line}</code>)}</div></div>
-            <div className="w3-panel"><h3>Contoh kode / perintah</h3><div className="code-table">{serkomLesson.code.map((line, index) => <div key={index}><span>{index + 1}</span><code>{line}</code></div>)}</div></div>
+        {serkomLesson && <div className="serkom-tutorial card">
+          <div className="tutorial-head"><div><div className="eyebrow">Tutorial teknis terstruktur</div><h2>Konsep → contoh → analisis baris → latihan mandiri</h2><p>Materi disusun dari pola inti menuju implementasi, analisis setiap baris, dan latihan penerapan secara mandiri.</p></div><Pill>SERKOM RPL</Pill></div>
+          <div className="tutorial-grid">
+            <div className="tutorial-panel"><h3>Sintaks / pola inti</h3><div className="syntax-stack">{serkomLesson.syntax.map((line, index) => <code key={index}>{line}</code>)}</div></div>
+            <div className="tutorial-panel"><h3>Contoh kode / perintah</h3><div className="code-table">{serkomLesson.code.map((line, index) => <div key={index}><span>{index + 1}</span><code>{line}</code></div>)}</div></div>
           </div>
-          <div className="line-explain"><h3>Penjelasan setiap baris</h3>{serkomLesson.explain.map((line, index) => <div key={index}><b>Baris {index + 1}</b><p>{line}</p></div>)}</div>
-          <div className="try-box"><div><b>Coba sendiri</b><p>{serkomLesson.tryIt}</p></div><Icon name="code" size={22}/></div>
+          <div className="line-explain"><h3>Analisis setiap baris</h3>{serkomLesson.explain.map((line, index) => <div key={index}><b>Baris {index + 1}</b><p>{line}</p></div>)}</div>
+          <div className="practice-box"><div><b>Latihan mandiri</b><p>{serkomLesson.tryIt}</p></div><Icon name="code" size={22}/></div>
         </div>}
 
         <div className="study-grid">
@@ -461,19 +506,19 @@ export default function Home() {
           <article className="card"><SectionTitle number="03" title="Konsep dasar" subtitle="Poin inti yang harus dikuasai."/><ul className="numbered-list">{(topic.concepts ?? []).map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ul></article>
           <article className="card span-2"><SectionTitle number="04" title="Pembahasan mendalam" subtitle="Hubungan antar konsep dan cara memahaminya secara utuh."/><div className="deep-list">{(topic.deepDive ?? []).map((item, index) => <div key={index}><b>0{index + 1}</b><p>{item}</p></div>)}</div></article>
           <article className="card span-2"><SectionTitle number="05" title="Rumus, strategi, atau pola penting" subtitle="Ringkasan yang dapat dipakai saat menyelesaikan soal atau praktik."/><div className="formula-list">{(topic.formulas?.length ? topic.formulas : ["Fokus pada alur konsep, bukti, dan langkah penyelesaian."]).map((item, index) => <code key={index}>{item}</code>)}</div></article>
-          <article className="card span-2"><SectionTitle number="06" title="Langkah penyelesaian" subtitle="Urutan kerja yang dapat diikuti saat menghadapi soal atau praktik."/><div className="teacher-step-note"><b>Cara guru menyarankan mengerjakannya:</b><p>Jangan lompat ke jawaban. Ikuti urutan ini sampai menjadi kebiasaan.</p></div><ol className="steps-list teacher-steps">{problemSolvingGuide(topic).map((item, index) => <li key={`teacher-${index}`}><span>{index + 1}</span><p>{item}</p></li>)}</ol><div className="original-steps"><b>Langkah khusus materi ini</b><ol className="steps-list">{(topic.steps ?? []).map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ol></div></article>
+          <article className="card span-2"><SectionTitle number="06" title="Langkah penyelesaian" subtitle="Urutan kerja yang dapat diikuti saat menghadapi soal atau praktik."/><div className="solution-guidance"><b>Prosedur penyelesaian umum</b><p>Gunakan urutan berikut agar analisis tetap sistematis dan dapat diverifikasi.</p></div><ol className="steps-list guided-steps">{problemSolvingGuide(topic).map((item, index) => <li key={`guide-${index}`}><span>{index + 1}</span><p>{item}</p></li>)}</ol><div className="original-steps"><b>Langkah khusus materi ini</b><ol className="steps-list">{(topic.steps ?? []).map((item, index) => <li key={index}><span>{index + 1}</span><p>{item}</p></li>)}</ol></div></article>
           <article className="card span-2"><SectionTitle number="07" title="Contoh bertahap" subtitle="Pelajari cara berpikir, bukan hanya hasil akhir."/><div className="examples-grid">{(topic.workedExamples ?? []).map((item, index) => <div className="worked-card" key={index}><div className="worked-label">{item.title}</div><h3>{item.problem}</h3><ol>{(item.steps ?? []).map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}</ol><div className="worked-result"><b>Hasil:</b> {item.result}</div></div>)}</div></article>
           <article className="card span-2"><SectionTitle number="08" title="Jebakan yang sering muncul" subtitle="Kesalahan yang perlu dihindari." danger/><div className="trap-grid">{(topic.traps ?? []).map((item, index) => <div key={index}><b>0{index + 1}</b><p>{item}</p></div>)}</div></article>
-          <article className="card"><SectionTitle number="09" title="Glosarium" subtitle="Istilah penting pada materi ini."/><div className="glossary-list">{(topic.glossary ?? []).map((item, index) => <div key={index}><b>{item.term}</b><p>{item.meaning}</p></div>)}</div><div className="exam-check"><h3>Checklist sebelum lanjut</h3>{examChecklist(topic).map((item, index) => <label key={index}><input type="checkbox"/><span>{item}</span></label>)}</div></article>
+          <article className="card"><SectionTitle number="09" title="Glosarium" subtitle="Istilah penting pada materi ini."/><div className="glossary-list">{(topic.glossary ?? []).map((item, index) => <div key={index}><b>{item.term}</b><p>{item.meaning}</p></div>)}</div><div className="exam-check"><h3>Checklist penguasaan</h3>{masteryChecklist(topic).map((item, index) => <label key={index}><input type="checkbox"/><span>{item}</span></label>)}</div></article>
           <article className="card"><SectionTitle number="10" title="Catatan pribadi" subtitle="Tersimpan otomatis di browser perangkat ini."/><textarea className="note-area" rows={10} value={notes[topic.id] ?? ""} onChange={(event) => setNotes((state) => ({ ...state, [topic.id]: event.target.value }))} placeholder="Tulis ringkasan, hal yang masih membingungkan, atau strategi yang ingin diingat..."/></article>
-          <article className="card span-2 callout"><div><div className="eyebrow">Penilaian kemampuan</div><h2>Kerjakan 25 soal untuk {topic.title}</h2><p>Setiap soal bernilai 4 poin. Total nilai 100. Paket baru dibuat secara acak tetapi tetap sesuai materi.</p></div><button className="primary" onClick={() => setView("latihan")}>Mulai 25 soal <Icon name="chevron" /></button></article>
+          <article className="card span-2 callout"><div><div className="eyebrow">Penilaian kemampuan</div><h2>Kerjakan 25 soal untuk {topic.title}</h2><p>Setiap paket terdiri dari 8 soal mudah, 9 soal sedang, dan 8 soal sulit. Seluruh 25 soal dibuat unik, bernilai total 100, dan tetap sesuai materi.</p></div><button className="primary" onClick={() => setView("latihan")}>Mulai 25 soal <Icon name="chevron" /></button></article>
           <article className="card span-2 topic-nav"><button className="secondary" disabled={topicIndexInSubject <= 0} onClick={() => goTopic(-1)}><Icon name="back" /> Materi sebelumnya</button><span>{topicIndexInSubject + 1} / {subjectTopics.length}</span><button className="secondary" disabled={topicIndexInSubject >= subjectTopics.length - 1} onClick={() => goTopic(1)}>Materi berikutnya <Icon name="chevron" /></button></article>
         </div>
       </>}
 
       {view === "latihan" && <section className="practice-page">
-        <div className="page-head"><div><div className="eyebrow">Penilaian kemampuan · {subject.name}</div><h1>{topic.title}</h1><p>25 soal dinamis, 4 poin per soal, nilai maksimum 100. Soal pilihan ganda kompleks harus dikunci setelah semua opsi dipilih.</p></div><div className="page-head-actions"><button className="secondary" onClick={() => setView("materi")}><Icon name="book" /> Kembali ke materi</button><button className="primary" onClick={newQuiz}><Icon name="shuffle" /> Acak 25 soal baru</button></div></div>
-        <div className="assessment-strip card"><div><span>Terjawab</span><strong>{answeredCount}/{QUESTIONS_PER_TOPIC}</strong></div><div><span>Nilai sementara</span><strong>{quizPoints}/100</strong></div><div><span>Nilai terbaik</span><strong>{topicScores[topic.id]?.best ?? "—"}</strong></div><div><span>Percobaan</span><strong>{topicScores[topic.id]?.attempts ?? 0}</strong></div></div>
+        <div className="page-head"><div><div className="eyebrow">Penilaian kemampuan · {subject.name}</div><h1>{topic.title}</h1><p>25 soal unik dengan urutan tingkat kesulitan: 1–8 mudah, 9–17 sedang, 18–25 sulit. Setiap soal bernilai 4 poin dan nilai maksimum 100.</p></div><div className="page-head-actions"><button className="secondary" onClick={() => setView("materi")}><Icon name="book" /> Kembali ke materi</button><button className="primary" onClick={newQuiz}><Icon name="shuffle" /> Acak 25 soal baru</button></div></div>
+        <div className="assessment-strip card"><div><span>Terjawab</span><strong>{answeredCount}/{QUESTIONS_PER_TOPIC}</strong></div><div><span>Nilai sementara</span><strong>{quizPoints}/100</strong></div><div><span>Nilai terbaik</span><strong>{topicScores[topic.id]?.best ?? "—"}</strong></div><div><span>Percobaan</span><strong>{topicScores[topic.id]?.attempts ?? 0}</strong></div></div><div className="difficulty-strip card"><div><span>Soal 1–8</span><strong>Mudah</strong><small>Konsep dasar dan penerapan langsung</small></div><div><span>Soal 9–17</span><strong>Sedang</strong><small>Penerapan dan analisis beberapa informasi</small></div><div><span>Soal 18–25</span><strong>Sulit</strong><small>Analisis terpadu dua bagian</small></div></div>
         <div className="question-stack">
           {topicQuestions.map((question, questionIndex) => {
             const state = answers[question.key];
@@ -493,23 +538,23 @@ export default function Home() {
             </article>;
           })}
           <article className="card question-card"><div className="q-number">Esai Pendek · Tidak memengaruhi nilai</div><h2>{topic.essay?.q}</h2><textarea placeholder="Tulis jawabanmu sebelum membuka pembahasan..." rows={5}/><button className="secondary" onClick={() => setEssayVisible((state) => ({ ...state, [topic.id]: !state[topic.id] }))}>{essayVisible[topic.id] ? "Sembunyikan pembahasan" : "Lihat pembahasan"}</button>{essayVisible[topic.id] && <div className="feedback ok"><b>Pembahasan:</b> {topic.essay?.answer}</div>}</article>
-          {!quizFinalized ? <div className="finish-card card"><div><Icon name="award" size={28}/><span><b>Selesaikan penilaian kemampuan</b><p>Semua 25 soal harus dikunci sebelum nilai akhir disimpan.</p></span></div><button className="primary" disabled={answeredCount !== QUESTIONS_PER_TOPIC} onClick={finalizeTopicQuiz}><Icon name="check" /> Simpan nilai kemampuan</button></div> : <div className="ability-card card"><div className="ability-score"><span>Nilai</span><strong>{quizPoints}</strong><small>/100</small></div><div className="ability-copy"><div className="eyebrow">Kemampuan materi</div><h2>{topicAbility.label}</h2><p>{topicAbility.description}</p><div className="ability-meta"><Pill>{quizCorrect}/{QUESTIONS_PER_TOPIC} benar</Pill><Pill>Terbaik {topicScores[topic.id]?.best ?? quizPoints}/100</Pill><Pill>Percobaan {topicScores[topic.id]?.attempts ?? 1}</Pill></div></div><button className="secondary" onClick={newQuiz}><Icon name="shuffle" /> Paket baru</button></div>}
-          <div className="regen-card card"><Icon name="spark" size={26}/><div><b>Bank soal dinamis 25+</b><p>Refresh halaman atau gunakan tombol paket baru untuk mendapatkan susunan dan variasi soal berbeda yang tetap berada pada cakupan materi.</p></div><button className="primary" onClick={newQuiz}><Icon name="shuffle"/> Acak 25 soal baru</button></div>
+          {!quizFinalized ? <div className="finish-card card"><div><Icon name="award" size={28}/><span><b>Selesaikan penilaian kemampuan</b><p>Semua 25 soal harus dikunci sebelum nilai akhir disimpan.</p></span></div><button className="primary" disabled={answeredCount !== QUESTIONS_PER_TOPIC} onClick={finalizeTopicQuiz}><Icon name="check" /> Simpan nilai kemampuan</button></div> : <div className="ability-card card"><div className="ability-score"><span>Nilai</span><strong>{quizPoints}</strong><small>/100</small></div><div className="ability-copy"><div className="eyebrow">Kemampuan materi</div><h2>{topicAbility.label}</h2><p>{topicAbility.description}</p><div className="ability-meta"><Pill>{quizCorrect}/{QUESTIONS_PER_TOPIC} benar</Pill>{quizDifficultySummary.map((item) => <Pill key={item.level}>{item.level} {item.correct}/{item.total}</Pill>)}<Pill>Terbaik {topicScores[topic.id]?.best ?? quizPoints}/100</Pill><Pill>Percobaan {topicScores[topic.id]?.attempts ?? 1}</Pill></div></div><button className="secondary" onClick={newQuiz}><Icon name="shuffle" /> Paket baru</button></div>}
+          <div className="regen-card card"><Icon name="spark" size={26}/><div><b>Bank soal unik dan bertingkat</b><p>Satu paket tidak mengizinkan soal yang sama. Sistem juga menyimpan riwayat soal terbaru untuk menghindari pengulangan pada pengacakan berikutnya. Komposisi setiap paket: 8 mudah, 9 sedang, dan 8 sulit.</p></div><button className="primary" onClick={newQuiz}><Icon name="shuffle"/> Acak 25 soal baru</button></div>
         </div>
       </section>}
 
       {view === "simulasi" && <section className="simulation-page">
-        <div className="page-head"><div><div className="eyebrow">Simulasi 25 soal · 100 poin</div><h1>Simulasi PelajarinAja</h1><p>Pilih simulasi {subject.name} atau campuran seluruh mata pelajaran. Timer 40 menit dan hasil disimpan pada riwayat lokal.</p></div>{simQuestions.length > 0 && <div className="timer-box"><Icon name="timer" /><strong>{mm}:{ss}</strong></div>}</div>
-        {simQuestions.length === 0 ? <div className="simulation-setup card"><div className="scope-toggle"><button className={simulationScope === "subject" ? "active" : ""} onClick={() => setSimulationScope("subject")}><Icon name={subjectIcon(subjectId)}/> {subject.name}</button><button className={simulationScope === "all" ? "active" : ""} onClick={() => setSimulationScope("all")}><Icon name="grid"/> Campuran semua mapel</button></div><div className="empty-icon"><Icon name="shuffle" size={30}/></div><h2>Bangun paket simulasi baru</h2><p>{simulationScope === "subject" ? `25 soal akan diambil dari materi ${subject.name}.` : `25 soal akan dicampur dari ${subjects.length} mata pelajaran.`}</p><button className="primary" onClick={startSimulation}>Mulai simulasi 40 menit</button></div> : <>
+        <div className="page-head"><div><div className="eyebrow">Simulasi 25 soal · 100 poin</div><h1>Simulasi PelajarinAja</h1><p>Pilih simulasi {subject.name} atau campuran seluruh mata pelajaran. Paket terdiri dari 8 soal mudah, 9 sedang, dan 8 sulit dengan riwayat pengacakan lokal.</p></div>{simQuestions.length > 0 && <div className="timer-box"><Icon name="timer" /><strong>{mm}:{ss}</strong></div>}</div>
+        {simQuestions.length === 0 ? <div className="simulation-setup card"><div className="scope-toggle"><button className={simulationScope === "subject" ? "active" : ""} onClick={() => setSimulationScope("subject")}><Icon name={subjectIcon(subjectId)}/> {subject.name}</button><button className={simulationScope === "all" ? "active" : ""} onClick={() => setSimulationScope("all")}><Icon name="grid"/> Campuran semua mapel</button></div><div className="empty-icon"><Icon name="shuffle" size={30}/></div><h2>Bangun paket simulasi baru</h2><p>{simulationScope === "subject" ? `25 soal akan diambil dari materi ${subject.name} dengan urutan mudah, sedang, lalu sulit.` : `25 soal akan dicampur dari ${subjects.length} mata pelajaran dengan urutan mudah, sedang, lalu sulit.`}</p><button className="primary" onClick={startSimulation}>Mulai simulasi 40 menit</button></div> : <>
           <div className="simulation-summary card"><span>Terjawab <b>{simAnsweredCount}/{SIMULATION_QUESTIONS}</b></span><span>Nilai {simFinished ? <b>{simPoints}/100</b> : <b>belum dinilai</b>}</span><span>Waktu <b>{mm}:{ss}</b></span><button className="secondary compact-btn" onClick={resetSimulation}>Ganti paket</button></div>
           <div className="question-stack">{simQuestions.map((question, index) => {
             const state = simAnswers[question.key];
             const selectedOptions = answerSelected(state);
             const multiple = Array.isArray(question.answer);
             const sourceSubject = subjects.find((item) => item.id === question.subjectId)?.short ?? "";
-            return <article className="card question-card compact" key={question.key}><div className="question-meta"><div className="q-number">Soal {index + 1} · {sourceSubject} · {question.topicTitle}</div><div className="meta-pills"><Pill>{question.difficulty}</Pill><Pill>{question.points} poin</Pill>{multiple && <Pill>Kompleks</Pill>}</div></div><h2>{question.q}</h2><div className="option-list">{question.options.map((option, optionIndex) => { const chosen = selectedOptions.includes(optionIndex); const correctOption = Array.isArray(question.answer) ? question.answer.includes(optionIndex) : question.answer === optionIndex; const cls = !simFinished ? chosen ? "chosen" : "" : correctOption ? "correct" : chosen ? "wrong" : ""; return <button disabled={simFinished || state?.locked} key={optionIndex} className={cls} onClick={() => selectSimulationOption(question, optionIndex)}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}</button>; })}</div>{multiple && !state?.locked && !simFinished && <button className="lock-answer" disabled={!selectedOptions.length} onClick={() => lockSimulationQuestion(question)}><Icon name="check" size={16}/> Kunci jawaban soal ini</button>}{simFinished && <div className={`feedback ${isCorrect(question, state) ? "ok" : "bad"}`}><b>{isCorrect(question, state) ? `Benar. +${question.points} poin.` : "Jawaban belum tepat."}</b><p>{question.explain}</p><div className="solution-walkthrough"><strong>Cara berpikir:</strong><ol>{(question.solutionSteps ?? [question.explain]).map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}</ol></div></div>}</article>;
+            return <article className="card question-card compact" key={question.key}><div className="question-meta"><div className="q-number">Soal {index + 1} · {sourceSubject} · {question.topicTitle}</div><div className="meta-pills"><Pill>{question.difficulty}</Pill><Pill>{question.points} poin</Pill>{multiple && <Pill>Kompleks</Pill>}</div></div><h2>{question.q}</h2><div className="option-list">{question.options.map((option, optionIndex) => { const chosen = selectedOptions.includes(optionIndex); const correctOption = Array.isArray(question.answer) ? question.answer.includes(optionIndex) : question.answer === optionIndex; const cls = !simFinished ? chosen ? "chosen" : "" : correctOption ? "correct" : chosen ? "wrong" : ""; return <button disabled={simFinished || state?.locked} key={optionIndex} className={cls} onClick={() => selectSimulationOption(question, optionIndex)}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}</button>; })}</div>{multiple && !state?.locked && !simFinished && <button className="lock-answer" disabled={!selectedOptions.length} onClick={() => lockSimulationQuestion(question)}><Icon name="check" size={16}/> Kunci jawaban soal ini</button>}{simFinished && <div className={`feedback ${isCorrect(question, state) ? "ok" : "bad"}`}><b>{isCorrect(question, state) ? `Benar. +${question.points} poin.` : "Jawaban belum tepat."}</b><p>{question.explain}</p><div className="solution-walkthrough"><strong>Langkah analisis:</strong><ol>{(question.solutionSteps ?? [question.explain]).map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}</ol></div></div>}</article>;
           })}</div>
-          <div className="sim-footer">{!simFinished ? <button className="primary" onClick={() => setSimFinished(true)}>Selesai & nilai</button> : <div className="ability-card card"><div className="ability-score"><span>Nilai</span><strong>{simPoints}</strong><small>/100</small></div><div className="ability-copy"><div className="eyebrow">Kemampuan simulasi</div><h2>{simAbility.label}</h2><p>{simAbility.description}</p><div className="ability-meta"><Pill>{simCorrect}/{SIMULATION_QUESTIONS} benar</Pill><Pill>{simAnsweredCount}/{SIMULATION_QUESTIONS} dijawab</Pill></div></div><button className="secondary" onClick={startSimulation}><Icon name="shuffle" /> Simulasi baru</button></div>}</div>
+          <div className="sim-footer">{!simFinished ? <button className="primary" onClick={() => setSimFinished(true)}>Selesai & nilai</button> : <div className="ability-card card"><div className="ability-score"><span>Nilai</span><strong>{simPoints}</strong><small>/100</small></div><div className="ability-copy"><div className="eyebrow">Kemampuan simulasi</div><h2>{simAbility.label}</h2><p>{simAbility.description}</p><div className="ability-meta"><Pill>{simCorrect}/{SIMULATION_QUESTIONS} benar</Pill>{simDifficultySummary.map((item) => <Pill key={item.level}>{item.level} {item.correct}/{item.total}</Pill>)}<Pill>{simAnsweredCount}/{SIMULATION_QUESTIONS} dijawab</Pill></div></div><button className="secondary" onClick={startSimulation}><Icon name="shuffle" /> Simulasi baru</button></div>}</div>
         </>}
       </section>}
 
@@ -523,6 +568,6 @@ export default function Home() {
       </section>}
     </section>
 
-    <footer><span>PelajarinAja · Matematika · Bahasa Indonesia · Bahasa Inggris · SERKOM RPL</span><span>25 soal per materi · nilai 0–100 · responsif · data lokal tanpa akun</span></footer>
+    <footer><span>PelajarinAja · Matematika · Bahasa Indonesia · Bahasa Inggris · SERKOM RPL</span><span>25 soal unik · 8 mudah · 9 sedang · 8 sulit · nilai 0–100 · responsif</span></footer>
   </main>;
 }

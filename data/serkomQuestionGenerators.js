@@ -93,7 +93,7 @@ const facts = {
     ["store()", "store() menerima request tambah, memvalidasi input, menyimpan record, lalu redirect dengan pesan.", ["store() hanya menampilkan form kosong.", "store() hanya membaca stylesheet.", "store() digunakan khusus menghapus record."]],
     ["edit()", "edit() menampilkan form edit dengan model yang sudah ditemukan melalui route model binding.", ["edit() selalu membuat record baru.", "edit() menghapus tabel products.", "edit() menggantikan migration."]],
     ["update()", "update() memvalidasi request dan menyimpan perubahan pada record yang sudah ada.", ["update() hanya membuka form tambah.", "update() menghapus seluruh database.", "update() menjalankan composer install."]],
-    ["destroy()", "destroy() menghapus record model lalu mengarahkan user kembali dengan umpan balik.", ["destroy() hanya membaca data tanpa perubahan.", "destroy() membuat migration baru.", "destroy() mengatur layout Blade."]],
+    ["destroy()", "destroy() menghapus record model lalu mengarahkan pengguna kembali dengan umpan balik.", ["destroy() hanya membaca data tanpa perubahan.", "destroy() membuat migration baru.", "destroy() mengatur layout Blade."]],
     ["flash session success", "Pesan success dapat dikirim saat redirect agar halaman berikutnya memberi umpan balik operasi berhasil.", ["Flash session success membuat kolom database.", "Flash session success menggantikan validation.", "Flash session success hanya bekerja di CSS."]]
   ],
   "serkom-routing": [
