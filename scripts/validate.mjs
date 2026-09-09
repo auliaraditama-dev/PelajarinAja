@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
 import { difficultyPlan, generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
@@ -38,6 +38,17 @@ if (new Set(subjectUrls).size !== subjects.length) fail("URL mapel tidak unik");
 const topicUrls = topics.map((item) => topicPath(item.subjectId, item.id));
 if (new Set(topicUrls).size !== topics.length) fail("URL materi tidak unik");
 
+
+function validateRelativeImports(path) {
+  const text = readFileSync(path, "utf8");
+  const pattern = /(?:from\s+|import\s+)["'](\.[^"']+)["']/g;
+  for (const match of text.matchAll(pattern)) {
+    const target = resolve(dirname(path), match[1]);
+    const candidates = [target, `${target}.js`, `${target}.mjs`, join(target, "index.js")];
+    if (!candidates.some((candidate) => existsSync(candidate))) fail(`Import relatif tidak ditemukan pada ${path}: ${match[1]}`);
+  }
+}
+
 function sourceFiles(dir) {
   const output = [];
   for (const name of readdirSync(dir)) {
@@ -49,11 +60,18 @@ function sourceFiles(dir) {
   return output;
 }
 
-for (const path of [...sourceFiles(join(root, "app")), ...sourceFiles(join(root, "data")), ...sourceFiles(join(root, "lib"))]) {
+const projectSourceFiles = [...sourceFiles(join(root, "app")), ...sourceFiles(join(root, "data")), ...sourceFiles(join(root, "lib"))];
+
+for (const path of projectSourceFiles) {
   const text = readFileSync(path, "utf8");
   if (text.split(/\r?\n/).some((line) => line.trim().startsWith("//"))) fail(`Komentar source ditemukan pada ${path}`);
   if (text.includes("/*") || text.includes("*/")) fail(`Komentar blok source ditemukan pada ${path}`);
+  if (/\.(js|mjs)$/.test(path)) validateRelativeImports(path);
 }
+
+const rootPage = readFileSync(join(root, "app/page.js"), "utf8");
+if (!rootPage.startsWith('"use client";')) fail("app/page.js bukan halaman aplikasi interaktif utama");
+if (rootPage.includes("function AboutPage")) fail("app/page.js tidak boleh berisi halaman Tentang");
 
 for (const path of [join(root, "app/page.js"), join(root, "app/tentang/page.js"), join(root, "app/mapel/page.js"), join(root, "app/materi/[subjectId]/[topicId]/page.js"), join(root, "app/opengraph-image.js"), join(root, "lib/site.js"), join(root, "lib/seo.js")]) {
   const text = readFileSync(path, "utf8");

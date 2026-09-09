@@ -1,6 +1,6 @@
 {
   "name": "pelajarinaja-universal-tka",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,7 +15,7 @@
     "react-dom": "19.2.8"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": "20.x"
   },
   "type": "module"
 }

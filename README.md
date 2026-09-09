@@ -1,4 +1,9 @@
-# PelajarinAja Universal TKA v11
+# PelajarinAja Universal TKA v11.1
+
+## Hotfix v11.1
+
+Versi ini memperbaiki kegagalan build Vercel ketika `app/page.js` tertimpa oleh isi halaman `app/tentang/page.js`. Halaman root kembali menggunakan aplikasi interaktif utama dengan import relatif yang benar dari `../data` dan `../lib`. Validator sekarang juga memeriksa seluruh import relatif sebelum `next build`, memastikan `app/page.js` tetap menjadi halaman aplikasi utama, dan Node.js dipin ke lini 20.x untuk deployment yang lebih stabil.
+
 
 PelajarinAja adalah platform pembelajaran multi-mapel berbasis Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL Laravel 12.
 
