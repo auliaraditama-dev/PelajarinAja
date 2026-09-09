@@ -1,0 +1,23 @@
+PelajarinAja Universal Production v16
+Validation status: PASS
+4 subjects
+60 topics
+69 indexable SEO URLs
+25 unique questions per package
+25 unique core questions per package
+1500 globally unique generated core questions
+Directly linked everyday-life literacy, numeracy, and coding stimuli
+5-option single choice
+Complex multi-select
+True-false matrices
+Hidden internal difficulty labels
+Recent-history repeat protection
+100 points per 25-question package
+Responsive UI
+Formal solution steps
+SERKOM line-by-line tutorials
+JavaScript syntax PASS
+JSX parse PASS
+CSS braces PASS
+Relative import validation PASS
+Source comment validation PASS

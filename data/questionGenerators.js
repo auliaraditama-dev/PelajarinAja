@@ -137,11 +137,15 @@ function statementSignature(question) {
 
 export function questionSignature(question) {
   const topicPart = normalize(question.topicId ?? "");
-  const stimulusPart = normalize(question.stimulus ?? "");
+  const corePart = normalize(question.coreQuestion ?? question.q ?? "");
   const codePart = normalize(question.codeExcerpt ?? "");
-  if (question.type === "matrix") return `${topicPart}::matrix::${stimulusPart}::${codePart}::${normalize(question.q)}::${statementSignature(question)}`;
+  if (question.type === "matrix") return `${topicPart}::matrix::${corePart}::${statementSignature(question)}`;
   const optionsPart = [...(question.options ?? [])].map(normalize).sort().join("|");
-  return `${topicPart}::${normalize(question.type ?? "single")}::${stimulusPart}::${codePart}::${normalize(question.q)}::${optionsPart}`;
+  return `${topicPart}::${normalize(question.type ?? "single")}::${corePart}::${codePart}::${optionsPart}`;
+}
+
+function coreQuestionKey(question) {
+  return normalize(question.coreQuestion ?? question.q ?? "");
 }
 
 export function difficultyPlan(count = 25) {
@@ -404,18 +408,44 @@ function applyPresentation(topicId, result, variantIndex) {
   if (!topic) return result;
   const subjectId = topic.subjectId;
   if (TKA_SUBJECTS.has(subjectId)) {
-    const original = result.stimulus ? `${result.stimulus}\n\n${result.q}` : result.q;
-    const built = buildTkaStimulus(topic, original, variantIndex);
-    if (result.type === "matrix") return { ...result, stimulus: built.text, contextKey: built.key };
-    if (result.type === "multiple") {
-      return { ...result, stimulus: built.text, contextKey: built.key, q: subjectId === "bahasa-inggris" ? "Select all statements that are supported by the stimulus." : "Pilih semua pernyataan yang benar berdasarkan stimulus." };
+    const built = buildTkaStimulus(topic, result, variantIndex);
+    if (result.type === "matrix") {
+      return {
+        ...result,
+        stimulus: built.text,
+        contextKey: built.key,
+        coreQuestion: built.coreQuestion,
+        q: subjectId === "bahasa-inggris" ? "Decide whether each statement is True or False using the same stimulus and evidence." : "Tentukan Benar atau Salah untuk setiap pernyataan dengan menggunakan stimulus dan konsep yang sama."
+      };
     }
-    return { ...result, stimulus: built.text, contextKey: built.key, q: subjectId === "bahasa-inggris" ? "Choose the most accurate answer based on the stimulus." : "Pilih jawaban yang paling tepat berdasarkan stimulus." };
+    if (result.type === "multiple") {
+      return {
+        ...result,
+        stimulus: built.text,
+        contextKey: built.key,
+        coreQuestion: built.coreQuestion,
+        q: subjectId === "bahasa-inggris" ? "Select all options that are supported by the same stimulus and evidence." : "Pilih semua opsi yang benar berdasarkan stimulus dan hubungan informasi yang sama."
+      };
+    }
+    return {
+      ...result,
+      stimulus: built.text,
+      contextKey: built.key,
+      coreQuestion: built.coreQuestion,
+      q: subjectId === "bahasa-inggris" ? "Choose the answer that correctly resolves the task described in the stimulus." : "Pilih jawaban yang secara langsung menyelesaikan persoalan pada stimulus."
+    };
   }
   if (subjectId === "serkom") {
     const lesson = getSerkomLesson(topicId);
-    const built = buildSerkomStimulus(topic, lesson, result.q, variantIndex);
-    return { ...result, stimulus: built.stimulus, codeExcerpt: built.codeExcerpt, contextKey: built.key };
+    const built = buildSerkomStimulus(topic, lesson, result, variantIndex);
+    return {
+      ...result,
+      stimulus: built.stimulus,
+      codeExcerpt: built.codeExcerpt,
+      contextKey: built.key,
+      coreQuestion: built.coreQuestion,
+      q: "Pilih jawaban yang paling tepat untuk menyelesaikan masalah teknis pada stimulus."
+    };
   }
   return result;
 }
@@ -433,14 +463,15 @@ export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 
     : topic
       ? questionSolutionSteps(result, topic)
       : [result.explain, "Tentukan konsep yang digunakan.", "Periksa kembali jawaban akhir."];
-  return { ...result, solutionSteps };
+  return { ...result, topicId, subjectId: subjectForTopic(topicId), solutionSteps };
 }
 
-function generateUniqueQuestion(topicId, difficulty, format, used, excluded, startIndex) {
+function generateUniqueQuestion(topicId, difficulty, format, used, usedCore, excluded, startIndex) {
   for (let attempt = 0; attempt < 12000; attempt += 1) {
     const item = generateQuestion(topicId, difficulty, startIndex + attempt, format);
     const signature = questionSignature(item);
-    if (!used.has(signature) && !excluded.has(signature)) return { item, signature, attempts: attempt + 1 };
+    const core = coreQuestionKey(item);
+    if (!used.has(signature) && !usedCore.has(core) && !excluded.has(signature)) return { item, signature, core, attempts: attempt + 1 };
   }
   return null;
 }
@@ -448,15 +479,17 @@ function generateUniqueQuestion(topicId, difficulty, format, used, excluded, sta
 export function generateQuestionsForTopic(topicId, count = 25, excludeSignatures = []) {
   const output = [];
   const used = new Set();
+  const usedCore = new Set();
   const excluded = new Set(excludeSignatures);
   const plan = difficultyPlan(count);
   let variantIndex = Date.now() * 1000 + Math.floor(Math.random() * 1000);
   for (const difficulty of plan) {
     const format = requestedFormat(topicId, output.length);
-    const generated = generateUniqueQuestion(topicId, difficulty, format, used, excluded, variantIndex);
+    const generated = generateUniqueQuestion(topicId, difficulty, format, used, usedCore, excluded, variantIndex);
     if (!generated) throw new Error(`Tidak dapat membuat soal unik untuk ${topicId}.`);
     variantIndex += generated.attempts + 7;
     used.add(generated.signature);
+    usedCore.add(generated.core);
     output.push({ ...generated.item, points: 100 / count, key: `${topicId}-${Date.now()}-${output.length}-${Math.random()}` });
   }
   return output;
@@ -465,6 +498,7 @@ export function generateQuestionsForTopic(topicId, count = 25, excludeSignatures
 export function generateMixedQuestions(topicList, count = 25, excludeSignatures = []) {
   const output = [];
   const used = new Set();
+  const usedCore = new Set();
   const excluded = new Set(excludeSignatures);
   const plan = difficultyPlan(count);
   let variantIndex = Date.now() * 1000 + Math.floor(Math.random() * 1000);
@@ -476,11 +510,13 @@ export function generateMixedQuestions(topicList, count = 25, excludeSignatures 
       const item = generateQuestion(topic.id, difficulty, variantIndex + attempt, format);
       const enriched = { ...item, topicId: topic.id, topicTitle: topic.title, subjectId: topic.subjectId };
       const signature = questionSignature(enriched);
-      if (!used.has(signature) && !excluded.has(signature)) accepted = { enriched, signature, attempts: attempt + 1 };
+      const core = coreQuestionKey(enriched);
+      if (!used.has(signature) && !usedCore.has(core) && !excluded.has(signature)) accepted = { enriched, signature, core, attempts: attempt + 1 };
     }
     if (!accepted) throw new Error("Tidak dapat membuat simulasi unik.");
     variantIndex += accepted.attempts + 11;
     used.add(accepted.signature);
+    usedCore.add(accepted.core);
     output.push({ ...accepted.enriched, points: 100 / count, key: `sim-${accepted.enriched.topicId}-${Date.now()}-${output.length}-${Math.random()}` });
   }
   return output;

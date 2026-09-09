@@ -1,68 +1,101 @@
-import { everydayContext } from "./everydayContexts.js";
+import { linkedContext } from "./linkedContexts.js";
 
-const mathFrames = [
-  "Gunakan konteks berikut sebagai latihan numerasi. Tentukan lebih dahulu informasi yang benar-benar dipakai, kemudian ubah informasi tersebut menjadi model matematika yang sesuai.",
-  "Masalah berikut ditempatkan pada situasi sehari-hari agar proses penyelesaian tidak berhenti pada hafalan rumus. Identifikasi besaran, hubungan, dan syarat sebelum menghitung.",
-  "Bacalah skenario secara utuh. Beberapa rincian berfungsi sebagai konteks, sedangkan bagian inti memuat data yang harus diolah. Pilih konsep yang tepat dan periksa kewajaran hasil.",
-  "Pada kehidupan sehari-hari, data sering muncul dalam bentuk narasi. Latihan ini meminta pembaca menerjemahkan narasi menjadi hubungan matematis, menyelesaikannya, lalu memeriksa hasil terhadap kondisi awal."
+const mathClosings = [
+  "Gunakan seluruh data yang tercantum pada persoalan inti, pilih konsep yang sesuai, lalu periksa apakah hasil akhirnya memenuhi syarat pada situasi tersebut.",
+  "Hubungkan setiap angka dan syarat pada persoalan dengan kebutuhan kegiatan. Informasi yang tidak muncul pada persoalan inti tidak diperlukan untuk menghitung jawaban.",
+  "Model matematika pada persoalan inti mewakili keputusan yang harus dibuat. Selesaikan model tersebut secara runtut dan periksa kembali satuan, tanda, atau batas yang berlaku."
 ];
 
-const idFrames = [
-  "Gunakan bacaan berikut sebagai latihan literasi pada situasi sehari-hari. Bedakan informasi eksplisit, petunjuk tersirat, opini, dan bukti sebelum menilai pilihan jawaban.",
-  "Bacalah keseluruhan stimulus terlebih dahulu. Perhatikan hubungan antarkalimat, kata rujukan, sebab-akibat, sudut pandang, dan batas makna sebelum menarik kesimpulan.",
-  "Latihan berikut menempatkan kemampuan membaca kritis pada konteks yang dekat dengan kehidupan. Jawaban yang tepat harus memiliki dukungan tekstual paling kuat.",
-  "Jangan memilih jawaban hanya karena satu kata pada opsi sama dengan kata dalam bacaan. Hubungkan ide utama, rincian, dan tujuan teks untuk menentukan pilihan yang paling tepat."
+const idClosings = [
+  "Gunakan bukti yang paling dekat dengan pertanyaan. Pilihan yang hanya terdengar masuk akal tetapi tidak didukung bacaan harus dieliminasi.",
+  "Jawaban yang benar harus konsisten dengan kata, kalimat, hubungan gagasan, atau inferensi yang benar-benar tersedia dalam bacaan inti.",
+  "Periksa kembali apakah pilihan jawaban menjawab hal yang ditanyakan tanpa menambah fakta baru di luar teks."
 ];
 
-const enFrames = [
-  "Use the following everyday context as a reading-comprehension task. Read for meaning, identify the question type, locate evidence, and eliminate unsupported options.",
-  "Read the full stimulus before answering. Pay attention to explicit details, references, sequence, cause and effect, comparison, implied meaning, and the writer's purpose where relevant.",
-  "The situation below is familiar, but the task still requires careful A2–B1 reading. The best answer must be supported by the passage rather than by outside assumptions.",
-  "Treat the text as a complete message. Connect related sentences, distinguish main ideas from supporting details, and check whether each option accurately reflects the evidence."
+const enClosings = [
+  "Use the strongest evidence from the passage. Reject an option when it adds an idea that is not supported by the text.",
+  "Connect the question to the exact sentence, sequence, reference, inference, or argument that provides the answer.",
+  "Check that the selected option answers what is asked and stays within the meaning of the passage. Before locking the answer, identify the exact word, sentence, reference, sequence, or relationship that supports the choice and confirm that no outside assumption is needed."
 ];
 
-const serkomFrames = [
-  "Gunakan skenario berikut sebagai latihan logika pemrograman dan analisis alur Laravel. Tentukan komponen yang bertanggung jawab, data yang masuk, proses yang terjadi, output yang diharapkan, dan cara verifikasinya.",
-  "Pada pekerjaan pengembangan perangkat lunak, masalah tidak cukup diselesaikan dengan menebak file yang salah. Telusuri request, route, controller, model, database, view atau redirect secara runtut.",
-  "Bacalah konteks teknis dan potongan kode sebagai satu alur. Perhatikan method, parameter, tipe data, aturan validasi, query, serta hubungan antarkomponen sebelum menentukan jawaban.",
-  "Skenario ini meniru pekerjaan sehari-hari seorang pemrogram junior. Jawaban yang tepat harus menjelaskan perilaku kode dan langkah pemeriksaan yang dapat dibuktikan."
+const serkomClosings = [
+  "Telusuri kasus dari gejala ke komponen yang bertanggung jawab, kemudian pilih jawaban yang dapat dibuktikan melalui kode, route, database, browser, migration, atau test yang sesuai.",
+  "Jangan memilih komponen hanya karena namanya familiar. Cocokkan fungsi komponen dengan masalah yang benar-benar dinyatakan pada kasus.",
+  "Gunakan alur request-response dan tanggung jawab setiap file untuk menentukan tindakan yang paling relevan, lalu tentukan cara verifikasi hasilnya."
 ];
 
 function pick(items, index) {
   return items[Math.abs(Number(index) || 0) % items.length];
 }
 
-function curriculumBridge(topic) {
-  const coverage = topic?.learningCoverage ?? [];
-  const first = coverage[0] ?? topic?.summary ?? "Konsep pada materi aktif menjadi dasar analisis.";
-  const second = coverage[1] ?? "Gunakan informasi yang tersedia tanpa menambahkan asumsi yang tidak diperlukan.";
-  return `${first} ${second}`;
+function compact(value) {
+  return String(value ?? "").replace(/\s+/g, " ").trim();
 }
 
-export function buildTkaStimulus(topic, original, variantIndex = 0) {
-  const scenario = everydayContext(topic, variantIndex);
+function tokens(value) {
+  const stop = new Set(["yang", "dan", "atau", "pada", "untuk", "dari", "dengan", "adalah", "dalam", "sebuah", "bagaimana", "ketika", "pilih", "penjelasan", "materi", "proyek", "laravel", "seharusnya", "tentang"]);
+  return compact(value).toLowerCase().split(/[^a-z0-9_$@.:-]+/).filter((item) => item.length >= 4 && !stop.has(item));
+}
+
+function relevantTechnicalExcerpt(lesson, question) {
+  const lines = [...(lesson?.code ?? []), ...(lesson?.syntax ?? [])].map((line) => String(line).trim()).filter(Boolean);
+  if (!lines.length) return compact(question);
+  const queryTokens = new Set(tokens(question));
+  const ranked = lines.map((line, index) => {
+    const lineTokens = tokens(line);
+    const score = lineTokens.reduce((sum, token) => sum + (queryTokens.has(token) ? 3 : 0), 0) + (index < 4 ? 0.25 : 0);
+    return { line, score, index };
+  }).sort((a, b) => b.score - a.score || a.index - b.index);
+  const selected = ranked.filter((item) => item.score > 0).slice(0, 7).map((item) => item.line);
+  const fallback = ranked.slice(0, Math.min(5, ranked.length)).map((item) => item.line);
+  return [...new Set(selected.length ? selected : fallback)].join("\n");
+}
+
+function questionCore(question) {
+  const q = compact(question?.q ?? question);
+  if (question?.type === "matrix") {
+    const rows = (question.statements ?? []).map((item, index) => `${index + 1}. ${compact(item.text)}`).join(" ");
+    return compact(`${q} ${rows}`);
+  }
+  if (question?.type === "multiple") {
+    const rows = (question.options ?? []).map((item, index) => `${String.fromCharCode(65 + index)}. ${compact(item)}`).join(" ");
+    return compact(`${q} ${rows}`);
+  }
+  return q;
+}
+
+export function buildTkaStimulus(topic, question, variantIndex = 0) {
+  const scenario = linkedContext(topic, variantIndex);
+  const core = questionCore(question);
   if (topic.subjectId === "matematika") {
     return {
       key: scenario.key,
-      text: `${scenario.text}\n\n${pick(mathFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${curriculumBridge(topic)}\n\nData atau persoalan inti:\n${original}\n\nSelesaikan berdasarkan data inti dan gunakan konteks untuk menilai apakah hasil akhir masuk akal dalam situasi tersebut.`
+      coreQuestion: core,
+      text: `${scenario.intro}\n\n${scenario.bridge}\n\nPersoalan yang langsung digunakan dalam kegiatan:\n${core}\n\n${pick(mathClosings, variantIndex)}`
     };
   }
   if (topic.subjectId === "bahasa-indonesia") {
     return {
       key: scenario.key,
-      text: `${scenario.text}\n\n${pick(idFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${curriculumBridge(topic)}\n\nBacaan atau informasi inti:\n${original}\n\nTentukan jawaban dengan menunjuk bukti yang paling relevan pada bacaan dan hindari kesimpulan yang melampaui informasi teks.`
+      coreQuestion: core,
+      text: `${scenario.intro}\n\n${scenario.bridge}\n\nBacaan dan tugas inti:\n${core}\n\n${pick(idClosings, variantIndex)}`
     };
   }
   return {
     key: scenario.key,
-    text: `${scenario.text}\n\n${pick(enFrames, variantIndex)}\n\nFocus: ${topic.title}. ${curriculumBridge(topic)}\n\nCore reading material:\n${original}\n\nChoose the answer that is most strongly supported by the text and the relationship between its ideas.`
+    coreQuestion: core,
+    text: `${scenario.intro}\n\n${scenario.bridge}\n\nCore passage and task:\n${core}\n\n${pick(enClosings, variantIndex)}`
   };
 }
 
-export function buildSerkomStimulus(topic, lesson, originalQuestion, variantIndex = 0) {
-  const scenario = everydayContext(topic, variantIndex);
-  const code = (lesson?.code ?? []).slice(0, 10).join("\n");
-  const scope = curriculumBridge(topic);
-  const text = `${scenario.text}\n\n${pick(serkomFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${scope}\n\nMasalah teknis yang harus dianalisis:\n${originalQuestion}\n\nHubungkan jawaban dengan fungsi komponen, alur data, kemungkinan gejala, dan langkah verifikasi yang paling relevan.`;
-  return { key: scenario.key, stimulus: text, codeExcerpt: code, originalQuestion };
+export function buildSerkomStimulus(topic, lesson, question, variantIndex = 0) {
+  const scenario = linkedContext(topic, variantIndex);
+  const core = compact(question?.q ?? question);
+  const codeExcerpt = relevantTechnicalExcerpt(lesson, core);
+  return {
+    key: scenario.key,
+    coreQuestion: core,
+    stimulus: `${scenario.intro}\n\n${scenario.bridge}\n\nMasalah yang langsung harus diselesaikan:\n${core}\n\n${pick(serkomClosings, variantIndex)}`,
+    codeExcerpt
+  };
 }

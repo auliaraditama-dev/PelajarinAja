@@ -108,6 +108,9 @@ function validateQuestionSet(label, questions, subjectId = null) {
   if (questions.length !== 25) fail(`${label} tidak menghasilkan 25 soal`);
   const signatures = questions.map(questionSignature);
   if (new Set(signatures).size !== 25) fail(`${label} menghasilkan soal duplikat dalam satu paket`);
+  const coreQuestions = questions.map((item) => String(item.coreQuestion ?? "").replace(/\s+/g, " ").trim().toLowerCase());
+  if (coreQuestions.some((item) => !item)) fail(`${label} memiliki soal tanpa inti persoalan`);
+  if (new Set(coreQuestions).size !== 25) fail(`${label} memiliki inti soal duplikat dalam satu paket`);
   const contextKeys = questions.map((item) => item.contextKey).filter(Boolean);
   if (contextKeys.length !== 25 || new Set(contextKeys).size !== 25) fail(`${label} tidak memiliki 25 konteks berbeda`);
   const totalPoints = questions.reduce((sum, item) => sum + item.points, 0);
@@ -121,6 +124,12 @@ function validateQuestionSet(label, questions, subjectId = null) {
     if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && !question.stimulus) fail(`${label} memiliki soal TKA tanpa stimulus`);
     if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && String(question.stimulus ?? "").length < 520) fail(`${label} stimulus TKA terlalu pendek`);
     if (effectiveSubjectId === "serkom" && String(question.stimulus ?? "").length < 560) fail(`${label} stimulus SERKOM terlalu pendek`);
+    const normalizedStimulus = String(question.stimulus ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    const normalizedCore = String(question.coreQuestion ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    if (!normalizedStimulus.includes(normalizedCore)) fail(`${label} memiliki stimulus yang tidak memuat inti soal secara langsung`);
+    for (const unrelatedMarker of ["sebagian informasi hanya memberi konteks", "some only provide background", "data matematika yang benar-benar diperlukan terdapat pada bagian inti soal"]) {
+      if (normalizedStimulus.includes(unrelatedMarker)) fail(`${label} masih memakai konteks pengalih yang tidak diperlukan`);
+    }
     if (effectiveSubjectId === "serkom" && !String(question.codeExcerpt ?? "").trim()) fail(`${label} soal SERKOM tidak memiliki potongan kode atau perintah`);
     if (!Array.isArray(question.solutionSteps) || question.solutionSteps.length < 3) fail(`${label} tidak memiliki langkah pembahasan yang cukup`);
     if (question.type === "matrix") {
@@ -185,6 +194,22 @@ for (const subject of subjects) {
   }
 }
 
+const globalGeneratedCore = new Set();
+const globalGeneratedSignatures = new Set();
+for (const topic of topics) {
+  const questions = generateQuestionsForTopic(topic.id, 25, []);
+  for (const question of questions) {
+    const signature = questionSignature(question);
+    const core = String(question.coreQuestion ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    if (globalGeneratedSignatures.has(signature)) fail(`Duplikasi signature lintas materi terdeteksi pada ${topic.id}`);
+    if (globalGeneratedCore.has(core)) fail(`Duplikasi inti soal lintas materi terdeteksi pada ${topic.id}`);
+    globalGeneratedSignatures.add(signature);
+    globalGeneratedCore.add(core);
+  }
+}
+if (globalGeneratedSignatures.size !== topics.length * 25) fail("Jumlah signature global tidak sesuai");
+if (globalGeneratedCore.size !== topics.length * 25) fail("Jumlah inti soal global tidak sesuai");
+
 let universalHistory = [];
 for (let cycle = 0; cycle < 3; cycle += 1) {
   const universal = generateMixedQuestions(topics, 25, universalHistory);
@@ -193,4 +218,4 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   universalHistory = [...signatures, ...universalHistory].slice(0, 200);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, everyday-life literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions per package, 25 unique core questions per package, 1500 globally unique generated core questions, directly-linked everyday-life literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
