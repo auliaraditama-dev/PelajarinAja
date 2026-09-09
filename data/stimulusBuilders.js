@@ -137,7 +137,27 @@ function enLanguageParts(question) {
   return { passage: source, question: "Which answer is best supported by the text?" };
 }
 
-function mathQuestion(topic, source) {
+
+const idQuestionDirectives = {
+  Pendek: ["Gunakan bukti pada teks.", "Pilih jawaban yang didukung teks.", "Jangan menambah asumsi di luar bacaan.", "Cocokkan jawaban dengan informasi pada teks."],
+  Sedang: ["Tentukan jawaban dengan menghubungkan pertanyaan pada bukti yang tersedia dalam bacaan.", "Pilih opsi yang paling konsisten dengan informasi yang dinyatakan atau tersirat secara wajar.", "Gunakan bagian bacaan yang paling relevan sebagai dasar keputusan.", "Periksa setiap pilihan terhadap konteks sebelum menentukan jawaban."],
+  Panjang: ["Gunakan seluruh bukti yang relevan dalam bacaan dan pastikan kesimpulan tidak melampaui informasi yang tersedia.", "Hubungkan rincian, hubungan antarkalimat, dan tujuan bacaan sebelum memilih jawaban yang paling dapat dipertanggungjawabkan.", "Bandingkan pilihan dengan isi bacaan secara menyeluruh, lalu singkirkan opsi yang menambah asumsi atau mengubah maksud teks.", "Pastikan jawaban akhir tetap konsisten dengan fakta, inferensi, atau evaluasi yang benar-benar didukung oleh bacaan."]
+};
+
+const enQuestionDirectives = {
+  Pendek: ["Use evidence from the text.", "Choose the answer supported by the passage.", "Do not add information that is not stated.", "Match the answer to the text."],
+  Sedang: ["Connect the question with the most relevant evidence in the passage.", "Choose the option that is most consistent with what the text states or reasonably implies.", "Use the relevant part of the passage as the basis for your answer.", "Check each option against the context before choosing."],
+  Panjang: ["Use all relevant evidence in the passage and make sure the conclusion does not go beyond the information provided.", "Connect details, relationships between sentences, and the purpose of the text before choosing the best-supported answer.", "Compare each option with the complete passage and eliminate choices that add assumptions or change the writer's meaning.", "Make sure the final answer remains consistent with the textual, inferential, or evaluative evidence in the passage."]
+};
+
+function questionWithDirective(question, subjectId, variantIndex, lengthClass) {
+  const bank = subjectId === "bahasa-inggris" ? enQuestionDirectives : idQuestionDirectives;
+  const options = bank[lengthClass] ?? bank.Sedang;
+  const directive = options[Math.abs(Number(variantIndex) || 0) % options.length];
+  return `${compact(question)} ${directive}`;
+}
+
+function mathQuestion(topic, source, variantIndex = 0, lengthClass = "Sedang") {
   const prompts = {
     "himpunan-bilangan": "Berdasarkan data pada teks, himpunan hasil yang diminta adalah ...",
     "eksponen": "Berdasarkan operasi pada teks, hasil perhitungannya adalah ...",
@@ -164,15 +184,26 @@ function mathQuestion(topic, source) {
     "peluang-tunggal": "Berdasarkan ruang sampel pada teks, peluang yang diminta adalah ...",
     "peluang-majemuk": "Berdasarkan informasi peluang pada teks, hasil yang diminta adalah ..."
   };
-  return prompts[topic.id] ?? `Berdasarkan informasi pada teks, selesaikan persoalan berikut: ${source}`;
+  const base = prompts[topic.id] ?? `Berdasarkan informasi pada teks, selesaikan persoalan berikut: ${source}`;
+  const variants = lengthClass === "Pendek"
+    ? [base, base.replace("Berdasarkan ", "Dari "), `Hasil yang tepat untuk kebutuhan pada teks adalah ...`]
+    : lengthClass === "Panjang"
+      ? [base, `Setelah seluruh data pada teks dihubungkan dengan konsep ${topic.title}, hasil yang paling konsisten adalah ...`, `Manakah hasil yang memenuhi seluruh angka, syarat, dan hubungan pada teks?`]
+      : [base, `Gunakan data pada teks untuk menentukan hasil yang benar.`, `Manakah hasil yang sesuai dengan hubungan matematis pada teks?`];
+  return variants[Math.abs(Number(variantIndex) || 0) % variants.length];
 }
 
-function mathPassage(topic, scenario, question) {
+function mathPassage(topic, scenario, question, variantIndex = 0, lengthClass = "Sedang") {
   const source = cleanFrames(question?.semanticCore ?? question?.q ?? "");
   const statement = source.replace(/\.{3,}$/g, "belum ditentukan.").replace(/\?$/g, ".");
+  const passages = {
+    Pendek: `${scenario.introShort ?? scenario.intro} Catatan yang dipakai untuk menyelesaikan kebutuhan tersebut menyatakan: ${statement}`,
+    Sedang: `${scenario.intro} Data yang digunakan dalam keputusan tersebut tercatat sebagai berikut: ${statement} Nilai yang diperoleh dari data ini akan langsung dipakai untuk menyelesaikan kebutuhan pada kegiatan tersebut.`,
+    Panjang: `${scenario.intro} ${scenario.bridge} Catatan perhitungannya menyatakan: ${statement} Setiap angka dan syarat pada catatan itu diperlukan untuk menentukan hasil akhir yang akan dipakai pada kegiatan tersebut.`
+  };
   return {
-    passage: `${scenario.intro} Data yang digunakan dalam keputusan tersebut tercatat sebagai berikut: ${statement}`,
-    question: mathQuestion(topic, source)
+    passage: passages[lengthClass] ?? passages.Sedang,
+    question: mathQuestion(topic, source, variantIndex, lengthClass)
   };
 }
 
@@ -239,13 +270,13 @@ function sourceOnly(part) {
   return index > 0 ? compact(part.slice(0, index)) : compact(part);
 }
 
-function compoundTkaParts(topic, question, scenario) {
+function compoundTkaParts(topic, question, scenario, variantIndex = 0, lengthClass = "Sedang") {
   const parts = semanticParts(question).map(sourceOnly);
   if (parts.length < 2) return null;
   if (topic.subjectId === "matematika") {
     const passage = `${scenario.intro} Untuk menyelesaikan tugas, dua bagian data berikut harus dianalisis secara terpisah.\n\n${parts.map((part, index) => `Bagian ${index + 1}: ${cleanFrames(part).replace(/\.{3,}$/g, "belum ditentukan.")}`).join("\n\n")}`;
     const questionText = question.type === "multiple" ? "Berdasarkan seluruh bagian pada teks, pilih semua pernyataan yang benar." : question.type === "matrix" ? "Berdasarkan seluruh bagian pada teks, tentukan Benar atau Salah untuk setiap pernyataan." : "Berdasarkan dua bagian pada teks, pilih pasangan jawaban yang benar secara berurutan.";
-    return { passage, question: questionText };
+    return { passage, question: questionWithDirective(questionText, topic.subjectId, variantIndex, lengthClass) };
   }
   if (topic.subjectId === "bahasa-indonesia") {
     const blocks = parts.map((part, index) => {
@@ -253,19 +284,19 @@ function compoundTkaParts(topic, question, scenario) {
       return `Bagian ${index + 1}: ${parsed.passage}\nTugas bagian ${index + 1}: ${parsed.question}`;
     });
     const questionText = question.type === "multiple" ? "Berdasarkan seluruh bagian pada teks, pilih semua pernyataan yang benar." : question.type === "matrix" ? "Berdasarkan seluruh bagian pada teks, tentukan Benar atau Salah untuk setiap pernyataan." : "Berdasarkan kedua bagian pada teks, pilih pasangan jawaban yang benar.";
-    return { passage: `${scenario.intro} Teks yang dianalisis terdiri atas beberapa bagian.\n\n${blocks.join("\n\n")}`, question: questionText };
+    return { passage: `${scenario.intro} Teks yang dianalisis terdiri atas beberapa bagian.\n\n${blocks.join("\n\n")}`, question: questionWithDirective(questionText, topic.subjectId, variantIndex, lengthClass) };
   }
   const blocks = parts.map((part, index) => {
     const parsed = enLanguageParts({ semanticCore: part });
     return `Part ${index + 1}: ${parsed.passage}\nTask ${index + 1}: ${parsed.question}`;
   });
   const questionText = question.type === "multiple" ? "Select all statements that are supported by the complete text." : question.type === "matrix" ? "Decide whether each statement is True or False based on the complete text." : "Choose the option that gives the correct answers for both parts in order.";
-  return { passage: `${scenario.intro} The text being analyzed contains several parts.\n\n${blocks.join("\n\n")}`, question: questionText };
+  return { passage: `${scenario.intro} The text being analyzed contains several parts.\n\n${blocks.join("\n\n")}`, question: questionWithDirective(questionText, topic.subjectId, variantIndex, lengthClass) };
 }
 
-export function buildTkaStimulus(topic, question, variantIndex = 0) {
+export function buildTkaStimulus(topic, question, variantIndex = 0, lengthClass = "Sedang") {
   const scenario = linkedContext(topic, variantIndex);
-  const compound = compoundTkaParts(topic, question, scenario);
+  const compound = compoundTkaParts(topic, question, scenario, variantIndex, lengthClass);
   if (compound) {
     return {
       key: scenario.key,
@@ -278,52 +309,68 @@ export function buildTkaStimulus(topic, question, variantIndex = 0) {
     };
   }
   if (topic.subjectId === "matematika") {
-    const parts = mathPassage(topic, scenario, question);
+    const parts = mathPassage(topic, scenario, question, variantIndex, lengthClass);
     return {
       key: scenario.key,
-      coreQuestion: compact(`${parts.passage} ${parts.question}`),
+      coreQuestion: compact(`${parts.passage} ${questionWithDirective(parts.question, topic.subjectId, variantIndex, lengthClass)}`),
       sourceCore: compact(question?.semanticCore ?? question?.q ?? ""),
       text: parts.passage,
-      question: parts.question,
+      question: questionWithDirective(parts.question, topic.subjectId, variantIndex, lengthClass),
       readingLabel: "Bacalah teks berikut:",
       questionLabel: "Pertanyaan:"
     };
   }
   if (topic.subjectId === "bahasa-indonesia") {
     const parts = idLanguageParts(question);
-    const passage = `${scenario.intro} Teks yang dianalisis berbunyi: ${parts.passage}`;
+    const passages = {
+      Pendek: `${scenario.introShort ?? scenario.intro} ${parts.passage}`,
+      Sedang: `${scenario.intro} ${parts.passage}`,
+      Panjang: `${scenario.intro} ${scenario.bridge} ${parts.passage}`
+    };
+    const passage = passages[lengthClass] ?? passages.Sedang;
     return {
       key: scenario.key,
-      coreQuestion: compact(`${passage} ${parts.question}`),
+      coreQuestion: compact(`${passage} ${questionWithDirective(parts.question, topic.subjectId, variantIndex, lengthClass)}`),
       sourceCore: compact(question?.semanticCore ?? question?.q ?? ""),
       text: passage,
-      question: parts.question,
+      question: questionWithDirective(parts.question, topic.subjectId, variantIndex, lengthClass),
       readingLabel: "Bacalah teks berikut:",
       questionLabel: "Pertanyaan:"
     };
   }
   const parts = enLanguageParts(question);
-  const passage = `${scenario.intro} The text being analyzed says: ${parts.passage}`;
+  const passages = {
+    Pendek: `${scenario.introShort ?? scenario.intro} ${parts.passage}`,
+    Sedang: `${scenario.intro} ${parts.passage}`,
+    Panjang: `${scenario.intro} ${scenario.bridge} ${parts.passage}`
+  };
+  const passage = passages[lengthClass] ?? passages.Sedang;
   return {
     key: scenario.key,
-    coreQuestion: compact(`${passage} ${parts.question}`),
+    coreQuestion: compact(`${passage} ${questionWithDirective(parts.question, topic.subjectId, variantIndex, lengthClass)}`),
     sourceCore: compact(question?.semanticCore ?? question?.q ?? ""),
     text: passage,
-    question: parts.question,
+    question: questionWithDirective(parts.question, topic.subjectId, variantIndex, lengthClass),
     readingLabel: "Read the following text:",
     questionLabel: "Question:"
   };
 }
 
-export function buildSerkomStimulus(topic, lesson, question, variantIndex = 0) {
+export function buildSerkomStimulus(topic, lesson, question, variantIndex = 0, lengthClass = "Sedang") {
   const scenario = linkedContext(topic, variantIndex);
   const parts = semanticParts(question).map(sourceOnly);
   const core = parts.length > 1 ? parts.map((part, index) => `Bagian ${index + 1}: ${cleanFrames(part)}`).join(" ") : cleanFrames(question?.semanticCore ?? question?.q ?? "");
   const codeExcerpt = technicalExcerpt(lesson, core);
   const questionText = parts.length > 1 ? "Berdasarkan dua bagian kasus tersebut, pilih pasangan jawaban teknis yang benar secara berurutan." : serkomQuestion(core);
+  const focus = parts.length > 1 ? parts.map((part, index) => `Bagian ${index + 1}: ${cleanFrames(part)}`).join(" ") : core;
+  const singleStimuli = {
+    Pendek: `${scenario.introShort ?? scenario.intro} Fokus masalah yang harus diselesaikan adalah: ${focus}`,
+    Sedang: `${scenario.intro} Tim menelusuri kasus berikut sebelum menentukan tindakan: ${focus} Potongan kode atau perintah di bawah adalah bagian yang diperiksa langsung pada kasus tersebut.`,
+    Panjang: `${scenario.intro} ${scenario.bridge} Gejala, tujuan, atau keputusan teknis yang sedang diperiksa adalah: ${focus} Potongan kode atau perintah di bawah harus dibaca bersama alur request, data, output, dan langkah verifikasi yang relevan.`
+  };
   const stimulus = parts.length > 1
-    ? `${scenario.intro} Dua bagian masalah berikut harus dianalisis secara terpisah karena keduanya menguji komponen pada materi yang sama. ${parts.map((part, index) => `Bagian ${index + 1}: ${cleanFrames(part)}`).join(" ")}`
-    : `${scenario.intro} Pada tahap ini tim harus menentukan tindakan teknis berdasarkan fungsi komponen yang sedang diperiksa. Potongan kode atau sintaks di bawah merupakan bagian yang berkaitan langsung dengan kasus tersebut.`;
+    ? `${singleStimuli[lengthClass] ?? singleStimuli.Sedang}`
+    : singleStimuli[lengthClass] ?? singleStimuli.Sedang;
   return {
     key: scenario.key,
     coreQuestion: compact(`${stimulus} ${questionText}`),

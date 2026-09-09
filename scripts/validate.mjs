@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 import { subjects } from "../data/subjects.js";
 import { topics } from "../data/topics.js";
-import { difficultyPlan, generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
+import { difficultyPlan, generateMixedQuestions, generateQuestionsForTopic, questionLengthPlan, questionSignature } from "../data/questionGenerators.js";
 import { getSerkomLesson } from "../data/serkomLessons.js";
 import { subjectPath, topicPath } from "../lib/site.js";
 
@@ -11,6 +11,7 @@ const fail = (message) => { throw new Error(message); };
 const ids = new Set();
 const subjectIds = new Set(subjects.map((item) => item.id));
 const expectedPlan = difficultyPlan(25);
+const expectedLengthPlan = questionLengthPlan(25);
 const tkaSubjects = new Set(["matematika", "bahasa-indonesia", "bahasa-inggris"]);
 const matrixPositions = new Set([7, 13, 19, 25]);
 const multiplePositions = new Set([4, 10, 16, 22]);
@@ -117,6 +118,8 @@ function validateQuestionSet(label, questions, subjectId = null) {
   if (Math.abs(totalPoints - 100) > 0.001) fail(`${label} total poin bukan 100`);
   const actualPlan = questions.map((item) => item.difficulty);
   if (actualPlan.some((value, index) => value !== expectedPlan[index])) fail(`${label} komposisi internal tingkat soal tidak sesuai`);
+  const actualLengthPlan = questions.map((item) => item.lengthClass);
+  if (actualLengthPlan.some((value, index) => value !== expectedLengthPlan[index])) fail(`${label} komposisi panjang soal tidak beragam atau tidak sesuai`);
   for (let index = 0; index < questions.length; index += 1) {
     const question = questions[index];
     if (!question.q || !question.explain) fail(`${label} memiliki soal tanpa teks atau pembahasan`);
@@ -135,7 +138,8 @@ function validateQuestionSet(label, questions, subjectId = null) {
     const normalizedCore = String(question.coreQuestion ?? "").replace(/\s+/g, " ").trim().toLowerCase();
     const combinedCore = `${normalizedStimulus} ${normalizedQuestion}`.replace(/\s+/g, " ").trim();
     if (normalizedCore !== combinedCore) fail(`${label} inti soal tidak terhubung langsung dengan bacaan dan pertanyaan`);
-    if (normalizedStimulus.length < 55) fail(`${label} bacaan terlalu pendek untuk melatih pemahaman`);
+    const minLength = question.lengthClass === "Pendek" ? 30 : question.lengthClass === "Panjang" ? 100 : 55;
+    if (normalizedStimulus.length < minLength) fail(`${label} bacaan tidak memenuhi variasi panjang ${question.lengthClass}`);
     if (effectiveSubjectId === "serkom" && !String(question.codeExcerpt ?? "").trim()) fail(`${label} soal SERKOM tidak memiliki potongan kode atau perintah`);
     for (const unrelatedMarker of ["sebagian informasi hanya memberi konteks", "some only provide background", "data matematika yang benar-benar diperlukan terdapat pada bagian inti soal", "informasi yang tidak diperlukan"]) {
       if (normalizedStimulus.includes(unrelatedMarker)) fail(`${label} masih memakai konteks pengalih yang tidak diperlukan`);
@@ -232,4 +236,4 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   universalHistory = [...signatures, ...universalHistory].slice(0, 200);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions per package, 25 unique connected reading-question cores per package, 1500 globally unique generated question cores, passage-first TKA format, directly-linked literacy-numeracy-coding contexts, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions per package, 25 unique connected reading-question cores per package, short-medium-long question mix, 1500 globally unique generated question cores, passage-first TKA format, directly-linked literacy-numeracy-coding contexts, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);

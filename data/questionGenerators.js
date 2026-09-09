@@ -137,11 +137,12 @@ function statementSignature(question) {
 
 export function questionSignature(question) {
   const topicPart = normalize(question.topicId ?? "");
-  const corePart = normalize(question.coreQuestion ?? question.q ?? "");
+  const semanticPart = normalize(question.semanticCore ?? question.sourceCore ?? question.coreQuestion ?? question.q ?? "");
+  const displayPart = normalize(question.coreQuestion ?? question.q ?? "");
   const codePart = normalize(question.codeExcerpt ?? "");
-  if (question.type === "matrix") return `${topicPart}::matrix::${corePart}::${statementSignature(question)}`;
+  if (question.type === "matrix") return `${topicPart}::matrix::${semanticPart}::${displayPart}::${statementSignature(question)}`;
   const optionsPart = [...(question.options ?? [])].map(normalize).sort().join("|");
-  return `${topicPart}::${normalize(question.type ?? "single")}::${corePart}::${codePart}::${optionsPart}`;
+  return `${topicPart}::${normalize(question.type ?? "single")}::${semanticPart}::${displayPart}::${codePart}::${optionsPart}`;
 }
 
 function coreQuestionKey(question) {
@@ -154,6 +155,12 @@ export function difficultyPlan(count = 25) {
   const hard = Math.floor(count * 0.32);
   const medium = count - easy - hard;
   return [...Array(easy).fill("Mudah"), ...Array(medium).fill("Sedang"), ...Array(hard).fill("Sulit")];
+}
+
+export function questionLengthPlan(count = 25) {
+  if (count === 25) return ["Pendek", "Sedang", "Pendek", "Sedang", "Panjang", "Pendek", "Panjang", "Sedang", "Pendek", "Panjang", "Sedang", "Pendek", "Panjang", "Sedang", "Pendek", "Panjang", "Sedang", "Pendek", "Panjang", "Sedang", "Pendek", "Panjang", "Sedang", "Panjang", "Sedang"];
+  const values = ["Pendek", "Sedang", "Panjang"];
+  return Array.from({ length: count }, (_, index) => values[index % values.length]);
 }
 
 function generateBaseQuestion(topicId) {
@@ -411,12 +418,12 @@ function requestedFormat(topicId, position) {
 }
 
 
-function applyPresentation(topicId, result, variantIndex) {
+function applyPresentation(topicId, result, variantIndex, lengthClass) {
   const topic = topicFor(topicId);
   if (!topic) return result;
   const subjectId = topic.subjectId;
   if (TKA_SUBJECTS.has(subjectId)) {
-    const built = buildTkaStimulus(topic, result, variantIndex);
+    const built = buildTkaStimulus(topic, result, variantIndex, lengthClass);
     if (result.type === "matrix") {
       return {
         ...result,
@@ -451,7 +458,7 @@ function applyPresentation(topicId, result, variantIndex) {
   }
   if (subjectId === "serkom") {
     const lesson = getSerkomLesson(topicId);
-    const built = buildSerkomStimulus(topic, lesson, result, variantIndex);
+    const built = buildSerkomStimulus(topic, lesson, result, variantIndex, lengthClass);
     return {
       ...result,
       stimulus: built.stimulus,
@@ -466,7 +473,7 @@ function applyPresentation(topicId, result, variantIndex) {
   return result;
 }
 
-export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 0, format = "standard") {
+export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 0, format = "standard", lengthClass = "Sedang") {
   let result;
   if (format === "matrix") result = matrixQuestion(topicId, difficulty, variantIndex);
   else if (format === "multiple") result = complexMultiQuestion(topicId, difficulty, variantIndex);
@@ -475,19 +482,19 @@ export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 
     const base = generateBaseQuestion(topicId);
     result = normalizeFiveOptions(frameQuestion(topicId, { ...base, semanticCore: base.q }, difficulty, variantIndex), topicId);
   }
-  result = applyPresentation(topicId, result, variantIndex);
+  result = applyPresentation(topicId, result, variantIndex, lengthClass);
   const topic = topicFor(topicId);
   const solutionSteps = Array.isArray(result.solutionSteps) && result.solutionSteps.length >= 3
     ? result.solutionSteps
     : topic
       ? questionSolutionSteps(result, topic)
       : [result.explain, "Tentukan konsep yang digunakan.", "Periksa kembali jawaban akhir."];
-  return { ...result, topicId, subjectId: subjectForTopic(topicId), solutionSteps };
+  return { ...result, topicId, subjectId: subjectForTopic(topicId), lengthClass, solutionSteps };
 }
 
-function generateUniqueQuestion(topicId, difficulty, format, used, usedCore, excluded, startIndex) {
+function generateUniqueQuestion(topicId, difficulty, format, lengthClass, used, usedCore, excluded, startIndex) {
   for (let attempt = 0; attempt < 12000; attempt += 1) {
-    const item = generateQuestion(topicId, difficulty, startIndex + attempt, format);
+    const item = generateQuestion(topicId, difficulty, startIndex + attempt, format, lengthClass);
     const signature = questionSignature(item);
     const core = coreQuestionKey(item);
     if (!used.has(signature) && !usedCore.has(core) && !excluded.has(signature)) return { item, signature, core, attempts: attempt + 1 };
@@ -501,10 +508,12 @@ export function generateQuestionsForTopic(topicId, count = 25, excludeSignatures
   const usedCore = new Set();
   const excluded = new Set(excludeSignatures);
   const plan = difficultyPlan(count);
+  const lengthPlan = questionLengthPlan(count);
   let variantIndex = Date.now() * 1000 + Math.floor(Math.random() * 1000);
   for (const difficulty of plan) {
     const format = requestedFormat(topicId, output.length);
-    const generated = generateUniqueQuestion(topicId, difficulty, format, used, usedCore, excluded, variantIndex);
+    const lengthClass = lengthPlan[output.length] ?? "Sedang";
+    const generated = generateUniqueQuestion(topicId, difficulty, format, lengthClass, used, usedCore, excluded, variantIndex);
     if (!generated) throw new Error(`Tidak dapat membuat soal unik untuk ${topicId}.`);
     variantIndex += generated.attempts + 7;
     used.add(generated.signature);
@@ -520,13 +529,15 @@ export function generateMixedQuestions(topicList, count = 25, excludeSignatures 
   const usedCore = new Set();
   const excluded = new Set(excludeSignatures);
   const plan = difficultyPlan(count);
+  const lengthPlan = questionLengthPlan(count);
   let variantIndex = Date.now() * 1000 + Math.floor(Math.random() * 1000);
   for (const difficulty of plan) {
     let accepted = null;
     for (let attempt = 0; attempt < 16000 && !accepted; attempt += 1) {
       const topic = topicList[Math.floor(Math.random() * topicList.length)];
       const format = requestedFormat(topic.id, output.length);
-      const item = generateQuestion(topic.id, difficulty, variantIndex + attempt, format);
+      const lengthClass = lengthPlan[output.length] ?? "Sedang";
+      const item = generateQuestion(topic.id, difficulty, variantIndex + attempt, format, lengthClass);
       const enriched = { ...item, topicId: topic.id, topicTitle: topic.title, subjectId: topic.subjectId };
       const signature = questionSignature(enriched);
       const core = coreQuestionKey(enriched);

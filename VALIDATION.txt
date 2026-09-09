@@ -1,30 +1,30 @@
-PelajarinAja Universal Production v17
-Validation status: PASS
-4 subjects
-60 topics
-69 indexable SEO URLs
-25 unique questions per package
-25 unique connected reading-question cores per package
-1500 globally unique generated question cores in validation sweep
-Passage-first TKA question format
-Bacalah teks berikut -> Pertanyaan
-Read the following text -> Question
-Bacalah kasus berikut -> Pertanyaan
-Directly linked literacy, numeracy, and coding contexts
-5-option single choice
-Complex multi-select
-True-false matrices
-Hidden internal difficulty labels
-8 sequential packages checked per topic
-Recent-history repeat protection
-100 points per 25-question package
-Responsive UI
-Formal solution steps
-SERKOM line-by-line tutorials
-Relative import validation PASS
-Source comment validation PASS
-JavaScript syntax PASS
-JS/JSX parse PASS
-CSS braces PASS
-npm install in sandbox: timeout before dependency installation completed
-Full Next.js build in sandbox: not executed because npm install timed out
+PelajarinAja Universal Production v18
+
+Source validation
+PASS npm run check
+PASS 4 subjects
+PASS 60 topics
+PASS 69 indexable SEO URLs
+PASS 25 unique questions per package
+PASS 25 unique connected reading-question cores per package
+PASS short-medium-long internal question mix: 8 short, 9 medium, 8 long
+PASS 1500 globally unique generated question cores in one complete 60-topic sweep
+PASS 8 consecutive 25-question packages validated for every topic with recent-history exclusions
+PASS passage-first TKA format
+PASS directly-linked literacy, numeracy, reading, and coding contexts
+PASS exactly five options A-E for non-matrix TKA questions
+PASS complex multi-select format
+PASS true-false matrix format
+PASS internal difficulty balance without user-facing difficulty labels
+PASS 100 points per package
+PASS responsive UI source structure
+PASS formal solution steps
+PASS SERKOM line-by-line tutorials
+PASS relative import validation
+PASS source comment validation
+PASS JavaScript syntax checks
+PASS JSX parse check
+PASS CSS structural check
+
+Production build status
+npm install was attempted in the sandbox but timed out before dependencies were installed. A full local next build was therefore not executed in this environment. Vercel or another networked environment should run npm install and npm run build.

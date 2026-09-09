@@ -313,6 +313,73 @@ const serkomContexts = {
   ]
 };
 
+
+const mathGoals = [
+  "Hasilnya akan dipakai untuk menentukan keputusan akhir pada kegiatan tersebut.",
+  "Nilai yang diperoleh menentukan apakah rencana dapat dilanjutkan sesuai kebutuhan.",
+  "Perhitungan itu menjadi dasar untuk memilih ukuran, jumlah, atau posisi yang tepat.",
+  "Tim perlu memperoleh hasil yang tepat sebelum menetapkan langkah berikutnya.",
+  "Keputusan akhir bergantung langsung pada hubungan angka dan syarat yang tersedia.",
+  "Hasil perhitungan akan dicocokkan dengan kebutuhan nyata pada kegiatan itu.",
+  "Nilai yang dicari digunakan untuk memastikan rencana memenuhi batas yang telah ditentukan.",
+  "Perhitungan yang benar diperlukan agar keputusan tidak bertentangan dengan data yang tersedia."
+];
+
+const idGoals = [
+  "Jawaban harus ditentukan dari bukti yang terdapat pada bacaan yang sama.",
+  "Rincian dalam teks akan dipakai untuk menjawab pertanyaan tanpa menambah asumsi.",
+  "Informasi utama pada bacaan perlu dibedakan dari simpulan yang tidak didukung.",
+  "Keputusan akhir harus mengikuti fakta, hubungan gagasan, atau makna yang benar-benar muncul dalam teks.",
+  "Setiap pilihan akan diperiksa terhadap informasi yang tertulis atau tersirat secara wajar dalam bacaan.",
+  "Pembaca perlu menghubungkan pertanyaan dengan bagian teks yang menjadi bukti jawabannya.",
+  "Jawaban yang dipilih harus tetap konsisten dengan konteks dan maksud bacaan.",
+  "Teks menjadi satu-satunya dasar untuk menentukan informasi, inferensi, atau evaluasi yang diminta."
+];
+
+const enGoals = [
+  "The answer must be supported by evidence from the same passage.",
+  "The details in the text are needed to answer without adding unsupported assumptions.",
+  "The reader needs to connect the question with the sentence or idea that supports it.",
+  "The final choice must remain consistent with the meaning and evidence in the passage.",
+  "Each option will be checked against information stated or reasonably implied in the text.",
+  "The task requires distinguishing supported details from conclusions that go beyond the passage.",
+  "The passage provides the evidence needed for the requested textual, inferential, or evaluative judgment.",
+  "The response must follow the context, sequence, purpose, or argument presented in the text."
+];
+
+const serkomGoals = [
+  "Hasil analisis akan menentukan komponen atau file yang perlu diperiksa berikutnya.",
+  "Tim harus menghubungkan gejala dengan bagian program yang benar sebelum melakukan perubahan.",
+  "Keputusan teknis harus sesuai dengan alur request, data, proses, dan response pada aplikasi.",
+  "Setiap langkah perbaikan harus dapat diverifikasi melalui output, route, data, atau hasil pengujian.",
+  "Tim perlu menentukan tindakan terkecil yang relevan agar perubahan tidak merusak bagian lain.",
+  "Analisis harus membedakan fungsi route, controller, model, database, view, dan pengujian.",
+  "Potongan kode yang diperiksa menjadi dasar untuk menentukan penyebab, fungsi, atau langkah verifikasi.",
+  "Jawaban teknis harus konsisten dengan perilaku Laravel dan batas proyek yang sedang dikerjakan."
+];
+
+const enVerificationGoals = [
+  "Therefore, every relevant detail must be connected directly to the answer.",
+  "The final choice needs to be checked against the information provided.",
+  "No conclusion should depend on information outside the task.",
+  "Each detail should be used according to its role in the passage.",
+  "The selected answer must be explainable through a clear chain of evidence.",
+  "A conclusion is acceptable only when it matches all relevant information.",
+  "Before the answer is locked, the connection between evidence and conclusion should be checked.",
+  "The reasoning should remain consistent from the first detail to the final choice."
+];
+
+const verificationGoals = [
+  "Karena itu, data yang disebutkan pada persoalan harus digunakan secara langsung.",
+  "Hasil akhirnya perlu diperiksa kembali terhadap syarat yang diberikan.",
+  "Tidak ada langkah yang boleh didasarkan pada informasi di luar persoalan.",
+  "Setiap bagian informasi perlu dipakai sesuai fungsinya dalam penyelesaian.",
+  "Pilihan akhir harus dapat dijelaskan dengan proses yang runtut.",
+  "Kesimpulan hanya dianggap tepat jika sesuai dengan seluruh informasi yang relevan.",
+  "Sebelum jawaban dikunci, hubungan antara data dan hasil perlu diverifikasi.",
+  "Langkah penyelesaian harus tetap konsisten dari awal sampai hasil akhir."
+];
+
 function pick(items, index) {
   return items[Math.abs(Number(index) || 0) % items.length];
 }
@@ -323,36 +390,46 @@ function actor(subjectId, index) {
 }
 
 export function linkedContext(topic, variantIndex = 0) {
-  const person = actor(topic.subjectId, variantIndex);
-  const key = `${topic.id}-${Math.abs(Number(variantIndex) || 0)}`;
+  const numeric = Math.abs(Math.trunc(Number(variantIndex) || 0));
+  const person = actor(topic.subjectId, numeric);
+  const key = `${topic.id}-${numeric}`;
+  const verification = topic.subjectId === "bahasa-inggris" ? pick(enVerificationGoals, Math.floor(numeric / 80)) : pick(verificationGoals, Math.floor(numeric / 80));
   if (topic.subjectId === "matematika") {
-    const activity = pick(mathContexts[topic.id] ?? ["sedang menyelesaikan persoalan numerasi yang langsung digunakan dalam kegiatan"], variantIndex);
+    const activity = pick(mathContexts[topic.id] ?? ["sedang menyelesaikan persoalan numerasi yang langsung digunakan dalam kegiatan"], numeric);
+    const goal = pick(mathGoals, Math.floor(numeric / 10));
     return {
       key,
-      intro: `${person} ${activity}.`,
-      bridge: "Perhitungan pada soal berikut merupakan data yang benar-benar dipakai untuk menentukan hasil kegiatan tersebut, sehingga angka, syarat, dan hubungan matematis pada soal harus digunakan secara langsung."
+      introShort: `${person} ${activity}. ${goal}`,
+      intro: `${person} ${activity}. ${goal} ${verification}`,
+      bridge: "Angka, syarat, dan hubungan matematis pada persoalan merupakan informasi yang dipakai langsung untuk memperoleh hasil tersebut."
     };
   }
   if (topic.subjectId === "bahasa-indonesia") {
-    const activity = pick(idContexts[topic.id] ?? ["sedang membaca informasi sehari-hari dan harus menentukan jawaban berdasarkan bukti yang tersedia"], variantIndex);
+    const activity = pick(idContexts[topic.id] ?? ["sedang membaca informasi sehari-hari dan harus menentukan jawaban berdasarkan bukti yang tersedia"], numeric);
+    const goal = pick(idGoals, Math.floor(numeric / 10));
     return {
       key,
-      intro: `${person} ${activity}.`,
-      bridge: "Bacaan dan pertanyaan berikut adalah informasi utama yang dipakai dalam situasi tersebut. Jawaban harus ditentukan dari isi teks yang sama, bukan dari cerita tambahan atau asumsi di luar bacaan."
+      introShort: `${person} ${activity}. ${goal}`,
+      intro: `${person} ${activity}. ${goal} ${verification}`,
+      bridge: "Pertanyaan dan bacaan berada pada konteks yang sama sehingga bukti jawaban harus berasal dari informasi yang benar-benar tersedia dalam teks."
     };
   }
   if (topic.subjectId === "bahasa-inggris") {
-    const activity = pick(enContexts[topic.id] ?? ["is reading an everyday text and needs to answer using evidence from the same text"], variantIndex);
+    const activity = pick(enContexts[topic.id] ?? ["is reading an everyday text and needs to answer using evidence from the same text"], numeric);
+    const goal = pick(enGoals, Math.floor(numeric / 10));
     return {
       key,
-      intro: `${person} ${activity}.`,
-      bridge: "The passage and question below are the actual information needed for the task. The answer must come from the same text and its evidence, not from unrelated background details."
+      introShort: `${person} ${activity}. ${goal}`,
+      intro: `${person} ${activity}. ${goal} ${verification}`,
+      bridge: "The question and passage belong to the same context, so the answer must follow the evidence that is actually available in the text."
     };
   }
-  const activity = pick(serkomContexts[topic.id] ?? ["sedang menelusuri masalah teknis pada aplikasi dan harus menghubungkan gejala dengan komponen yang bertanggung jawab"], variantIndex);
+  const activity = pick(serkomContexts[topic.id] ?? ["sedang menelusuri masalah teknis pada aplikasi dan harus menghubungkan gejala dengan komponen yang bertanggung jawab"], numeric);
+  const goal = pick(serkomGoals, Math.floor(numeric / 10));
   return {
     key,
-    intro: `${person} ${activity}.`,
-    bridge: "Masalah teknis berikut menentukan langkah kerja berikutnya. Jawaban harus dikaitkan langsung dengan komponen, kode atau urutan teknis, data, output, dan verifikasi yang relevan pada kasus tersebut."
+    introShort: `${person} ${activity}. ${goal}`,
+    intro: `${person} ${activity}. ${goal} ${verification}`,
+    bridge: "Kasus, kode, data, output, dan langkah verifikasi harus dibaca sebagai satu alur teknis yang saling berkaitan."
   };
 }
