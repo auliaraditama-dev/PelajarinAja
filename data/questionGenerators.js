@@ -405,17 +405,17 @@ function applyPresentation(topicId, result, variantIndex) {
   const subjectId = topic.subjectId;
   if (TKA_SUBJECTS.has(subjectId)) {
     const original = result.stimulus ? `${result.stimulus}\n\n${result.q}` : result.q;
-    const stimulus = buildTkaStimulus(topic, original, variantIndex);
-    if (result.type === "matrix") return { ...result, stimulus };
+    const built = buildTkaStimulus(topic, original, variantIndex);
+    if (result.type === "matrix") return { ...result, stimulus: built.text, contextKey: built.key };
     if (result.type === "multiple") {
-      return { ...result, stimulus, q: subjectId === "bahasa-inggris" ? "Select all statements that are supported by the stimulus." : "Pilih semua pernyataan yang benar berdasarkan stimulus." };
+      return { ...result, stimulus: built.text, contextKey: built.key, q: subjectId === "bahasa-inggris" ? "Select all statements that are supported by the stimulus." : "Pilih semua pernyataan yang benar berdasarkan stimulus." };
     }
-    return { ...result, stimulus, q: subjectId === "bahasa-inggris" ? "Choose the most accurate answer based on the stimulus." : "Pilih jawaban yang paling tepat berdasarkan stimulus." };
+    return { ...result, stimulus: built.text, contextKey: built.key, q: subjectId === "bahasa-inggris" ? "Choose the most accurate answer based on the stimulus." : "Pilih jawaban yang paling tepat berdasarkan stimulus." };
   }
   if (subjectId === "serkom") {
     const lesson = getSerkomLesson(topicId);
     const built = buildSerkomStimulus(topic, lesson, result.q, variantIndex);
-    return { ...result, stimulus: built.stimulus, codeExcerpt: built.codeExcerpt };
+    return { ...result, stimulus: built.stimulus, codeExcerpt: built.codeExcerpt, contextKey: built.key };
   }
   return result;
 }
@@ -450,7 +450,7 @@ export function generateQuestionsForTopic(topicId, count = 25, excludeSignatures
   const used = new Set();
   const excluded = new Set(excludeSignatures);
   const plan = difficultyPlan(count);
-  let variantIndex = Math.floor(Math.random() * 100000);
+  let variantIndex = Date.now() * 1000 + Math.floor(Math.random() * 1000);
   for (const difficulty of plan) {
     const format = requestedFormat(topicId, output.length);
     const generated = generateUniqueQuestion(topicId, difficulty, format, used, excluded, variantIndex);
@@ -467,7 +467,7 @@ export function generateMixedQuestions(topicList, count = 25, excludeSignatures 
   const used = new Set();
   const excluded = new Set(excludeSignatures);
   const plan = difficultyPlan(count);
-  let variantIndex = Math.floor(Math.random() * 100000);
+  let variantIndex = Date.now() * 1000 + Math.floor(Math.random() * 1000);
   for (const difficulty of plan) {
     let accepted = null;
     for (let attempt = 0; attempt < 16000 && !accepted; attempt += 1) {

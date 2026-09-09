@@ -17,3 +17,9 @@ Tujuh belas halaman dipetakan ke textual comprehension, inferential comprehensio
 ## SERKOM RPL
 
 Jobsheet 42 halaman dan rangkuman 58 halaman dipetakan ke 19 materi SERKOM: SKKNI/MUK, MVC, skenario dan IPO, syntax, environment, migration, model, seeder, controller, routing, Blade, form CRUD, CSS responsif, workflow, debugging, testing, portofolio, pertanyaan asesor, dan cheat sheet. Peta juga mencakup rubrik kesiapan, troubleshooting, log, refleksi, manual test TC-01 sampai TC-10, feature test, dan bukti portofolio.
+
+## Kontekstualisasi Kehidupan Sehari-hari
+
+Seluruh generator soal menggunakan konteks yang dekat dengan kehidupan sehari-hari tanpa mengubah kompetensi sumber. Matematika memakai situasi seperti belanja, tabungan, transportasi, ruang, kemasan, data kegiatan, dan peluang. Bahasa Indonesia memakai pengumuman, layanan publik, kebiasaan digital, lingkungan, dunia kerja, dan cerita keseharian. Bahasa Inggris memakai daily, vocational, school, community, travel, library, shopping, and internship contexts. SERKOM memakai skenario praktik pemrogram junior, pengelolaan produk usaha kecil, laboratorium sekolah, debugging, testing, dokumentasi, dan presentasi kompetensi.
+
+Setiap paket berisi 25 soal dengan konteks berbeda. Riwayat soal digunakan untuk mengurangi kemunculan kembali stimulus yang sama ketika paket baru dibuat. Konteks berfungsi melatih pemilahan informasi, literasi, numerasi, dan logika pemrograman, sedangkan konsep dan indikator tetap mengikuti materi sumber.

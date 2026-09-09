@@ -1,4 +1,4 @@
-# PelajarinAja Universal Source-Integrated v12
+# PelajarinAja Universal Everyday TKA v13
 
 PelajarinAja adalah platform pembelajaran Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL. Versi v12 mengintegrasikan cakupan materi dari lima dokumen sumber yang dilampirkan ke dalam 60 materi, menambahkan peta sumber per materi, dan memperpanjang stimulus latihan untuk melatih literasi, numerasi, serta logika pemrograman.
 
@@ -275,3 +275,12 @@ data/
 scripts/
   validate.mjs
 ```
+
+
+## Everyday Context Question Engine
+
+Setiap paket penilaian tetap berisi 25 soal unik dengan nilai maksimum 100. Stimulus sekarang menggunakan konteks kehidupan sehari-hari yang berbeda untuk setiap soal, termasuk belanja, transportasi, rumah, kegiatan sekolah, lingkungan, pekerjaan, layanan publik, dan praktik pemrograman.
+
+Matematika menggunakan narasi numerasi yang meminta pengguna memilah konteks dan data inti. Bahasa Indonesia dan Bahasa Inggris menggunakan bacaan yang dekat dengan aktivitas harian. SERKOM menggunakan skenario pekerjaan Pemrogram Junior, potongan kode, alur request-response, debugging, testing, dan verifikasi.
+
+Riwayat 1000 signature soal terbaru per materi digunakan untuk mengurangi pengulangan saat paket baru dibuat. Dalam satu paket, 25 signature dan 25 konteks harus berbeda. Tingkat internal tetap seimbang, tetapi label tingkat kesulitan tidak ditampilkan di antarmuka.

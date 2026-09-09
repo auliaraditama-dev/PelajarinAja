@@ -11,7 +11,7 @@ import { sourceDocuments } from "../data/sourceCoverage.js";
 const QUESTIONS_PER_TOPIC = 25;
 const SIMULATION_QUESTIONS = 25;
 const SIMULATION_SECONDS = 40 * 60;
-const QUESTION_HISTORY_LIMIT = 250;
+const QUESTION_HISTORY_LIMIT = 1000;
 
 function Icon({ name, size = 18 }) {
   const paths = {

@@ -83,6 +83,8 @@ function validateQuestionSet(label, questions, subjectId = null) {
   if (questions.length !== 25) fail(`${label} tidak menghasilkan 25 soal`);
   const signatures = questions.map(questionSignature);
   if (new Set(signatures).size !== 25) fail(`${label} menghasilkan soal duplikat dalam satu paket`);
+  const contextKeys = questions.map((item) => item.contextKey).filter(Boolean);
+  if (contextKeys.length !== 25 || new Set(contextKeys).size !== 25) fail(`${label} tidak memiliki 25 konteks berbeda`);
   const totalPoints = questions.reduce((sum, item) => sum + item.points, 0);
   if (Math.abs(totalPoints - 100) > 0.001) fail(`${label} total poin bukan 100`);
   const actualPlan = questions.map((item) => item.difficulty);
@@ -92,8 +94,8 @@ function validateQuestionSet(label, questions, subjectId = null) {
     if (!question.q || !question.explain) fail(`${label} memiliki soal tanpa teks atau pembahasan`);
     const effectiveSubjectId = subjectId ?? question.subjectId ?? null;
     if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && !question.stimulus) fail(`${label} memiliki soal TKA tanpa stimulus`);
-    if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && String(question.stimulus ?? "").length < 320) fail(`${label} stimulus TKA terlalu pendek`);
-    if (effectiveSubjectId === "serkom" && String(question.stimulus ?? "").length < 320) fail(`${label} stimulus SERKOM terlalu pendek`);
+    if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && String(question.stimulus ?? "").length < 520) fail(`${label} stimulus TKA terlalu pendek`);
+    if (effectiveSubjectId === "serkom" && String(question.stimulus ?? "").length < 560) fail(`${label} stimulus SERKOM terlalu pendek`);
     if (effectiveSubjectId === "serkom" && !String(question.codeExcerpt ?? "").trim()) fail(`${label} soal SERKOM tidak memiliki potongan kode atau perintah`);
     if (!Array.isArray(question.solutionSteps) || question.solutionSteps.length < 3) fail(`${label} tidak memiliki langkah pembahasan yang cukup`);
     if (question.type === "matrix") {
@@ -134,11 +136,11 @@ for (const topic of topics) {
   if (!topic.sourceCompetency || !Array.isArray(topic.sourceCoverage) || topic.sourceCoverage.length < 4) fail(`${topic.id} belum memiliki cakupan sumber lengkap`);
   if (!topic.essay?.q || !topic.essay?.answer) fail(`${topic.id} tidak memiliki esai dan pembahasan`);
   let history = [];
-  for (let cycle = 0; cycle < 4; cycle += 1) {
+  for (let cycle = 0; cycle < 8; cycle += 1) {
     const questions = generateQuestionsForTopic(topic.id, 25, history);
     const signatures = validateQuestionSet(`${topic.id} paket ${cycle + 1}`, questions, topic.subjectId);
     if (signatures.some((signature) => history.includes(signature))) fail(`${topic.id} mengulang soal dari paket sebelumnya`);
-    history = [...signatures, ...history].slice(0, 100);
+    history = [...signatures, ...history].slice(0, 200);
   }
   if (topic.subjectId === "serkom") {
     const lesson = getSerkomLesson(topic.id);
@@ -157,7 +159,7 @@ for (const subject of subjects) {
     const mixed = generateMixedQuestions(list, 25, history);
     const signatures = validateQuestionSet(`Simulasi ${subject.id} paket ${cycle + 1}`, mixed, subject.id);
     if (signatures.some((signature) => history.includes(signature))) fail(`Simulasi ${subject.id} mengulang soal dari paket sebelumnya`);
-    history = [...signatures, ...history].slice(0, 100);
+    history = [...signatures, ...history].slice(0, 200);
   }
 }
 
@@ -166,7 +168,7 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   const universal = generateMixedQuestions(topics, 25, universalHistory);
   const signatures = validateQuestionSet(`Simulasi universal paket ${cycle + 1}`, universal);
   if (signatures.some((signature) => universalHistory.includes(signature))) fail("Simulasi universal mengulang soal dari paket sebelumnya");
-  universalHistory = [...signatures, ...universalHistory].slice(0, 100);
+  universalHistory = [...signatures, ...universalHistory].slice(0, 200);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${sourceDocuments.length} source documents integrated, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, extended literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${sourceDocuments.length} source documents integrated, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, everyday-life literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
