@@ -3,6 +3,8 @@ import { generateLanguageQuestion } from "./languageQuestionGenerators.js";
 import { generateSerkomQuestion } from "./serkomQuestionGenerators.js";
 import { topics } from "./topics.js";
 import { questionSolutionSteps } from "./pedagogy.js";
+import { getSerkomLesson } from "./serkomLessons.js";
+import { buildSerkomStimulus, buildTkaStimulus } from "./stimulusBuilders.js";
 
 const EASY_LEADS = [
   "Cermati informasi berikut:",
@@ -40,6 +42,43 @@ const MEDIUM_TAILS = [
   "Eliminasi pilihan yang tidak sesuai dengan konsep."
 ];
 
+
+const EN_EASY_LEADS = [
+  "Read the information carefully:",
+  "Use the details in the text:",
+  "Consider the following information:",
+  "Identify the most relevant detail:",
+  "Based on the information provided:",
+  "Read the short passage carefully:",
+  "Focus on the stated information:",
+  "Choose the answer supported by the text:"
+];
+
+const EN_MEDIUM_LEADS = [
+  "Analyze the following situation:",
+  "Connect the details in the text:",
+  "Consider the relationship between the ideas:",
+  "Use all relevant information:",
+  "Read the passage and evaluate the evidence:",
+  "Interpret the information carefully:",
+  "Compare the details before answering:",
+  "Determine the conclusion best supported by the text:"
+];
+
+const EN_EASY_TAILS = [
+  "Use only information supported by the text.",
+  "Check the key detail before choosing your answer.",
+  "Do not add assumptions that are not stated.",
+  "Make sure the answer matches the information given."
+];
+
+const EN_MEDIUM_TAILS = [
+  "Consider how the details work together before choosing an answer.",
+  "Use more than one relevant clue when necessary.",
+  "Make sure the conclusion is consistent with the evidence.",
+  "Eliminate choices that are too broad or unsupported."
+];
+
 const HARD_LEADS = [
   "Analisis terpadu:",
   "Evaluasi dua kondisi berikut:",
@@ -49,6 +88,17 @@ const HARD_LEADS = [
   "Periksa dua penerapan konsep berikut:",
   "Analisis kedua bagian secara mandiri:",
   "Evaluasi hasil untuk dua kondisi berikut:"
+];
+
+const EN_HARD_LEADS = [
+  "Integrated analysis:",
+  "Evaluate the following two situations:",
+  "Consider both tasks carefully:",
+  "Use the reading concept across both parts:",
+  "Determine the pair of answers supported by the evidence:",
+  "Evaluate both applications of the concept:",
+  "Analyze each part independently:",
+  "Compare the conclusions from the two situations:"
 ];
 
 const COMPLEX_MULTI_POSITIONS = new Set([4, 10, 16, 22]);
@@ -88,9 +138,10 @@ function statementSignature(question) {
 export function questionSignature(question) {
   const topicPart = normalize(question.topicId ?? "");
   const stimulusPart = normalize(question.stimulus ?? "");
-  if (question.type === "matrix") return `${topicPart}::matrix::${stimulusPart}::${normalize(question.q)}::${statementSignature(question)}`;
+  const codePart = normalize(question.codeExcerpt ?? "");
+  if (question.type === "matrix") return `${topicPart}::matrix::${stimulusPart}::${codePart}::${normalize(question.q)}::${statementSignature(question)}`;
   const optionsPart = [...(question.options ?? [])].map(normalize).sort().join("|");
-  return `${topicPart}::${normalize(question.type ?? "single")}::${stimulusPart}::${normalize(question.q)}::${optionsPart}`;
+  return `${topicPart}::${normalize(question.type ?? "single")}::${stimulusPart}::${codePart}::${normalize(question.q)}::${optionsPart}`;
 }
 
 export function difficultyPlan(count = 25) {
@@ -142,10 +193,15 @@ function normalizeFiveOptions(base, topicId) {
   const sourceOptions = [...new Set((base.options ?? []).map(String))];
   const correctTexts = answerTexts(base);
   const donors = donorOptions(topicId, sourceOptions);
-  const fallback = subjectForTopic(topicId) === "matematika"
-    ? ["Tidak dapat ditentukan", "0", "1", "−1", "Tidak ada pilihan yang sesuai"]
-    : ["Tidak dapat disimpulkan dari informasi yang tersedia.", "Pernyataan tersebut tidak didukung konteks.", "Semua pilihan lain benar.", "Tidak ada informasi yang relevan.", "Kesimpulan tersebut terlalu umum."];
-  const pool = [...sourceOptions, ...donors, ...fallback].filter((value, index, array) => array.findIndex((item) => normalize(item) === normalize(value)) === index);
+  const subjectId = subjectForTopic(topicId);
+  const fallback = subjectId === "matematika"
+    ? ["Tidak dapat ditentukan dari data yang diberikan.", "Tidak ada hasil yang memenuhi seluruh syarat.", "0", "1", "−1"]
+    : subjectId === "bahasa-inggris"
+      ? ["The information is not sufficiently supported by the text.", "The statement is too broad for the evidence given.", "The passage does not provide enough evidence for that conclusion.", "The option adds an assumption that is not stated in the text."]
+      : subjectId === "serkom"
+        ? ["Penjelasan tersebut mencampurkan tanggung jawab komponen yang berbeda.", "Langkah tersebut tidak sesuai dengan alur request-response pada proyek.", "Pernyataan tersebut tidak dapat diverifikasi dari fungsi komponen yang dibahas.", "Komponen tersebut hanya berkaitan dengan tampilan dan tidak menjalankan fungsi yang disebutkan."]
+        : ["Informasi tersebut tidak cukup untuk mendukung kesimpulan itu.", "Pernyataan tersebut terlalu luas dibanding bukti pada stimulus.", "Pilihan tersebut menambahkan asumsi yang tidak dinyatakan dalam bacaan.", "Hubungan gagasan pada pilihan tersebut tidak sesuai dengan konteks."];
+  const pool = [...sourceOptions, ...fallback, ...donors].filter((value, index, array) => array.findIndex((item) => normalize(item) === normalize(value)) === index);
   if (Array.isArray(base.answer)) {
     const correctSet = new Set(correctTexts.map(normalize));
     const wrong = pool.filter((item) => !correctSet.has(normalize(item)));
@@ -170,15 +226,20 @@ function wrongText(question, offset = 0) {
   return wrong[offset % Math.max(1, wrong.length)] ?? question.options[0];
 }
 
-function frameQuestion(base, difficulty, variantIndex) {
+function frameQuestion(topicId, base, difficulty, variantIndex) {
   const points = 4;
+  const isEnglish = subjectForTopic(topicId) === "bahasa-inggris";
   if (difficulty === "Mudah") {
-    const lead = EASY_LEADS[variantIndex % EASY_LEADS.length];
-    const tail = EASY_TAILS[Math.floor(variantIndex / EASY_LEADS.length) % EASY_TAILS.length];
+    const leads = isEnglish ? EN_EASY_LEADS : EASY_LEADS;
+    const tails = isEnglish ? EN_EASY_TAILS : EASY_TAILS;
+    const lead = leads[variantIndex % leads.length];
+    const tail = tails[Math.floor(variantIndex / leads.length) % tails.length];
     return { ...base, q: `${lead} ${base.q} ${tail}`, difficulty, points };
   }
-  const lead = MEDIUM_LEADS[variantIndex % MEDIUM_LEADS.length];
-  const tail = MEDIUM_TAILS[Math.floor(variantIndex / MEDIUM_LEADS.length) % MEDIUM_TAILS.length];
+  const leads = isEnglish ? EN_MEDIUM_LEADS : MEDIUM_LEADS;
+  const tails = isEnglish ? EN_MEDIUM_TAILS : MEDIUM_TAILS;
+  const lead = leads[variantIndex % leads.length];
+  const tail = tails[Math.floor(variantIndex / leads.length) % tails.length];
   return { ...base, q: `${lead} ${base.q} ${tail}`, difficulty, points };
 }
 
@@ -206,9 +267,15 @@ function hardQuestion(topicId, variantIndex) {
   ];
   const options = shuffle([...new Set(candidates)]);
   if (options.length < 5) return hardQuestion(topicId, variantIndex + 11);
-  const lead = HARD_LEADS[variantIndex % HARD_LEADS.length];
-  const q = `${lead}\n(1) ${first.q}\n(2) ${second.q}\nPilih pasangan jawaban yang benar untuk bagian (1) dan (2).`;
-  const explain = `Bagian (1): ${first.explain} Bagian (2): ${second.explain}`;
+  const isEnglish = subjectForTopic(topicId) === "bahasa-inggris";
+  const leads = isEnglish ? EN_HARD_LEADS : HARD_LEADS;
+  const lead = leads[variantIndex % leads.length];
+  const q = isEnglish
+    ? `${lead}\n(1) ${first.q}\n(2) ${second.q}\nChoose the option that gives the correct answers for both part (1) and part (2).`
+    : `${lead}\n(1) ${first.q}\n(2) ${second.q}\nPilih pasangan jawaban yang benar untuk bagian (1) dan (2).`;
+  const explain = isEnglish
+    ? `Part (1): ${first.explain} Part (2): ${second.explain}`
+    : `Bagian (1): ${first.explain} Bagian (2): ${second.explain}`;
   return {
     q,
     options,
@@ -217,13 +284,21 @@ function hardQuestion(topicId, variantIndex) {
     difficulty: "Sulit",
     points: 4,
     type: "single",
-    solutionSteps: [
-      "Pisahkan persoalan menjadi bagian (1) dan bagian (2).",
-      `Selesaikan bagian (1) secara mandiri. Hasil yang benar adalah ${correctFirst}.`,
-      `Selesaikan bagian (2) secara mandiri. Hasil yang benar adalah ${correctSecond}.`,
-      "Gabungkan kedua hasil tanpa mengubah urutan bagian.",
-      "Pilih opsi yang memuat kedua jawaban tersebut secara bersamaan."
-    ]
+    solutionSteps: isEnglish
+      ? [
+        "Treat part (1) and part (2) as separate reading tasks.",
+        `Solve part (1) first. The supported answer is ${correctFirst}.`,
+        `Solve part (2) independently. The supported answer is ${correctSecond}.`,
+        "Combine the two results without changing their order.",
+        "Choose the option that contains both supported answers."
+      ]
+      : [
+        "Pisahkan persoalan menjadi bagian (1) dan bagian (2).",
+        `Selesaikan bagian (1) secara mandiri. Hasil yang benar adalah ${correctFirst}.`,
+        `Selesaikan bagian (2) secara mandiri. Hasil yang benar adalah ${correctSecond}.`,
+        "Gabungkan kedua hasil tanpa mengubah urutan bagian.",
+        "Pilih opsi yang memuat kedua jawaban tersebut secara bersamaan."
+      ]
   };
 }
 
@@ -260,41 +335,57 @@ function complexMultiQuestion(topicId, difficulty, variantIndex) {
   const propositions = uniquePropositions(topicId, truthPattern, variantIndex);
   const options = propositions.map((item) => item.text);
   const answer = propositions.map((item, index) => item.correct ? index : -1).filter((index) => index >= 0);
+  const isEnglish = subjectForTopic(topicId) === "bahasa-inggris";
   return {
-    stimulus: "Nilai setiap opsi secara mandiri menggunakan konsep pada materi aktif. Beberapa opsi dapat benar secara bersamaan.",
-    q: "Pilih semua pernyataan yang benar berdasarkan informasi dan konsep yang diberikan.",
+    stimulus: isEnglish ? "Evaluate each option independently using the active reading concept. More than one option may be correct." : "Nilai setiap opsi secara mandiri menggunakan konsep pada materi aktif. Beberapa opsi dapat benar secara bersamaan.",
+    q: isEnglish ? "Select all statements that are correct based on the information and concept provided." : "Pilih semua pernyataan yang benar berdasarkan informasi dan konsep yang diberikan.",
     options,
     answer,
-    explain: propositions.map((item, index) => `Opsi ${String.fromCharCode(65 + index)}: ${item.explain}`).join(" "),
+    explain: propositions.map((item, index) => `${isEnglish ? "Option" : "Opsi"} ${String.fromCharCode(65 + index)}: ${item.explain}`).join(" "),
     difficulty,
     points: 4,
     type: "multiple",
-    solutionSteps: [
-      "Baca setiap opsi sebagai pernyataan yang berdiri sendiri.",
-      "Selesaikan persoalan pada setiap opsi tanpa mengandalkan hasil opsi lain.",
-      "Tandai hanya opsi yang sesuai dengan hasil atau konsep yang benar.",
-      "Periksa kembali seluruh opsi sebelum mengunci kombinasi jawaban."
-    ]
+    solutionSteps: isEnglish
+      ? [
+        "Read each option as an independent statement.",
+        "Evaluate the evidence for each option without depending on another option.",
+        "Select only statements that are fully supported by the text or concept.",
+        "Review the complete combination before locking the answer."
+      ]
+      : [
+        "Baca setiap opsi sebagai pernyataan yang berdiri sendiri.",
+        "Selesaikan persoalan pada setiap opsi tanpa mengandalkan hasil opsi lain.",
+        "Tandai hanya opsi yang sesuai dengan hasil atau konsep yang benar.",
+        "Periksa kembali seluruh opsi sebelum mengunci kombinasi jawaban."
+      ]
   };
 }
 
 function matrixQuestion(topicId, difficulty, variantIndex) {
   const truthPattern = variantIndex % 2 === 0 ? [true, false, true, false] : [false, true, false, true];
   const statements = uniquePropositions(topicId, truthPattern, variantIndex + 5000);
+  const isEnglish = subjectForTopic(topicId) === "bahasa-inggris";
   return {
-    stimulus: "Cermati empat penerapan konsep berikut. Setiap baris harus dinilai secara terpisah.",
-    q: "Tentukan status Benar atau Salah untuk setiap pernyataan.",
+    stimulus: isEnglish ? "Consider the four applications of the concept below. Evaluate each row independently." : "Cermati empat penerapan konsep berikut. Setiap baris harus dinilai secara terpisah.",
+    q: isEnglish ? "Decide whether each statement is True or False." : "Tentukan status Benar atau Salah untuk setiap pernyataan.",
     statements: statements.map((item) => ({ text: item.text, answer: item.correct })),
-    explain: statements.map((item, index) => `Pernyataan ${index + 1}: ${item.explain}`).join(" "),
+    explain: statements.map((item, index) => `${isEnglish ? "Statement" : "Pernyataan"} ${index + 1}: ${item.explain}`).join(" "),
     difficulty,
     points: 4,
     type: "matrix",
-    solutionSteps: [
-      "Baca satu pernyataan pada satu waktu.",
-      "Selesaikan persoalan atau verifikasi konsep yang disebutkan pada baris tersebut.",
-      "Pilih Benar jika seluruh klaim sesuai, atau Salah jika terdapat ketidaksesuaian.",
-      "Pastikan semua baris telah dinilai sebelum mengunci jawaban."
-    ]
+    solutionSteps: isEnglish
+      ? [
+        "Read one statement at a time.",
+        "Check the evidence or concept used in that statement.",
+        "Choose True only when the complete claim is supported; otherwise choose False.",
+        "Make sure every row has been evaluated before locking the answer."
+      ]
+      : [
+        "Baca satu pernyataan pada satu waktu.",
+        "Selesaikan persoalan atau verifikasi konsep yang disebutkan pada baris tersebut.",
+        "Pilih Benar jika seluruh klaim sesuai, atau Salah jika terdapat ketidaksesuaian.",
+        "Pastikan semua baris telah dinilai sebelum mengunci jawaban."
+      ]
   };
 }
 
@@ -308,13 +399,25 @@ function requestedFormat(topicId, position) {
 }
 
 
-function applyTkaPresentation(topicId, result) {
-  const subjectId = subjectForTopic(topicId);
-  if (!TKA_SUBJECTS.has(subjectId) || result.stimulus || result.type === "matrix") return result;
-  if (result.type === "multiple") {
-    return { ...result, stimulus: result.q, q: subjectId === "bahasa-inggris" ? "Select all statements that are supported by the stimulus." : "Pilih semua pernyataan yang benar berdasarkan stimulus." };
+function applyPresentation(topicId, result, variantIndex) {
+  const topic = topicFor(topicId);
+  if (!topic) return result;
+  const subjectId = topic.subjectId;
+  if (TKA_SUBJECTS.has(subjectId)) {
+    const original = result.stimulus ? `${result.stimulus}\n\n${result.q}` : result.q;
+    const stimulus = buildTkaStimulus(topic, original, variantIndex);
+    if (result.type === "matrix") return { ...result, stimulus };
+    if (result.type === "multiple") {
+      return { ...result, stimulus, q: subjectId === "bahasa-inggris" ? "Select all statements that are supported by the stimulus." : "Pilih semua pernyataan yang benar berdasarkan stimulus." };
+    }
+    return { ...result, stimulus, q: subjectId === "bahasa-inggris" ? "Choose the most accurate answer based on the stimulus." : "Pilih jawaban yang paling tepat berdasarkan stimulus." };
   }
-  return { ...result, stimulus: result.q, q: subjectId === "bahasa-inggris" ? "Choose the most accurate answer based on the stimulus." : "Pilih jawaban yang paling tepat berdasarkan stimulus." };
+  if (subjectId === "serkom") {
+    const lesson = getSerkomLesson(topicId);
+    const built = buildSerkomStimulus(topic, lesson, result.q, variantIndex);
+    return { ...result, stimulus: built.stimulus, codeExcerpt: built.codeExcerpt };
+  }
+  return result;
 }
 
 export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 0, format = "standard") {
@@ -322,8 +425,8 @@ export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 
   if (format === "matrix") result = matrixQuestion(topicId, difficulty, variantIndex);
   else if (format === "multiple") result = complexMultiQuestion(topicId, difficulty, variantIndex);
   else if (difficulty === "Sulit") result = normalizeFiveOptions(hardQuestion(topicId, variantIndex), topicId);
-  else result = normalizeFiveOptions(frameQuestion(generateBaseQuestion(topicId), difficulty, variantIndex), topicId);
-  result = applyTkaPresentation(topicId, result);
+  else result = normalizeFiveOptions(frameQuestion(topicId, generateBaseQuestion(topicId), difficulty, variantIndex), topicId);
+  result = applyPresentation(topicId, result, variantIndex);
   const topic = topicFor(topicId);
   const solutionSteps = Array.isArray(result.solutionSteps) && result.solutionSteps.length >= 3
     ? result.solutionSteps

@@ -6,6 +6,7 @@ import { topics } from "../data/topics.js";
 import { generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
 import { conceptIllustration, masteryChecklist, materialImportance, materialOverview, problemSolvingGuide } from "../data/pedagogy.js";
 import { getSerkomLesson } from "../data/serkomLessons.js";
+import { sourceDocuments } from "../data/sourceCoverage.js";
 
 const QUESTIONS_PER_TOPIC = 25;
 const SIMULATION_QUESTIONS = 25;
@@ -511,6 +512,7 @@ export default function Home() {
             return <article className="subject-card card" key={item.id}><div className="subject-icon"><Icon name={subjectIcon(item.id)} size={24} /></div><div><div className="eyebrow">{item.short}</div><h2>{item.name}</h2><p>{item.description}</p></div><div className="subject-stats"><span>{list.length} materi</span><span>{done} selesai</span><span>{scored} dinilai</span></div><div className="bar"><i style={{ width: `${pct}%` }} /></div><button className="primary" onClick={() => chooseSubject(item.id, "materi")}>Buka materi <Icon name="chevron" /></button></article>;
           })}
         </div>
+        <article className="card source-library-card"><SectionTitle number="S" title="Pustaka materi terintegrasi" subtitle="Seluruh cakupan utama dari dokumen PDF dan Word yang dilampirkan dipetakan ke materi terkait." /><div className="source-library-grid">{sourceDocuments.map((doc) => <div className="source-library-item" key={doc.id}><div><b>{doc.title}</b><p>{doc.role}</p></div><Pill>{doc.pages} halaman</Pill></div>)}</div></article>
         <div className="dashboard-grid">
           <article className="card progress-card"><SectionTitle number="01" title="Progres keseluruhan" subtitle="Progres dari seluruh mata pelajaran pada perangkat ini." /><div className="big-progress"><i style={{ width: `${overallProgress}%` }} /></div><div className="dashboard-progress-lines">{subjects.map((item) => { const list = topics.filter((topicItem) => topicItem.subjectId === item.id); const done = list.filter((topicItem) => completed.includes(topicItem.id)).length; const pct = Math.round(done / list.length * 100); return <div key={item.id}><span><b>{item.name}</b><small>{done}/{list.length}</small></span><div className="bar"><i style={{ width: `${pct}%` }} /></div></div>; })}</div></article>
           <article className="card feature-card"><SectionTitle number="02" title="Sistem penilaian" subtitle="Setiap materi memiliki paket soal dinamis." /><div className="feature-points"><div><strong>25</strong><span>soal per materi</span></div><div><strong>4</strong><span>poin per soal</span></div><div><strong>100</strong><span>nilai maksimum</span></div></div><p>Paket dibuat ulang ketika refresh atau tombol paket baru digunakan. Pilihan ganda kompleks didukung untuk materi bahasa.</p></article>
@@ -531,6 +533,11 @@ export default function Home() {
           <p>{materialOverview(topic)}</p>
           <div className="concept-illustration"><b>Ilustrasi konsep</b><span>{conceptIllustration(topic)}</span></div>
           <div className="material-importance"><b>Signifikansi materi</b><span>{materialImportance(topic)}</span></div>
+        </div>
+
+        <div className="source-coverage card">
+          <div className="source-coverage-head"><div><div className="eyebrow">Integrasi dokumen sumber</div><h2>Cakupan Materi dari PDF dan Word</h2><p>{topic.sourceCompetency}</p></div><div className="source-reference-list">{(topic.sourceReferences ?? []).map((ref, index) => <Pill key={index}>{ref}</Pill>)}</div></div>
+          <div className="source-coverage-grid">{(topic.sourceCoverage ?? []).map((item, index) => <div className="source-coverage-item" key={index}><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></div>)}</div>
         </div>
 
         {serkomLesson && <div className="serkom-tutorial card">
@@ -589,7 +596,7 @@ export default function Home() {
                 <div className="q-number">{questionLabel} {questionIndex + 1}</div>
                 <div className="meta-pills"><Pill>{question.points} poin</Pill>{multiple && <Pill>Pilih semua yang benar</Pill>}{matrix && <Pill>Benar / Salah</Pill>}</div>
               </div>
-              {question.stimulus && <div className="stimulus-box"><span>Stimulus</span><p>{question.stimulus}</p></div>}
+              {question.stimulus && <div className="stimulus-box"><span>Stimulus</span><p>{question.stimulus}</p>{question.codeExcerpt && <pre className="stimulus-code"><code>{question.codeExcerpt}</code></pre>}</div>}
               <h2>{question.q}</h2>
               {matrix ? <div className="matrix-list">
                 {(question.statements ?? []).map((statement, rowIndex) => {
@@ -662,7 +669,7 @@ export default function Home() {
             const sourceSubject = subjects.find((item) => item.id === question.subjectId)?.short ?? "";
             return <article className="card question-card compact" key={question.key}>
               <div className="question-meta"><div className="q-number">Soal {index + 1} · {sourceSubject} · {question.topicTitle}</div><div className="meta-pills"><Pill>{question.points} poin</Pill>{multiple && <Pill>Pilih semua yang benar</Pill>}{matrix && <Pill>Benar / Salah</Pill>}</div></div>
-              {question.stimulus && <div className="stimulus-box"><span>Stimulus</span><p>{question.stimulus}</p></div>}
+              {question.stimulus && <div className="stimulus-box"><span>Stimulus</span><p>{question.stimulus}</p>{question.codeExcerpt && <pre className="stimulus-code"><code>{question.codeExcerpt}</code></pre>}</div>}
               <h2>{question.q}</h2>
               {matrix ? <div className="matrix-list">{(question.statements ?? []).map((statement, rowIndex) => {
                 const selectedValue = state?.matrix?.[rowIndex];

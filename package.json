@@ -1,6 +1,6 @@
 {
-  "name": "pelajarinaja-universal-tka",
-  "version": "11.1.0",
+  "name": "pelajarinaja-universal-source-integrated",
+  "version": "12.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

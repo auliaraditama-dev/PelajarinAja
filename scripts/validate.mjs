@@ -6,6 +6,7 @@ import { topics } from "../data/topics.js";
 import { difficultyPlan, generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
 import { getSerkomLesson } from "../data/serkomLessons.js";
 import { subjectPath, topicPath } from "../lib/site.js";
+import { sourceDocuments } from "../data/sourceCoverage.js";
 
 const fail = (message) => { throw new Error(message); };
 const ids = new Set();
@@ -91,6 +92,9 @@ function validateQuestionSet(label, questions, subjectId = null) {
     if (!question.q || !question.explain) fail(`${label} memiliki soal tanpa teks atau pembahasan`);
     const effectiveSubjectId = subjectId ?? question.subjectId ?? null;
     if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && !question.stimulus) fail(`${label} memiliki soal TKA tanpa stimulus`);
+    if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && String(question.stimulus ?? "").length < 320) fail(`${label} stimulus TKA terlalu pendek`);
+    if (effectiveSubjectId === "serkom" && String(question.stimulus ?? "").length < 320) fail(`${label} stimulus SERKOM terlalu pendek`);
+    if (effectiveSubjectId === "serkom" && !String(question.codeExcerpt ?? "").trim()) fail(`${label} soal SERKOM tidak memiliki potongan kode atau perintah`);
     if (!Array.isArray(question.solutionSteps) || question.solutionSteps.length < 3) fail(`${label} tidak memiliki langkah pembahasan yang cukup`);
     if (question.type === "matrix") {
       if (!Array.isArray(question.statements) || question.statements.length < 3 || question.statements.length > 5) fail(`${label} memiliki tabel pernyataan tidak valid`);
@@ -117,6 +121,8 @@ function validateQuestionSet(label, questions, subjectId = null) {
 
 if (subjects.length < 4) fail("Minimal empat mata pelajaran diperlukan.");
 if (topics.length < 60) fail(`Jumlah materi terlalu sedikit: ${topics.length}`);
+if (!Array.isArray(sourceDocuments) || sourceDocuments.length !== 5) fail("Lima dokumen sumber utama harus terdaftar.");
+if (sourceDocuments.some((item) => !item.title || !item.pages || !item.role)) fail("Metadata dokumen sumber tidak lengkap.");
 
 for (const topic of topics) {
   if (!topic.id || ids.has(topic.id)) fail(`ID materi tidak valid atau ganda: ${topic.id}`);
@@ -124,6 +130,8 @@ for (const topic of topics) {
   if (!subjectIds.has(topic.subjectId)) fail(`subjectId tidak valid pada ${topic.id}`);
   for (const field of ["title", "group", "summary", "level", "sourceLabel"]) if (!topic[field]) fail(`${topic.id} tidak memiliki ${field}`);
   for (const field of ["objectives", "prerequisites", "concepts", "deepDive", "steps", "workedExamples", "traps", "glossary"]) if (!Array.isArray(topic[field]) || topic[field].length === 0) fail(`${topic.id} tidak memiliki isi ${field}`);
+  if (!Array.isArray(topic.sourceReferences) || topic.sourceReferences.length === 0) fail(`${topic.id} tidak memiliki referensi sumber`);
+  if (!topic.sourceCompetency || !Array.isArray(topic.sourceCoverage) || topic.sourceCoverage.length < 4) fail(`${topic.id} belum memiliki cakupan sumber lengkap`);
   if (!topic.essay?.q || !topic.essay?.answer) fail(`${topic.id} tidak memiliki esai dan pembahasan`);
   let history = [];
   for (let cycle = 0; cycle < 4; cycle += 1) {
@@ -161,4 +169,4 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   universalHistory = [...signatures, ...universalHistory].slice(0, 100);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${sourceDocuments.length} source documents integrated, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, extended literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);

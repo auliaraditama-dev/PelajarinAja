@@ -1,6 +1,24 @@
-# PelajarinAja Universal TKA v11.1
+# PelajarinAja Universal Source-Integrated v12
 
-## Hotfix v11.1
+PelajarinAja adalah platform pembelajaran Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL. Versi v12 mengintegrasikan cakupan materi dari lima dokumen sumber yang dilampirkan ke dalam 60 materi, menambahkan peta sumber per materi, dan memperpanjang stimulus latihan untuk melatih literasi, numerasi, serta logika pemrograman.
+
+## Integrasi sumber
+
+- Soal TKA Matematika Wajib SMA/MA/SMK Tahun 2025, 29 halaman.
+- Soal TKA Bahasa Indonesia, 5 halaman.
+- TKA Bahasa Inggris, 17 halaman.
+- Jobsheet Pembelajaran Persiapan SERKOM RPL Laravel 12, 42 halaman.
+- Rangkuman & Analisis Laravel 12 Persiapan SERKOM RPL, 58 halaman.
+
+Setiap materi memiliki referensi halaman, kompetensi sumber, dan cakupan konsep yang tampil langsung pada halaman materi. Materi SERKOM memuat tutorial teknis, potongan kode/perintah, analisis baris, workflow CRUD, debugging, testing, portofolio, dan kesiapan asesmen sesuai dokumen latihan.
+
+## Sistem latihan v12
+
+Setiap materi menghasilkan 25 soal unik dengan total 100 poin. Komposisi tingkat kemampuan tetap diatur internal tanpa label tingkat pada antarmuka. Soal TKA menggunakan stimulus panjang, 5 opsi A–E, pilihan ganda kompleks banyak jawaban, dan tabel Benar/Salah. Soal Matematika memakai narasi numerasi sebelum data inti. Soal Bahasa Indonesia dan Bahasa Inggris memakai stimulus membaca yang lebih panjang. Soal SERKOM memakai skenario teknis dan potongan kode atau perintah untuk melatih logika pemrograman dan penelusuran alur Laravel.
+
+# PelajarinAja Universal TKA v12
+
+## Hotfix v12
 
 Versi ini memperbaiki kegagalan build Vercel ketika `app/page.js` tertimpa oleh isi halaman `app/tentang/page.js`. Halaman root kembali menggunakan aplikasi interaktif utama dengan import relatif yang benar dari `../data` dan `../lib`. Validator sekarang juga memeriksa seluruh import relatif sebelum `next build`, memastikan `app/page.js` tetap menjadi halaman aplikasi utama, dan Node.js dipin ke lini 20.x untuk deployment yang lebih stabil.
 
