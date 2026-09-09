@@ -1,23 +1,30 @@
-PelajarinAja Universal Production v16
+PelajarinAja Universal Production v17
 Validation status: PASS
 4 subjects
 60 topics
 69 indexable SEO URLs
 25 unique questions per package
-25 unique core questions per package
-1500 globally unique generated core questions
-Directly linked everyday-life literacy, numeracy, and coding stimuli
+25 unique connected reading-question cores per package
+1500 globally unique generated question cores in validation sweep
+Passage-first TKA question format
+Bacalah teks berikut -> Pertanyaan
+Read the following text -> Question
+Bacalah kasus berikut -> Pertanyaan
+Directly linked literacy, numeracy, and coding contexts
 5-option single choice
 Complex multi-select
 True-false matrices
 Hidden internal difficulty labels
+8 sequential packages checked per topic
 Recent-history repeat protection
 100 points per 25-question package
 Responsive UI
 Formal solution steps
 SERKOM line-by-line tutorials
-JavaScript syntax PASS
-JSX parse PASS
-CSS braces PASS
 Relative import validation PASS
 Source comment validation PASS
+JavaScript syntax PASS
+JS/JSX parse PASS
+CSS braces PASS
+npm install in sandbox: timeout before dependency installation completed
+Full Next.js build in sandbox: not executed because npm install timed out

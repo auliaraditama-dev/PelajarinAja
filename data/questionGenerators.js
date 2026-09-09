@@ -288,6 +288,7 @@ function hardQuestion(topicId, variantIndex) {
     difficulty: "Sulit",
     points: 4,
     type: "single",
+    semanticCore: `${first.q} || ${second.q}`,
     solutionSteps: isEnglish
       ? [
         "Treat part (1) and part (2) as separate reading tasks.",
@@ -313,22 +314,27 @@ function propositionFromBase(topicId, shouldBeTrue, variantIndex) {
   return {
     text: `Pada persoalan “${base.q}”, jawaban “${candidate}” dinyatakan tepat.`,
     correct: shouldBeTrue,
-    explain: base.explain
+    explain: base.explain,
+    sourceCore: base.q,
+    semanticCore: `${base.q} => ${candidate}`
   };
 }
 
 function uniquePropositions(topicId, truthPattern, variantIndex) {
   const propositions = [];
   const used = new Set();
+  const usedSources = new Set();
   for (let index = 0; index < truthPattern.length; index += 1) {
     let accepted = null;
     for (let attempt = 0; attempt < 240 && !accepted; attempt += 1) {
       const item = propositionFromBase(topicId, truthPattern[index], variantIndex + index * 31 + attempt * 13);
       const key = normalize(item.text);
-      if (!used.has(key)) accepted = item;
+      const sourceKey = normalize(item.sourceCore);
+      if (!used.has(key) && !usedSources.has(sourceKey)) accepted = item;
     }
     if (!accepted) throw new Error(`Tidak dapat membuat pernyataan unik untuk ${topicId}.`);
     used.add(normalize(accepted.text));
+    usedSources.add(normalize(accepted.sourceCore));
     propositions.push(accepted);
   }
   return propositions;
@@ -349,6 +355,7 @@ function complexMultiQuestion(topicId, difficulty, variantIndex) {
     difficulty,
     points: 4,
     type: "multiple",
+    semanticCore: propositions.map((item) => item.semanticCore).join(" || "),
     solutionSteps: isEnglish
       ? [
         "Read each option as an independent statement.",
@@ -377,6 +384,7 @@ function matrixQuestion(topicId, difficulty, variantIndex) {
     difficulty,
     points: 4,
     type: "matrix",
+    semanticCore: statements.map((item) => item.semanticCore).join(" || "),
     solutionSteps: isEnglish
       ? [
         "Read one statement at a time.",
@@ -415,7 +423,9 @@ function applyPresentation(topicId, result, variantIndex) {
         stimulus: built.text,
         contextKey: built.key,
         coreQuestion: built.coreQuestion,
-        q: subjectId === "bahasa-inggris" ? "Decide whether each statement is True or False using the same stimulus and evidence." : "Tentukan Benar atau Salah untuk setiap pernyataan dengan menggunakan stimulus dan konsep yang sama."
+        q: built.question,
+        readingLabel: built.readingLabel,
+        questionLabel: built.questionLabel
       };
     }
     if (result.type === "multiple") {
@@ -424,7 +434,9 @@ function applyPresentation(topicId, result, variantIndex) {
         stimulus: built.text,
         contextKey: built.key,
         coreQuestion: built.coreQuestion,
-        q: subjectId === "bahasa-inggris" ? "Select all options that are supported by the same stimulus and evidence." : "Pilih semua opsi yang benar berdasarkan stimulus dan hubungan informasi yang sama."
+        q: built.question,
+        readingLabel: built.readingLabel,
+        questionLabel: built.questionLabel
       };
     }
     return {
@@ -432,7 +444,9 @@ function applyPresentation(topicId, result, variantIndex) {
       stimulus: built.text,
       contextKey: built.key,
       coreQuestion: built.coreQuestion,
-      q: subjectId === "bahasa-inggris" ? "Choose the answer that correctly resolves the task described in the stimulus." : "Pilih jawaban yang secara langsung menyelesaikan persoalan pada stimulus."
+      q: built.question,
+      readingLabel: built.readingLabel,
+      questionLabel: built.questionLabel
     };
   }
   if (subjectId === "serkom") {
@@ -444,7 +458,9 @@ function applyPresentation(topicId, result, variantIndex) {
       codeExcerpt: built.codeExcerpt,
       contextKey: built.key,
       coreQuestion: built.coreQuestion,
-      q: "Pilih jawaban yang paling tepat untuk menyelesaikan masalah teknis pada stimulus."
+      q: built.question,
+      readingLabel: built.readingLabel,
+      questionLabel: built.questionLabel
     };
   }
   return result;
@@ -455,7 +471,10 @@ export function generateQuestion(topicId, difficulty = "Sedang", variantIndex = 
   if (format === "matrix") result = matrixQuestion(topicId, difficulty, variantIndex);
   else if (format === "multiple") result = complexMultiQuestion(topicId, difficulty, variantIndex);
   else if (difficulty === "Sulit") result = normalizeFiveOptions(hardQuestion(topicId, variantIndex), topicId);
-  else result = normalizeFiveOptions(frameQuestion(topicId, generateBaseQuestion(topicId), difficulty, variantIndex), topicId);
+  else {
+    const base = generateBaseQuestion(topicId);
+    result = normalizeFiveOptions(frameQuestion(topicId, { ...base, semanticCore: base.q }, difficulty, variantIndex), topicId);
+  }
   result = applyPresentation(topicId, result, variantIndex);
   const topic = topicFor(topicId);
   const solutionSteps = Array.isArray(result.solutionSteps) && result.solutionSteps.length >= 3

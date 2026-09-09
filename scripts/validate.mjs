@@ -121,16 +121,30 @@ function validateQuestionSet(label, questions, subjectId = null) {
     const question = questions[index];
     if (!question.q || !question.explain) fail(`${label} memiliki soal tanpa teks atau pembahasan`);
     const effectiveSubjectId = subjectId ?? question.subjectId ?? null;
-    if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && !question.stimulus) fail(`${label} memiliki soal TKA tanpa stimulus`);
-    if (effectiveSubjectId && tkaSubjects.has(effectiveSubjectId) && String(question.stimulus ?? "").length < 520) fail(`${label} stimulus TKA terlalu pendek`);
-    if (effectiveSubjectId === "serkom" && String(question.stimulus ?? "").length < 560) fail(`${label} stimulus SERKOM terlalu pendek`);
+    if (!question.stimulus) fail(`${label} memiliki soal tanpa teks atau kasus`);
+    if (!question.readingLabel || !question.questionLabel) fail(`${label} tidak memakai format bacaan dan pertanyaan`);
+    if (effectiveSubjectId === "bahasa-inggris") {
+      if (question.readingLabel !== "Read the following text:" || question.questionLabel !== "Question:") fail(`${label} format Bahasa Inggris tidak konsisten`);
+    } else if (effectiveSubjectId === "serkom") {
+      if (question.readingLabel !== "Bacalah kasus berikut:" || question.questionLabel !== "Pertanyaan:") fail(`${label} format SERKOM tidak konsisten`);
+    } else if (question.readingLabel !== "Bacalah teks berikut:" || question.questionLabel !== "Pertanyaan:") {
+      fail(`${label} format TKA tidak konsisten`);
+    }
     const normalizedStimulus = String(question.stimulus ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    const normalizedQuestion = String(question.q ?? "").replace(/\s+/g, " ").trim().toLowerCase();
     const normalizedCore = String(question.coreQuestion ?? "").replace(/\s+/g, " ").trim().toLowerCase();
-    if (!normalizedStimulus.includes(normalizedCore)) fail(`${label} memiliki stimulus yang tidak memuat inti soal secara langsung`);
-    for (const unrelatedMarker of ["sebagian informasi hanya memberi konteks", "some only provide background", "data matematika yang benar-benar diperlukan terdapat pada bagian inti soal"]) {
+    const combinedCore = `${normalizedStimulus} ${normalizedQuestion}`.replace(/\s+/g, " ").trim();
+    if (normalizedCore !== combinedCore) fail(`${label} inti soal tidak terhubung langsung dengan bacaan dan pertanyaan`);
+    if (normalizedStimulus.length < 55) fail(`${label} bacaan terlalu pendek untuk melatih pemahaman`);
+    if (effectiveSubjectId === "serkom" && !String(question.codeExcerpt ?? "").trim()) fail(`${label} soal SERKOM tidak memiliki potongan kode atau perintah`);
+    for (const unrelatedMarker of ["sebagian informasi hanya memberi konteks", "some only provide background", "data matematika yang benar-benar diperlukan terdapat pada bagian inti soal", "informasi yang tidak diperlukan"]) {
       if (normalizedStimulus.includes(unrelatedMarker)) fail(`${label} masih memakai konteks pengalih yang tidak diperlukan`);
     }
-    if (effectiveSubjectId === "serkom" && !String(question.codeExcerpt ?? "").trim()) fail(`${label} soal SERKOM tidak memiliki potongan kode atau perintah`);
+    const semanticParts = String(question.semanticCore ?? "").split("||").map((part) => part.trim()).filter(Boolean);
+    if (semanticParts.length > 1) {
+      const sources = semanticParts.map((part) => part.split("=>")[0].replace(/\s+/g, " ").trim().toLowerCase());
+      if (new Set(sources).size !== sources.length) fail(`${label} memiliki bagian inti ganda dalam satu soal kompleks`);
+    }
     if (!Array.isArray(question.solutionSteps) || question.solutionSteps.length < 3) fail(`${label} tidak memiliki langkah pembahasan yang cukup`);
     if (question.type === "matrix") {
       if (!Array.isArray(question.statements) || question.statements.length < 3 || question.statements.length > 5) fail(`${label} memiliki tabel pernyataan tidak valid`);
@@ -218,4 +232,4 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   universalHistory = [...signatures, ...universalHistory].slice(0, 200);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions per package, 25 unique core questions per package, 1500 globally unique generated core questions, directly-linked everyday-life literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions per package, 25 unique connected reading-question cores per package, 1500 globally unique generated question cores, passage-first TKA format, directly-linked literacy-numeracy-coding contexts, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);

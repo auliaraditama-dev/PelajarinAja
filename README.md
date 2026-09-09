@@ -1,11 +1,11 @@
-# PelajarinAja Universal Production v16
+# PelajarinAja Universal Production v17
 
 PelajarinAja adalah platform pembelajaran Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL Laravel 12.
 
 ## Fitur pembelajaran
 
 - 4 mata pelajaran dan 60 materi.
-- Materi terstruktur dengan tujuan, konsep, pembahasan, langkah, contoh, kesalahan umum, glosarium, latihan, dan pembahasan.
+- Materi terstruktur dengan tujuan, prasyarat, konsep, pembahasan, prosedur, contoh, kesalahan umum, glosarium, latihan, dan pembahasan.
 - Tutorial SERKOM dengan syntax, potongan kode atau urutan teknis, analisis per baris, debugging, testing, dan latihan mandiri.
 - Pencarian dan filter materi.
 - Bookmark dan status selesai.
@@ -17,25 +17,36 @@ PelajarinAja adalah platform pembelajaran Next.js untuk TKA Matematika, Bahasa I
 - Navigasi materi sebelumnya dan berikutnya.
 - Responsive desktop, tablet, dan mobile.
 
+## Format soal TKA
+
+Setiap soal ditampilkan dalam urutan bacaan lalu pertanyaan.
+
+- Bahasa Indonesia dan Matematika menggunakan label `Bacalah teks berikut:` lalu `Pertanyaan:`.
+- Bahasa Inggris menggunakan `Read the following text:` lalu `Question:`.
+- SERKOM menggunakan `Bacalah kasus berikut:` lalu `Pertanyaan:`.
+- Teks, data, kode, atau situasi pada bacaan berhubungan langsung dengan hal yang ditanyakan.
+- Informasi pendukung tetap berada dalam peristiwa atau masalah yang sama sehingga latihan tetap melatih literasi, numerasi, dan penalaran tanpa cerita pengalih yang tidak relevan.
+- Soal pemahaman tekstual meminta informasi eksplisit dari bacaan.
+- Soal inferensial meminta kesimpulan yang didukung petunjuk pada bacaan.
+- Soal evaluasi meminta penilaian terhadap bukti, gagasan, atau keputusan berdasarkan bacaan.
+- Matematika memakai konteks yang langsung membawa data, syarat, model, dan besaran yang dihitung.
+- SERKOM memakai kasus teknis dan potongan kode atau sintaks yang berkaitan dengan komponen yang ditanyakan.
+
 ## Sistem soal
 
-Setiap materi menghasilkan 25 soal dengan nilai total 100.
-
-- Setiap paket memiliki 25 soal unik.
-- Setiap paket memiliki 25 inti soal unik.
-- Signature soal tidak bergantung pada cerita pengantar sehingga perubahan konteks tidak dapat menyamarkan soal inti yang sama.
-- Stimulus kehidupan sehari-hari dihubungkan langsung dengan data, bacaan, atau masalah teknis yang ditanyakan.
-- Tidak menggunakan cerita tambahan yang tidak diperlukan untuk menjawab pertanyaan.
-- Matematika menghubungkan konteks dengan besaran, syarat, model, dan perhitungan yang benar-benar digunakan.
-- Bahasa Indonesia dan Bahasa Inggris menghubungkan konteks dengan bacaan yang sama yang menjadi bukti jawaban.
-- SERKOM menghubungkan skenario dengan komponen, kode atau urutan teknis, alur data, gejala, dan langkah verifikasi yang relevan.
+- 25 soal per materi.
+- Nilai total 100 dengan 4 poin per soal.
+- 25 soal dalam setiap paket memiliki kombinasi bacaan dan pertanyaan yang berbeda.
+- Generator menolak signature yang sudah digunakan di dalam paket.
+- Riwayat signature lokal dipakai untuk menghindari pengulangan pada paket berikutnya.
+- Validator menguji delapan paket berturut-turut untuk seluruh 60 materi.
 - 5 opsi A–E untuk pilihan ganda biasa.
 - Pilihan ganda kompleks banyak jawaban.
 - Tabel pernyataan Benar atau Salah.
+- Bagian-bagian dalam soal kompleks juga diperiksa agar tidak memakai bagian inti yang sama dalam satu soal.
 - Exact-match scoring untuk soal kompleks.
 - Tingkat soal diatur internal tanpa label tingkat pada antarmuka.
 - Pembahasan dan langkah analisis tersedia setelah jawaban dikunci.
-- Riwayat signature lokal mengurangi pengulangan pada paket berikutnya.
 - Simulasi 25 soal dengan waktu 40 menit.
 
 ## SEO dan production
@@ -54,7 +65,7 @@ Setiap materi menghasilkan 25 soal dengan nilai total 100.
 - Security headers.
 - Vercel configuration.
 - GitHub Actions CI.
-- Validator import relatif, route, SEO, data materi, kualitas stimulus, keterhubungan inti soal, dan duplikasi soal.
+- Validator import relatif, route, SEO, struktur materi, format bacaan-pertanyaan, kualitas keterhubungan soal, dan duplikasi.
 
 ## Runtime
 

@@ -594,8 +594,8 @@ export default function Home() {
                 <div className="q-number">{questionLabel} {questionIndex + 1}</div>
                 <div className="meta-pills"><Pill>{question.points} poin</Pill>{multiple && <Pill>Pilih semua yang benar</Pill>}{matrix && <Pill>Benar / Salah</Pill>}{!multiple && !matrix && <Pill>Pilih satu jawaban</Pill>}</div>
               </div>
-              {question.stimulus && <div className="stimulus-box"><span>Stimulus dan Persoalan Inti</span><p>{question.stimulus}</p>{question.codeExcerpt && <pre className="stimulus-code"><code>{question.codeExcerpt}</code></pre>}</div>}
-              <h2>{question.q}</h2>
+              {question.stimulus && <div className="stimulus-box"><span>{question.readingLabel ?? "Bacalah teks berikut:"}</span><p>{question.stimulus}</p>{question.codeExcerpt && <pre className="stimulus-code"><code>{question.codeExcerpt}</code></pre>}</div>}
+              <div className="question-prompt"><span>{question.questionLabel ?? "Pertanyaan:"}</span><h2>{question.q}</h2></div>
               {matrix ? <div className="matrix-list">
                 {(question.statements ?? []).map((statement, rowIndex) => {
                   const selectedValue = state?.matrix?.[rowIndex];
@@ -667,8 +667,8 @@ export default function Home() {
             const questionSubject = subjects.find((item) => item.id === question.subjectId)?.short ?? "";
             return <article className="card question-card compact" key={question.key}>
               <div className="question-meta"><div className="q-number">Soal {index + 1} · {questionSubject} · {question.topicTitle}</div><div className="meta-pills"><Pill>{question.points} poin</Pill>{multiple && <Pill>Pilih semua yang benar</Pill>}{matrix && <Pill>Benar / Salah</Pill>}{!multiple && !matrix && <Pill>Pilih satu jawaban</Pill>}</div></div>
-              {question.stimulus && <div className="stimulus-box"><span>Stimulus dan Persoalan Inti</span><p>{question.stimulus}</p>{question.codeExcerpt && <pre className="stimulus-code"><code>{question.codeExcerpt}</code></pre>}</div>}
-              <h2>{question.q}</h2>
+              {question.stimulus && <div className="stimulus-box"><span>{question.readingLabel ?? "Bacalah teks berikut:"}</span><p>{question.stimulus}</p>{question.codeExcerpt && <pre className="stimulus-code"><code>{question.codeExcerpt}</code></pre>}</div>}
+              <div className="question-prompt"><span>{question.questionLabel ?? "Pertanyaan:"}</span><h2>{question.q}</h2></div>
               {matrix ? <div className="matrix-list">{(question.statements ?? []).map((statement, rowIndex) => {
                 const selectedValue = state?.matrix?.[rowIndex];
                 const trueCorrect = simFinished && statement.answer === true;
