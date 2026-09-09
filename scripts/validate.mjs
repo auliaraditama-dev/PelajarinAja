@@ -88,8 +88,16 @@ for (const file of publicTextFiles) {
 }
 
 const rootPage = readFileSync(join(root, "app/page.js"), "utf8");
+const mapelIndexPage = readFileSync(join(root, "app/mapel/page.js"), "utf8");
+const materiIndexPage = readFileSync(join(root, "app/materi/page.js"), "utf8");
+const mapelDetailPage = readFileSync(join(root, "app/mapel/[subjectId]/page.js"), "utf8");
+const materiDetailPage = readFileSync(join(root, "app/materi/[subjectId]/[topicId]/page.js"), "utf8");
 if (!rootPage.startsWith('"use client";')) fail("app/page.js bukan halaman aplikasi interaktif utama");
-if (rootPage.includes("function AboutPage")) fail("app/page.js tidak boleh berisi halaman Tentang");
+if (rootPage.includes("function AboutPage") || rootPage.includes("generateStaticParams")) fail("app/page.js tertimpa halaman statis");
+if (!mapelIndexPage.includes("function SubjectsPage") || mapelIndexPage.includes("generateStaticParams") || mapelIndexPage.includes("../../../data/")) fail("app/mapel/page.js bukan halaman indeks mapel yang benar");
+if (!materiIndexPage.includes("function MaterialsPage") || materiIndexPage.includes("generateStaticParams") || materiIndexPage.includes("../../../../data/")) fail("app/materi/page.js bukan halaman indeks materi yang benar");
+if (!mapelDetailPage.includes("generateStaticParams") || !mapelDetailPage.includes("../../../data/subjects.js")) fail("app/mapel/[subjectId]/page.js tidak sesuai struktur route dinamis");
+if (!materiDetailPage.includes("generateStaticParams") || !materiDetailPage.includes("../../../../data/topics.js")) fail("app/materi/[subjectId]/[topicId]/page.js tidak sesuai struktur route dinamis");
 
 for (const path of [join(root, "app/page.js"), join(root, "app/tentang/page.js"), join(root, "app/mapel/page.js"), join(root, "app/materi/[subjectId]/[topicId]/page.js"), join(root, "app/opengraph-image.js"), join(root, "lib/site.js"), join(root, "lib/seo.js")]) {
   const text = readFileSync(path, "utf8");

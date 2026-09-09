@@ -1,4 +1,4 @@
-# PelajarinAja Universal Production v14
+# PelajarinAja Universal Production v14.1
 
 PelajarinAja adalah platform pembelajaran Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL.
 
@@ -88,3 +88,7 @@ GOOGLE_SITE_VERIFICATION=
 5. Pastikan `npm run check` dan `next build` selesai tanpa error.
 
 Project menggunakan Next.js 16.3.4, React 19.2.8, dan Node.js 20.x.
+
+## Hotfix v14.1
+
+Perbaikan struktur route App Router memastikan halaman root, indeks mata pelajaran, indeks materi, dan route dinamis tidak saling tertukar. Validator juga memeriksa peran setiap file route sebelum production build dijalankan.
