@@ -1,4 +1,4 @@
-# PelajarinAja Universal Production v14.1
+# PelajarinAja Universal Production v15
 
 PelajarinAja adalah platform pembelajaran Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL.
 
@@ -24,9 +24,9 @@ Setiap materi menghasilkan 25 soal berbeda dengan nilai total 100.
 - 5 opsi A sampai E untuk pilihan ganda biasa.
 - Pilihan ganda kompleks banyak jawaban.
 - Tabel pernyataan Benar atau Salah.
-- Stimulus kontekstual untuk melatih literasi, numerasi, dan logika pemrograman.
+- Stimulus kehidupan sehari-hari untuk melatih literasi, numerasi, analisis, dan logika pemrograman.
 - Tingkat kemampuan diatur secara internal tanpa label tingkat pada antarmuka.
-- Setiap jawaban dipilih terlebih dahulu kemudian dikunci agar klik tidak langsung menjadi keputusan final.
+- Setiap jawaban dipilih terlebih dahulu kemudian dikunci.
 - Pembahasan dan langkah analisis muncul setelah jawaban dikunci.
 - Riwayat soal lokal digunakan untuk mengurangi pengulangan paket berikutnya.
 
@@ -46,7 +46,7 @@ Setiap materi menghasilkan 25 soal berbeda dengan nilai total 100.
 - Simulasi satu mata pelajaran atau campuran.
 - Penyimpanan lokal menggunakan localStorage.
 - Responsive desktop, tablet, dan mobile.
-- Halaman error, loading, dan 404.
+- Halaman error, global error, loading, dan 404.
 - Metadata dinamis.
 - Canonical URL.
 - Open Graph dan Twitter Card.
@@ -56,6 +56,13 @@ Setiap materi menghasilkan 25 soal berbeda dengan nilai total 100.
 - Security headers.
 - GitHub Actions CI.
 - Konfigurasi Vercel.
+
+## Runtime Production
+
+- Node.js 24.x.
+- Next.js 16.3.4.
+- React 19.2.8.
+- React DOM 19.2.8.
 
 ## Menjalankan project
 
@@ -79,16 +86,26 @@ NEXT_PUBLIC_SITE_URL=https://domain-anda.com
 GOOGLE_SITE_VERIFICATION=
 ```
 
+`NEXT_PUBLIC_SITE_URL` direkomendasikan untuk canonical URL, sitemap, Open Graph, dan structured data pada domain production.
+
 ## Deployment Vercel
 
-1. Push project ke GitHub.
-2. Import repository ke Vercel.
-3. Tambahkan environment variable production apabila menggunakan domain sendiri.
-4. Deploy.
-5. Pastikan `npm run check` dan `next build` selesai tanpa error.
+1. Ekstrak project sehingga `package.json` berada di root repository.
+2. Push seluruh isi project ke branch deployment GitHub.
+3. Import repository ke Vercel dengan Framework Preset Next.js.
+4. Gunakan Node.js 24.x pada Vercel Project Settings.
+5. Tambahkan `NEXT_PUBLIC_SITE_URL` dan `GOOGLE_SITE_VERIFICATION` bila diperlukan.
+6. Deploy dengan Build Command `npm run build`.
 
-Project menggunakan Next.js 16.3.4, React 19.2.8, dan Node.js 20.x.
+Validator dijalankan otomatis melalui `prebuild` sebelum `next build`.
 
-## Hotfix v14.1
+## Perbaikan Production v15
 
-Perbaikan struktur route App Router memastikan halaman root, indeks mata pelajaran, indeks materi, dan route dinamis tidak saling tertukar. Validator juga memeriksa peran setiap file route sebelum production build dijalankan.
+- Root `app/page.js` dipulihkan sebagai aplikasi interaktif utama.
+- `app/mapel/page.js` dipulihkan sebagai indeks mata pelajaran.
+- `app/mapel/[subjectId]/page.js` tetap menjadi route mata pelajaran dinamis.
+- `app/materi/page.js` dipulihkan sebagai indeks materi.
+- `app/materi/[subjectId]/[topicId]/page.js` tetap menjadi route materi dinamis.
+- Seluruh relative import divalidasi sebelum build.
+- Node.js diseragamkan ke 24.x pada `package.json`, `.nvmrc`, dan GitHub Actions.
+- Informasi internal asal materi tidak ditampilkan pada antarmuka production.
