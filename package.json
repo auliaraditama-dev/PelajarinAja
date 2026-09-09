@@ -1,6 +1,6 @@
 {
   "name": "pelajarinaja-universal-production",
-  "version": "14.1.1",
+  "version": "14.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,7 +15,7 @@
     "react-dom": "19.2.8"
   },
   "engines": {
-    "node": "24.x"
+    "node": "20.x"
   },
   "type": "module"
 }
