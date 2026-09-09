@@ -27,7 +27,7 @@ export default function SubjectsPage() {
         <section className="seo-hero">
           <span className="seo-eyebrow">Indeks pembelajaran</span>
           <h1>Mata Pelajaran PelajarinAja</h1>
-          <p>Pilih mata pelajaran untuk membuka indeks materi, penjelasan terstruktur, latihan 25 soal bertingkat, dan simulasi penilaian kemampuan.</p>
+          <p>Pilih mata pelajaran untuk membuka indeks materi, penjelasan terstruktur, latihan 25 soal bervariasi, dan simulasi penilaian kemampuan.</p>
         </section>
         <section className="seo-card-grid">
           {subjects.map((subject) => {

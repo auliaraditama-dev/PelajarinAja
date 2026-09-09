@@ -1,17 +1,20 @@
-# PelajarinAja Universal SEO v10
+# PelajarinAja Universal TKA v11
 
-PelajarinAja adalah platform belajar multi-mapel berbasis Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL Laravel 12.
+PelajarinAja adalah platform pembelajaran multi-mapel berbasis Next.js untuk TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan persiapan SERKOM RPL Laravel 12.
 
-Versi v10 mempertahankan seluruh fitur pembelajaran sebelumnya dan menambahkan fondasi SEO teknis, SEO konten, structured data, URL materi yang dapat diindeks, sitemap, robots, Open Graph, Twitter Card, canonical URL, metadata dinamis, dan internal linking.
+Versi v11 mempertahankan fitur pembelajaran, progres, simulasi, tutorial SERKOM, dan SEO versi sebelumnya. Sistem soal diperbarui agar lebih sesuai dengan pola asesmen TKA: pilihan ganda lima opsi, pilihan ganda kompleks banyak jawaban, tabel pernyataan Benar/Salah, stimulus, pembahasan bertahap, paket unik, dan pengacakan dengan perlindungan riwayat.
+
+## Mata pelajaran
+
+- Matematika
+- Bahasa Indonesia
+- Bahasa Inggris
+- SERKOM RPL
+
+Total materi: 60.
 
 ## Fitur pembelajaran
 
-- 4 mata pelajaran.
-- 60 materi.
-- Matematika.
-- Bahasa Indonesia.
-- Bahasa Inggris.
-- SERKOM RPL.
 - Materi formal dan terstruktur.
 - Tujuan belajar.
 - Prasyarat.
@@ -26,28 +29,56 @@ Versi v10 mempertahankan seluruh fitur pembelajaran sebelumnya dan menambahkan f
 - Kontrol ukuran bacaan A−, A, A+.
 - Bookmark.
 - Catatan pribadi.
-- Materi selesai.
+- Penanda materi selesai.
 - Dark mode.
 - Print.
 - Progres lokal.
 - Nilai per materi.
 - Riwayat simulasi.
 
-## Sistem penilaian
+## Sistem soal TKA
 
-Setiap materi memiliki 25 soal unik dalam satu paket:
+Setiap materi memiliki 25 soal dengan nilai total 100. Setiap soal bernilai 4 poin.
 
-| Nomor | Tingkat | Jumlah | Fokus |
-| --- | --- | ---: | --- |
-| 1–8 | Mudah | 8 | Konsep dasar dan penerapan langsung |
-| 9–17 | Sedang | 9 | Penerapan dan analisis beberapa informasi |
-| 18–25 | Sulit | 8 | Analisis terpadu dan evaluasi |
+Tingkat soal tetap disusun secara internal dengan tiga lapisan kemampuan agar paket tidak hanya berisi pertanyaan langsung. Label tingkat tersebut tidak ditampilkan pada halaman latihan maupun simulasi.
 
-Setiap soal bernilai 4 poin. Nilai maksimum adalah 100.
+Format soal TKA yang didukung:
 
-Sistem menggunakan signature pertanyaan dan opsi untuk menolak duplikasi dalam satu paket. Riwayat signature terbaru juga disimpan di localStorage agar pengacakan berikutnya menghindari soal yang baru saja digunakan.
+- Pilihan ganda biasa dengan tepat 5 opsi A, B, C, D, dan E serta satu jawaban benar.
+- Pilihan ganda kompleks dengan 5 opsi dan lebih dari satu jawaban benar.
+- Pilihan ganda kompleks berbentuk tabel pernyataan Benar/Salah.
+- Stimulus terpisah pada soal kompleks.
+- Penilaian pilihan ganda kompleks bersifat kombinasi tepat: poin diberikan jika seluruh jawaban benar dipilih tanpa tambahan jawaban salah.
+- Penilaian tabel diberikan jika seluruh baris Benar/Salah tepat.
+- Pembahasan dan langkah analisis tersedia setelah jawaban dikunci atau simulasi selesai.
 
-## SEO v10
+Pada mata pelajaran TKA, satu paket 25 soal secara terjadwal memuat variasi pilihan ganda biasa, pilihan ganda kompleks banyak jawaban, dan tabel pernyataan. SERKOM tetap menggunakan sistem soal yang sesuai dengan pembelajaran teknisnya dan seluruh pilihan ganda memiliki 5 opsi.
+
+## Sistem anti-duplikasi
+
+- Tidak ada dua signature soal yang sama dalam satu paket 25 soal.
+- Signature mempertimbangkan tipe soal, stimulus, pertanyaan, opsi, atau pernyataan tabel.
+- Riwayat soal disimpan di localStorage.
+- Aplikasi menyimpan hingga 250 signature terbaru untuk setiap materi dan simulasi.
+- Generator menolak signature yang masih berada dalam riwayat pengacakan.
+- Validator menguji paket berturut-turut agar paket baru tidak mengulang paket sebelumnya.
+
+## Penilaian
+
+- 25 soal per materi.
+- 4 poin per soal.
+- Nilai maksimum 100.
+- Nilai terakhir.
+- Nilai terbaik.
+- Jumlah percobaan.
+- Riwayat nilai.
+- Klasifikasi kemampuan.
+- Simulasi 25 soal.
+- Timer simulasi 40 menit.
+- Simulasi satu mata pelajaran.
+- Simulasi campuran seluruh mata pelajaran.
+
+## SEO
 
 ### URL yang dapat diindeks
 
@@ -59,48 +90,51 @@ Sistem menggunakan signature pertanyaan dan opsi untuk menolak duplikasi dalam s
 - `/tentang`
 - `/kebijakan-privasi`
 
-Terdapat 69 URL indeks utama dari halaman statis, halaman mata pelajaran, dan 60 halaman materi.
+Terdapat 69 URL indeks utama dari halaman statis, halaman mata pelajaran, dan seluruh halaman materi.
 
-### Metadata
+### Metadata dan discovery
 
-- metadataBase otomatis dari environment.
-- Title template.
+- Metadata dinamis.
+- Canonical URL.
 - Meta description.
 - Keywords kontekstual.
-- Canonical URL.
 - Open Graph.
 - Twitter Card.
-- Robots meta.
+- Robots metadata.
 - Googlebot preview directives.
-- Application metadata.
+- Web App Manifest.
 - Icon dan Apple icon.
-- Web app manifest.
 - Google Site Verification opsional.
+- `robots.txt` melalui `app/robots.js`.
+- `sitemap.xml` melalui `app/sitemap.js`.
+- Internal linking antar mata pelajaran dan materi.
 
 ### Structured data
 
 - WebSite.
 - Organization.
 - BreadcrumbList.
-- LearningResource untuk halaman materi.
+- LearningResource.
 
-### Crawling dan discovery
+## Responsive design
 
-- `app/robots.js` menghasilkan `robots.txt`.
-- `app/sitemap.js` menghasilkan `sitemap.xml`.
-- Sitemap mencakup halaman utama, indeks, mata pelajaran, dan seluruh halaman materi.
-- Internal link tersedia dari indeks mapel ke materi dan antar materi.
-- URL menggunakan slug semantik berdasarkan mata pelajaran dan topik.
+Antarmuka disusun untuk desktop, tablet, dan mobile. Soal tabel Benar/Salah berubah dari susunan dua kolom menjadi satu kolom pada layar kecil agar tetap terbaca dan mudah disentuh.
 
-### Social preview
+## Penyimpanan lokal
 
-- `app/opengraph-image.js` menghasilkan gambar Open Graph 1200×630.
-- `app/twitter-image.js` menggunakan visual social preview yang sama.
+Versi ini tidak membutuhkan database untuk data belajar pengguna. Data disimpan pada localStorage browser:
 
-### Halaman trust
-
-- `/tentang` menjelaskan cakupan dan sistem platform.
-- `/kebijakan-privasi` menjelaskan penggunaan localStorage dan batasan versi tanpa akun.
+- mata pelajaran aktif;
+- materi aktif;
+- view aktif;
+- bookmark;
+- materi selesai;
+- catatan pribadi;
+- nilai per materi;
+- riwayat simulasi;
+- riwayat signature soal;
+- tema;
+- ukuran huruf bacaan.
 
 ## Environment
 
@@ -111,18 +145,12 @@ NEXT_PUBLIC_SITE_URL=https://domain-anda.com
 GOOGLE_SITE_VERIFICATION=
 ```
 
-Pada Vercel, `NEXT_PUBLIC_SITE_URL` dapat diisi dengan domain production. Jika variabel tidak tersedia, project juga mencoba membaca `VERCEL_PROJECT_PRODUCTION_URL` yang disediakan lingkungan Vercel.
-
-`GOOGLE_SITE_VERIFICATION` bersifat opsional dan dapat diisi setelah properti Google Search Console dibuat.
-
 ## Menjalankan lokal
 
 ```bash
 npm install
 npm run dev
 ```
-
-Buka `http://localhost:3000`.
 
 ## Validator
 
@@ -135,19 +163,25 @@ Validator memeriksa:
 - minimal 4 mata pelajaran;
 - minimal 60 materi;
 - struktur materi lengkap;
-- 25 soal unik per materi;
-- 8 soal mudah, 9 sedang, 8 sulit;
+- 25 soal unik per paket;
 - total nilai 100;
-- opsi dan indeks jawaban valid;
+- komposisi internal tingkat soal;
+- tepat 5 opsi untuk soal non-tabel;
+- indeks jawaban valid;
+- pilihan ganda kompleks banyak jawaban;
+- tabel pernyataan 3 sampai 5 baris;
+- jawaban boolean tabel valid;
+- format kompleks pada paket TKA;
 - pembahasan langkah demi langkah;
-- proteksi riwayat soal;
+- anti-duplikasi antar paket terbaru;
 - tutorial SERKOM;
-- jumlah baris kode SERKOM dan penjelasan yang seimbang;
+- keseimbangan jumlah baris kode dan penjelasan SERKOM;
 - simulasi per mapel;
 - simulasi universal;
-- URL mapel unik;
-- URL materi unik;
-- keberadaan route SEO utama.
+- URL SEO unik;
+- keberadaan route SEO utama;
+- tidak adanya label tingkat soal pada antarmuka;
+- tidak adanya komentar source pada file aplikasi, data, dan library.
 
 ## Production build
 
@@ -161,13 +195,11 @@ npm run build
 
 1. Push project ke GitHub.
 2. Import repository di Vercel.
-3. Tambahkan `NEXT_PUBLIC_SITE_URL` pada Project Settings → Environment Variables.
-4. Tambahkan `GOOGLE_SITE_VERIFICATION` jika diperlukan.
+3. Tambahkan `NEXT_PUBLIC_SITE_URL` pada Environment Variables.
+4. Tambahkan `GOOGLE_SITE_VERIFICATION` jika digunakan.
 5. Deploy.
-6. Buka `/robots.txt` dan `/sitemap.xml` pada domain production untuk memastikan keduanya dapat diakses.
-7. Tambahkan domain ke Google Search Console.
-8. Kirim URL `/sitemap.xml` melalui menu Sitemaps.
-9. Gunakan URL Inspection pada beberapa halaman materi utama setelah deployment.
+6. Verifikasi `/robots.txt` dan `/sitemap.xml` pada domain production.
+7. Tambahkan domain ke Google Search Console bila diperlukan.
 
 ## GitHub Actions
 
@@ -178,24 +210,6 @@ npm install
 npm run check
 npm run build
 ```
-
-Workflow berjalan pada push ke branch `main` atau `master` dan pada pull request.
-
-## Penyimpanan data belajar
-
-Versi ini tidak membutuhkan database untuk progres pengguna. Data berikut disimpan pada localStorage browser:
-
-- mata pelajaran aktif;
-- materi aktif;
-- view aktif;
-- bookmark;
-- materi selesai;
-- catatan pribadi;
-- nilai per materi;
-- riwayat simulasi;
-- riwayat signature soal;
-- tema;
-- ukuran huruf bacaan.
 
 ## Struktur utama
 
@@ -238,11 +252,3 @@ data/
 scripts/
   validate.mjs
 ```
-
-## Catatan SERKOM
-
-Materi SERKOM pada platform ini berfungsi sebagai bahan pembelajaran dan simulasi. Keputusan kompeten atau belum kompeten resmi tetap mengikuti asesor, LSP, skema, dan MUK yang berlaku.
-
-## Catatan production
-
-Setelah domain final terpasang, gunakan domain tersebut pada `NEXT_PUBLIC_SITE_URL`. Canonical, sitemap, robots, Open Graph, dan structured data kemudian menggunakan domain production yang sama.

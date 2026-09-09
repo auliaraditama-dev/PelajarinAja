@@ -102,8 +102,8 @@ export default async function TopicPage({ params }) {
           </section>
 
           <section className="seo-content-section assessment-promo">
-            <h2>Penilaian 25 Soal Bertingkat</h2>
-            <p>Setiap paket berisi 8 soal mudah, 9 soal sedang, dan 8 soal sulit. Seluruh soal dalam satu paket dibuat unik dengan nilai total 100.</p>
+            <h2>Penilaian 25 Soal</h2>
+            <p>Setiap paket berisi 25 soal unik dengan variasi pilihan ganda dan pilihan ganda kompleks serta nilai total 100.</p>
             <Link className="seo-button" href={appTopicPath(subject.id, topic.id, "latihan")}>Mulai penilaian</Link>
           </section>
 

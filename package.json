@@ -1,6 +1,6 @@
 {
-  "name": "pelajarinaja-universal-seo",
-  "version": "10.0.0",
+  "name": "pelajarinaja-universal-tka",
+  "version": "11.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

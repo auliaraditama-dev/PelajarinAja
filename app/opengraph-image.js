@@ -12,7 +12,7 @@ export default function Image() {
       <div style={{ fontSize: 38, lineHeight: 1.35, marginTop: 18, maxWidth: 980 }}>TKA Matematika, Bahasa Indonesia, Bahasa Inggris, dan Persiapan SERKOM RPL Laravel 12</div>
       <div style={{ display: "flex", gap: 18, marginTop: 42, fontSize: 24 }}>
         <span style={{ padding: "12px 18px", border: "2px solid rgba(255,255,255,.35)", borderRadius: 999 }}>60 materi</span>
-        <span style={{ padding: "12px 18px", border: "2px solid rgba(255,255,255,.35)", borderRadius: 999 }}>25 soal bertingkat</span>
+        <span style={{ padding: "12px 18px", border: "2px solid rgba(255,255,255,.35)", borderRadius: 999 }}>25 soal unik</span>
         <span style={{ padding: "12px 18px", border: "2px solid rgba(255,255,255,.35)", borderRadius: 999 }}>Nilai 0–100</span>
       </div>
     </div>,
