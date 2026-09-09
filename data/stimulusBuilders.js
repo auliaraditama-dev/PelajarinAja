@@ -32,8 +32,8 @@ function pick(items, index) {
   return items[Math.abs(Number(index) || 0) % items.length];
 }
 
-function sourceBridge(topic) {
-  const coverage = topic?.sourceCoverage ?? [];
+function curriculumBridge(topic) {
+  const coverage = topic?.learningCoverage ?? [];
   const first = coverage[0] ?? topic?.summary ?? "Konsep pada materi aktif menjadi dasar analisis.";
   const second = coverage[1] ?? "Gunakan informasi yang tersedia tanpa menambahkan asumsi yang tidak diperlukan.";
   return `${first} ${second}`;
@@ -44,25 +44,25 @@ export function buildTkaStimulus(topic, original, variantIndex = 0) {
   if (topic.subjectId === "matematika") {
     return {
       key: scenario.key,
-      text: `${scenario.text}\n\n${pick(mathFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${sourceBridge(topic)}\n\nData atau persoalan inti:\n${original}\n\nSelesaikan berdasarkan data inti dan gunakan konteks untuk menilai apakah hasil akhir masuk akal dalam situasi tersebut.`
+      text: `${scenario.text}\n\n${pick(mathFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${curriculumBridge(topic)}\n\nData atau persoalan inti:\n${original}\n\nSelesaikan berdasarkan data inti dan gunakan konteks untuk menilai apakah hasil akhir masuk akal dalam situasi tersebut.`
     };
   }
   if (topic.subjectId === "bahasa-indonesia") {
     return {
       key: scenario.key,
-      text: `${scenario.text}\n\n${pick(idFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${sourceBridge(topic)}\n\nBacaan atau informasi inti:\n${original}\n\nTentukan jawaban dengan menunjuk bukti yang paling relevan pada bacaan dan hindari kesimpulan yang melampaui informasi teks.`
+      text: `${scenario.text}\n\n${pick(idFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${curriculumBridge(topic)}\n\nBacaan atau informasi inti:\n${original}\n\nTentukan jawaban dengan menunjuk bukti yang paling relevan pada bacaan dan hindari kesimpulan yang melampaui informasi teks.`
     };
   }
   return {
     key: scenario.key,
-    text: `${scenario.text}\n\n${pick(enFrames, variantIndex)}\n\nFocus: ${topic.title}. ${sourceBridge(topic)}\n\nCore reading material:\n${original}\n\nChoose the answer that is most strongly supported by the text and the relationship between its ideas.`
+    text: `${scenario.text}\n\n${pick(enFrames, variantIndex)}\n\nFocus: ${topic.title}. ${curriculumBridge(topic)}\n\nCore reading material:\n${original}\n\nChoose the answer that is most strongly supported by the text and the relationship between its ideas.`
   };
 }
 
 export function buildSerkomStimulus(topic, lesson, originalQuestion, variantIndex = 0) {
   const scenario = everydayContext(topic, variantIndex);
   const code = (lesson?.code ?? []).slice(0, 10).join("\n");
-  const source = sourceBridge(topic);
-  const text = `${scenario.text}\n\n${pick(serkomFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${source}\n\nMasalah teknis yang harus dianalisis:\n${originalQuestion}\n\nHubungkan jawaban dengan fungsi komponen, alur data, kemungkinan gejala, dan langkah verifikasi yang paling relevan.`;
+  const scope = curriculumBridge(topic);
+  const text = `${scenario.text}\n\n${pick(serkomFrames, variantIndex)}\n\nFokus materi: ${topic.title}. ${scope}\n\nMasalah teknis yang harus dianalisis:\n${originalQuestion}\n\nHubungkan jawaban dengan fungsi komponen, alur data, kemungkinan gejala, dan langkah verifikasi yang paling relevan.`;
   return { key: scenario.key, stimulus: text, codeExcerpt: code, originalQuestion };
 }

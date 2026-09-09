@@ -412,7 +412,7 @@ function backgroundForSubject(topic) {
   if (topic.subjectId === "matematika") return `Materi ini berada dalam cakupan TKA Matematika Wajib dan dipakai untuk menguji pemahaman konsep serta penalaran pada konteks yang bervariasi. Pola soal dapat berubah, tetapi prinsip matematikanya tetap sama.`;
   if (topic.subjectId === "bahasa-indonesia") return `Materi ini diturunkan dari pola kompetensi pada soal TKA Bahasa Indonesia yang menggunakan teks nonfiksi, fiksi, dan teks jamak. Fokusnya adalah membuktikan jawaban melalui isi, struktur, dan bahasa teks.`;
   if (topic.subjectId === "bahasa-inggris") return `Materi ini mengikuti kerangka TKA Bahasa Inggris yang menggunakan teks descriptive, recount, narrative, procedure, dan analytical exposition pada tingkat A2–B1, dengan kompetensi textual, inferential, serta evaluation and appreciation.`;
-  return `Materi SERKOM ditempatkan dalam studi kasus Laravel 12: landing page Kopi Ulee Kareng dan CRUD satu tabel products. Jobsheet menekankan alur kerja, debugging, testing, dokumentasi, dan bukti kompetensi.`;
+  return `Materi SERKOM ditempatkan dalam studi kasus Laravel 12: landing page Kopi Ulee Kareng dan CRUD satu tabel products. Pembelajaran menekankan alur kerja, debugging, testing, dokumentasi, dan bukti kompetensi.`;
 }
 
 function limitationsForTopic(topic) {

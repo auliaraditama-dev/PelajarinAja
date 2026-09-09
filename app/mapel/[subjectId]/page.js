@@ -48,7 +48,7 @@ export default async function SubjectPage({ params }) {
               {entry.topics.map((topic, index) => (
                 <article key={topic.id}>
                   <div className="seo-topic-index">{String(index + 1).padStart(2, "0")}</div>
-                  <div><h3><Link href={topicPath(subject.id, topic.id)}>{topic.title}</Link></h3><p>{topic.summary}</p><div className="seo-card-meta"><span>{topic.level}</span><span>{topic.pages}</span></div></div>
+                  <div><h3><Link href={topicPath(subject.id, topic.id)}>{topic.title}</Link></h3><p>{topic.summary}</p><div className="seo-card-meta"><span>{topic.level}</span><span>{topic.group}</span></div></div>
                   <Link className="seo-text-link" href={topicPath(subject.id, topic.id)}>Baca materi</Link>
                 </article>
               ))}

@@ -108,7 +108,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "eksponen",
@@ -221,7 +220,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "operasi-khusus",
@@ -331,7 +329,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "fungsi-invers",
@@ -443,7 +440,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "komposisi-fungsi",
@@ -553,7 +549,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "barisan-aritmetika",
@@ -665,7 +660,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "barisan-geometri",
@@ -776,7 +770,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "sistem-pertidaksamaan",
@@ -888,7 +881,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "spl",
@@ -999,7 +991,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "sudut-garis-sejajar",
@@ -1108,7 +1099,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "bangun-ruang-garis-bidang",
@@ -1217,7 +1207,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "kesebangunan",
@@ -1325,7 +1314,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "pythagoras",
@@ -1435,7 +1423,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "transformasi",
@@ -1546,7 +1533,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "jarak-ruang",
@@ -1656,7 +1642,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "keliling-luas",
@@ -1766,7 +1751,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "volume-bangun-ruang",
@@ -1877,7 +1861,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "luas-permukaan",
@@ -1986,7 +1969,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "trigonometri",
@@ -2098,7 +2080,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "diagram-grafik",
@@ -2208,7 +2189,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "aturan-pencacahan",
@@ -2318,7 +2298,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "statistika",
@@ -2428,7 +2407,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "peluang-tunggal",
@@ -2538,7 +2516,6 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   },
   {
     "id": "peluang-majemuk",
@@ -2648,6 +2625,5 @@ export const mathTopics = [
       }
     ],
     "subjectId": "matematika",
-    "sourceLabel": "Soal TKA Matematika Wajib 2025"
   }
 ];

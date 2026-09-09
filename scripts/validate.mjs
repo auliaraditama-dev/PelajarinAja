@@ -6,7 +6,6 @@ import { topics } from "../data/topics.js";
 import { difficultyPlan, generateMixedQuestions, generateQuestionsForTopic, questionSignature } from "../data/questionGenerators.js";
 import { getSerkomLesson } from "../data/serkomLessons.js";
 import { subjectPath, topicPath } from "../lib/site.js";
-import { sourceDocuments } from "../data/sourceCoverage.js";
 
 const fail = (message) => { throw new Error(message); };
 const ids = new Set();
@@ -19,6 +18,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 const seoFiles = [
   "app/robots.js",
+  "app/global-error.js",
   "app/sitemap.js",
   "app/opengraph-image.js",
   "app/twitter-image.js",
@@ -68,6 +68,23 @@ for (const path of projectSourceFiles) {
   if (text.split(/\r?\n/).some((line) => line.trim().startsWith("//"))) fail(`Komentar source ditemukan pada ${path}`);
   if (text.includes("/*") || text.includes("*/")) fail(`Komentar blok source ditemukan pada ${path}`);
   if (/\.(js|mjs)$/.test(path)) validateRelativeImports(path);
+}
+
+
+const publicTextFiles = [
+  "app/page.js",
+  "app/materi/[subjectId]/[topicId]/page.js",
+  "app/mapel/page.js",
+  "app/mapel/[subjectId]/page.js",
+  "app/tentang/page.js",
+  "lib/seo.js"
+];
+
+for (const file of publicTextFiles) {
+  const text = readFileSync(join(root, file), "utf8").toLowerCase();
+  for (const forbidden of ["dokumen pdf", "dokumen word", "pdf dan word", "integrasi dokumen sumber", "source label", "source references"]) {
+    if (text.includes(forbidden)) fail(`Informasi asal materi tampil pada antarmuka: ${file}`);
+  }
 }
 
 const rootPage = readFileSync(join(root, "app/page.js"), "utf8");
@@ -123,17 +140,14 @@ function validateQuestionSet(label, questions, subjectId = null) {
 
 if (subjects.length < 4) fail("Minimal empat mata pelajaran diperlukan.");
 if (topics.length < 60) fail(`Jumlah materi terlalu sedikit: ${topics.length}`);
-if (!Array.isArray(sourceDocuments) || sourceDocuments.length !== 5) fail("Lima dokumen sumber utama harus terdaftar.");
-if (sourceDocuments.some((item) => !item.title || !item.pages || !item.role)) fail("Metadata dokumen sumber tidak lengkap.");
 
 for (const topic of topics) {
   if (!topic.id || ids.has(topic.id)) fail(`ID materi tidak valid atau ganda: ${topic.id}`);
   ids.add(topic.id);
   if (!subjectIds.has(topic.subjectId)) fail(`subjectId tidak valid pada ${topic.id}`);
-  for (const field of ["title", "group", "summary", "level", "sourceLabel"]) if (!topic[field]) fail(`${topic.id} tidak memiliki ${field}`);
+  for (const field of ["title", "group", "summary", "level"]) if (!topic[field]) fail(`${topic.id} tidak memiliki ${field}`);
   for (const field of ["objectives", "prerequisites", "concepts", "deepDive", "steps", "workedExamples", "traps", "glossary"]) if (!Array.isArray(topic[field]) || topic[field].length === 0) fail(`${topic.id} tidak memiliki isi ${field}`);
-  if (!Array.isArray(topic.sourceReferences) || topic.sourceReferences.length === 0) fail(`${topic.id} tidak memiliki referensi sumber`);
-  if (!topic.sourceCompetency || !Array.isArray(topic.sourceCoverage) || topic.sourceCoverage.length < 4) fail(`${topic.id} belum memiliki cakupan sumber lengkap`);
+  if (!topic.learningCompetency || !Array.isArray(topic.learningCoverage) || topic.learningCoverage.length < 4) fail(`${topic.id} belum memiliki cakupan pembelajaran lengkap`);
   if (!topic.essay?.q || !topic.essay?.answer) fail(`${topic.id} tidak memiliki esai dan pembahasan`);
   let history = [];
   for (let cycle = 0; cycle < 8; cycle += 1) {
@@ -171,4 +185,4 @@ for (let cycle = 0; cycle < 3; cycle += 1) {
   universalHistory = [...signatures, ...universalHistory].slice(0, 200);
 }
 
-console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${sourceDocuments.length} source documents integrated, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, everyday-life literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);
+console.log(`Validation passed: ${subjects.length} subjects, ${topics.length} topics, ${subjectUrls.length + topicUrls.length + 5} indexable SEO URLs, 25 unique questions, everyday-life literacy-numeracy-coding stimuli, 5-option single choice, TKA complex multi-select, TKA true-false matrices, hidden difficulty labels, internal balanced difficulty, recent-history repeat protection, 100 points, responsive UI, formal solution steps, SERKOM line-by-line tutorials.`);

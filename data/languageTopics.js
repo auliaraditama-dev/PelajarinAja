@@ -84,7 +84,6 @@ export const indonesianTopics = [
     "analogy": "Jangan menjawab berdasarkan pengetahuan di luar teks ketika pertanyaan meminta informasi tekstual.",
     "example": "Jawaban: aula sekolah.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   },
   {
     "id": "bi-kosakata-kontekstual",
@@ -169,7 +168,6 @@ export const indonesianTopics = [
     "analogy": "Jangan memilih arti harfiah jika konteks jelas bersifat kiasan.",
     "example": "“Batu loncatan” berarti titik perantara untuk mencapai target berikutnya.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   },
   {
     "id": "bi-inferensi",
@@ -253,7 +251,6 @@ export const indonesianTopics = [
     "analogy": "Gunakan prinsip “bukti dulu, kesimpulan kemudian”.",
     "example": "Inferensi yang kuat: siswa memperkirakan kemungkinan hujan.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   },
   {
     "id": "bi-evaluasi-gagasan",
@@ -336,7 +333,6 @@ export const indonesianTopics = [
     "analogy": "Pisahkan “apa yang dikatakan penulis” dari “mengapa penulis menganggapnya benar”.",
     "example": "Data peningkatan frekuensi membaca setelah program lebih kuat daripada opini bahwa buku itu menarik.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   },
   {
     "id": "bi-fiksi",
@@ -421,7 +417,6 @@ export const indonesianTopics = [
     "analogy": "Untuk karakter, tanyakan: tindakan apa yang paling konsisten dilakukan tokoh?",
     "example": "Konflik utama adalah pergulatan nilai seni dengan otomatisasi.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   },
   {
     "id": "bi-teks-jamak",
@@ -504,7 +499,6 @@ export const indonesianTopics = [
     "analogy": "Buat dua kolom: Teks A dan Teks B. Catat klaim utama, alasan, dan konsekuensinya.",
     "example": "Sintesis: gig economy memberi peluang, tetapi pekerja perlu manajemen risiko dan perlindungan finansial mandiri.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   },
   {
     "id": "bi-pg-kompleks",
@@ -588,7 +582,6 @@ export const indonesianTopics = [
     "analogy": "Jangan berhenti setelah menemukan satu jawaban benar.",
     "example": "Pilih semua tindakan yang langsung menutup kelemahan yang disebutkan.",
     "quiz": [],
-    "sourceLabel": "Soal TKA Bahasa Indonesia"
   }
 ];
 
@@ -675,7 +668,6 @@ export const englishTopics = [
     "analogy": "Match keywords with synonyms in the passage.",
     "example": "Answer: Saturday.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-inferential",
@@ -758,7 +750,6 @@ export const englishTopics = [
     "analogy": "Use at least two clues when possible.",
     "example": "A reasonable inference is that jealousy or resentment motivated the attack.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-evaluation",
@@ -841,7 +832,6 @@ export const englishTopics = [
     "analogy": "Separate claim from evidence.",
     "example": "Research data or expert medical opinion would strengthen the discussion.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-descriptive",
@@ -928,7 +918,6 @@ export const englishTopics = [
     "analogy": "Descriptive texts help readers imagine a person, place, object, or situation.",
     "example": "The text mainly describes the park’s natural features and atmosphere.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-recount",
@@ -1014,7 +1003,6 @@ export const englishTopics = [
     "analogy": "Recount texts retell events that happened in the past.",
     "example": "The report happened after the practical tasks.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-narrative",
@@ -1100,7 +1088,6 @@ export const englishTopics = [
     "analogy": "Narratives usually develop through characters, setting, a problem, and a resolution.",
     "example": "The conflict comes from rivalry and refusal to accept the result.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-procedure",
@@ -1186,7 +1173,6 @@ export const englishTopics = [
     "analogy": "Procedure texts explain how to do or achieve something.",
     "example": "The purpose is to guide effective study behavior.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-exposition",
@@ -1272,7 +1258,6 @@ export const englishTopics = [
     "analogy": "Analytical exposition presents a position and supports it with reasons.",
     "example": "It functions as the thesis.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-vocabulary",
@@ -1358,7 +1343,6 @@ export const englishTopics = [
     "analogy": "Context can show meaning through examples, contrast, cause, or definition.",
     "example": "Meaning: did what he had promised to do.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   },
   {
     "id": "en-multiple-texts",
@@ -1444,6 +1428,5 @@ export const englishTopics = [
     "analogy": "Multiple texts may present different perspectives on the same topic.",
     "example": "Difference: opportunity and flexibility versus risk and missing protection.",
     "quiz": [],
-    "sourceLabel": "TKA Bahasa Inggris"
   }
 ];

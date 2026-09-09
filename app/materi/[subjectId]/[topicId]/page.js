@@ -49,10 +49,16 @@ export default async function TopicPage({ params }) {
             <span className="seo-eyebrow">{subject.name} · {topic.group}</span>
             <h1>{topic.title}</h1>
             <p>{topic.summary}</p>
-            <div className="seo-card-meta"><span>{topic.level}</span><span>{topic.pages}</span><span>{topic.sourceLabel}</span></div>
+            <div className="seo-card-meta"><span>{topic.level}</span><span>{topic.group}</span><span>25 soal penilaian</span></div>
             <div className="seo-actions"><Link className="seo-button" href={appTopicPath(subject.id, topic.id, "materi")}>Buka mode belajar interaktif</Link><Link className="seo-button secondary" href={appTopicPath(subject.id, topic.id, "latihan")}>Kerjakan 25 soal</Link></div>
           </header>
 
+
+          <section className="seo-content-section">
+            <h2>Cakupan Pembelajaran</h2>
+            <p>{topic.learningCompetency}</p>
+            <ul>{(topic.learningCoverage ?? []).map((item) => <li key={item}>{item}</li>)}</ul>
+          </section>
           <section className="seo-content-section">
             <h2>Tujuan Pembelajaran</h2>
             <ul>{topic.objectives.map((item) => <li key={item}>{item}</li>)}</ul>

@@ -4,9 +4,8 @@ export const serkomTopics = [
     "subjectId": "serkom",
     "group": "Dasar SERKOM",
     "title": "Posisi SKKNI, MUK, Unit, dan Bukti Kompetensi",
-    "pages": "Jobsheet 4–5",
-    "level": "Dasar",
-    "summary": "Memahami posisi jobsheet sebagai bahan latihan, hubungan dengan SKKNI/MUK, unit pembelajaran, serta bukti yang perlu disiapkan.",
+        "level": "Dasar",
+    "summary": "Memahami posisi latihan persiapan kompetensi, hubungan dengan SKKNI/MUK, unit pembelajaran, serta bukti yang perlu disiapkan.",
     "objectives": [
       "Membedakan bahan latihan dengan keputusan asesmen resmi.",
       "Mengenali unit penguatan dan unit yang langsung muncul pada MUK sekolah.",
@@ -17,7 +16,7 @@ export const serkomTopics = [
       "Mengenal istilah asesor dan LSP."
     ],
     "concepts": [
-      "Jobsheet digunakan sebagai pembelajaran dan simulasi; keputusan kompeten atau belum kompeten tetap mengikuti asesor, LSP, skema, dan MUK resmi.",
+      "Materi latihan digunakan untuk pembelajaran dan simulasi; keputusan kompeten atau belum kompeten tetap mengikuti asesor, LSP, skema, dan MUK resmi.",
       "Dokumen memetakan beberapa unit SKKNI sebagai penguatan, sedangkan J.620100.033.02 tentang pengujian unit program disebut langsung pada MUK sekolah yang dipelajari.",
       "Keterlacakan berarti setiap aktivitas memiliki bukti yang dapat ditunjukkan, seperti migration/model untuk struktur data, log terminal untuk eksekusi, atau tabel test untuk pengujian.",
       "Perbedaan penulisan kode/judul unit pada dokumen latihan tidak boleh dianggap mengganti dokumen skema resmi."
@@ -71,8 +70,8 @@ export const serkomTopics = [
       }
     ],
     "essay": {
-      "q": "Mengapa jobsheet tidak boleh dianggap sebagai keputusan kompeten resmi?",
-      "answer": "Karena jobsheet adalah bahan belajar/simulasi; keputusan resmi berada pada asesor dan LSP berdasarkan skema serta MUK yang disahkan."
+      "q": "Mengapa hasil latihan tidak boleh dianggap sebagai keputusan kompeten resmi?",
+      "answer": "Karena latihan hanya digunakan untuk pembelajaran dan simulasi; keputusan resmi berada pada asesor dan LSP berdasarkan skema serta MUK yang disahkan."
     },
     "formulas": [
       "Aktivitas → bukti → unit kompetensi."
@@ -80,15 +79,13 @@ export const serkomTopics = [
     "analogy": "Fokus pada kompetensi yang dibuktikan, bukan sekadar hafalan kode unit.",
     "example": "Bukti yang kuat berupa catatan sebelum/sesudah dan hasil uji ulang.",
     "quiz": [],
-    "sourceLabel": "Jobsheet SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-inti-mvc",
     "subjectId": "serkom",
     "group": "Dasar SERKOM",
     "title": "Inti Proyek dan Arsitektur MVC",
-    "pages": "Rangkuman 3–4",
-    "level": "Dasar",
+        "level": "Dasar",
     "summary": "Menguasai gambaran besar proyek: data produk mengalir dari request sampai database dan kembali menjadi tampilan.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -96,7 +93,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Route adalah pintu masuk request.",
@@ -165,15 +162,13 @@ export const serkomTopics = [
     "analogy": "Browser → Route → Controller → Model/Eloquent → MySQL → Controller → Blade → Browser.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-skenario-ipo",
     "subjectId": "serkom",
     "group": "Analisis & Perancangan",
     "title": "Skenario Proyek, Batasan, IPO, dan Alur Request–Response",
-    "pages": "Jobsheet 6–7, 12–13",
-    "level": "Dasar",
+        "level": "Dasar",
     "summary": "Menganalisis kebutuhan proyek landing page Kopi Ulee Kareng dan CRUD satu entitas products sebelum menulis kode.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -181,7 +176,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Input utama: nama produk, deskripsi, harga, dan nama file gambar opsional.",
@@ -250,15 +245,13 @@ export const serkomTopics = [
     "analogy": "Analisis IPO membantu menerjemahkan kebutuhan menjadi komponen teknis.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-syntax",
     "subjectId": "serkom",
     "group": "Dasar Pemrograman",
     "title": "Kamus Syntax PHP, Laravel, Blade, HTML, CSS, dan HTTP",
-    "pages": "Rangkuman 5–6",
-    "level": "Dasar",
+        "level": "Dasar",
     "summary": "Memahami simbol dan sintaks yang sering muncul agar peserta dapat membaca kode, bukan sekadar menyalinnya.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -266,7 +259,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "$ menandai variabel PHP, -> mengakses method/properti objek, dan :: mengakses class/static member.",
@@ -335,15 +328,13 @@ export const serkomTopics = [
     "analogy": "Memahami simbol membuat proses debugging lebih cepat karena peserta tahu jenis operasi yang sedang dilakukan.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-environment",
     "subjectId": "serkom",
     "group": "Persiapan Laravel",
     "title": "PHP, Composer, Artisan, Database, dan .env",
-    "pages": "Jobsheet 8–11; Rangkuman 6–8",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Menyiapkan lingkungan Laravel 12 berbasis PHP 8.2 dan MySQL serta memahami fungsi perintah setup utama.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -351,7 +342,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Periksa PHP dan Composer sebelum bekerja pada proyek.",
@@ -420,15 +411,13 @@ export const serkomTopics = [
     "analogy": "Lingkungan yang salah dapat membuat kode benar terlihat rusak.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-migration",
     "subjectId": "serkom",
     "group": "Backend Laravel",
     "title": "Database, Data Dictionary, dan Migration",
-    "pages": "Jobsheet 7, 14–15; Rangkuman 9–10",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Merancang tabel products dan menerapkannya melalui migration Laravel.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -436,7 +425,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Data dictionary menentukan nama kolom, tipe, aturan, dan kegunaannya sebelum migration ditulis.",
@@ -505,15 +494,13 @@ export const serkomTopics = [
     "analogy": "Migration adalah riwayat perubahan skema, bukan tempat data contoh.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-model",
     "subjectId": "serkom",
     "group": "Backend Laravel",
     "title": "Model Eloquent, $fillable, casts(), dan Route Model Binding",
-    "pages": "Jobsheet 15; Rangkuman 11–12",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Memahami Product sebagai model Eloquent dan membedakan mass assignment, casting, validasi, dan route model binding.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -521,7 +508,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "$fillable menentukan atribut yang boleh diisi massal oleh create/update.",
@@ -590,15 +577,13 @@ export const serkomTopics = [
     "analogy": "Model adalah jembatan objek ke tabel database melalui Eloquent.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-seeder",
     "subjectId": "serkom",
     "group": "Backend Laravel",
     "title": "Seeder, Array, foreach, dan Data Awal",
-    "pages": "Jobsheet 16–17; Rangkuman 13–15",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Membuat data latihan agar landing page dan CRUD dapat diuji sejak awal.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -606,7 +591,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Seeder menyimpan data awal/latihan, bukan definisi struktur tabel.",
@@ -675,15 +660,13 @@ export const serkomTopics = [
     "analogy": "Seeder mempercepat pengujian tampilan dinamis karena database tidak kosong.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-controller",
     "subjectId": "serkom",
     "group": "Backend Laravel",
     "title": "Controller CRUD, Validation, Redirect, dan Pesan Sesi",
-    "pages": "Jobsheet 17–19; Rangkuman 16–20",
-    "level": "Lanjut",
+        "level": "Lanjut",
     "summary": "Memahami method controller untuk landing, index, create, store, edit, update, destroy, validasi, dan response.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -691,7 +674,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "create() menampilkan form, sedangkan store() memvalidasi lalu membuat record.",
@@ -760,15 +743,13 @@ export const serkomTopics = [
     "analogy": "Controller menghubungkan request dengan logika aplikasi dan Eloquent.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-routing",
     "subjectId": "serkom",
     "group": "Backend Laravel",
     "title": "Routing, Resource Route, Parameter, dan HTTP Method",
-    "pages": "Jobsheet 19; Rangkuman 21",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Menghubungkan URL dan HTTP method ke controller serta memahami route resource proyek.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -776,7 +757,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Route GET / mengarah ke landing().",
@@ -845,15 +826,13 @@ export const serkomTopics = [
     "analogy": "Routing adalah kontrak antara request browser dan method controller.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-blade-landing",
     "subjectId": "serkom",
     "group": "Frontend Laravel",
     "title": "Blade Layout dan Landing Page Dinamis",
-    "pages": "Jobsheet 20–22; Rangkuman 22–28",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Membangun layout reusable dan landing page yang menampilkan collection produk dari database.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -861,7 +840,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Layout menyediakan struktur HTML umum dan @yield untuk konten halaman.",
@@ -930,15 +909,13 @@ export const serkomTopics = [
     "analogy": "Blade menggabungkan HTML dengan data dari server tanpa mencampur logika database ke view.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-form-crud",
     "subjectId": "serkom",
     "group": "Frontend Laravel",
     "title": "Form CRUD, Partial, CSRF, Method Spoofing, old(), dan Error",
-    "pages": "Jobsheet 22–26; Rangkuman 28–38",
-    "level": "Lanjut",
+        "level": "Lanjut",
     "summary": "Membuat form tambah/edit yang aman, reusable, mempertahankan input lama, dan menampilkan pesan validasi.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -946,7 +923,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Partial _form menghindari duplikasi field create dan edit.",
@@ -1015,15 +992,13 @@ export const serkomTopics = [
     "analogy": "DRY membuat perubahan field cukup dilakukan di satu partial.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-css",
     "subjectId": "serkom",
     "group": "Frontend Laravel",
     "title": "CSS Responsif dan Keterbacaan Antarmuka",
-    "pages": "Jobsheet 26–30; Rangkuman 39–44",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Menerapkan CSS lokal yang responsif, konsisten, dan dapat berjalan pada laboratorium tanpa ketergantungan internet.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1031,7 +1006,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Gunakan variabel warna dan class reusable untuk konsistensi.",
@@ -1100,15 +1075,13 @@ export const serkomTopics = [
     "analogy": "CSS lokal membantu latihan offline.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-workflow",
     "subjectId": "serkom",
     "group": "Workflow",
     "title": "Workflow CRUD Lengkap dari Browser sampai Database",
-    "pages": "Rangkuman 44–45",
-    "level": "Lanjut",
+        "level": "Lanjut",
     "summary": "Menjelaskan CREATE, READ, UPDATE, dan DELETE sebagai alur lengkap lintas route, controller, model, database, dan view.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1116,7 +1089,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "CREATE: form → POST → store → validate → create → redirect.",
@@ -1185,15 +1158,13 @@ export const serkomTopics = [
     "analogy": "Mengetahui alur end-to-end membantu peserta mencari titik error dengan cepat.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-debugging",
     "subjectId": "serkom",
     "group": "Debugging & Testing",
     "title": "Debugging Terstruktur dan Troubleshooting",
-    "pages": "Jobsheet 31, 34; Rangkuman 45–47",
-    "level": "Lanjut",
+        "level": "Lanjut",
     "summary": "Menjalankan debugging sebagai proses terstruktur: reproduksi, baca error, hipotesis, perubahan kecil, uji ulang, dan bukti.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1201,7 +1172,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Reproduksi error dengan langkah yang sama sebelum mengubah kode.",
@@ -1270,15 +1241,13 @@ export const serkomTopics = [
     "analogy": "Debugging bukan menebak-nebak atau mengganti banyak file sekaligus.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-testing",
     "subjectId": "serkom",
     "group": "Debugging & Testing",
     "title": "Pengujian Manual dan Feature Test Laravel",
-    "pages": "Jobsheet 31–34; Rangkuman 47–51",
-    "level": "Lanjut",
+        "level": "Lanjut",
     "summary": "Merancang data uji, expected result, actual result, status, dan feature test untuk membuktikan fungsi aplikasi.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1286,7 +1255,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Skenario manual harus mencakup jalur normal, batas, dan data tidak valid.",
@@ -1355,15 +1324,13 @@ export const serkomTopics = [
     "analogy": "Testing bukan sekadar menekan tombol; perlu skenario, data, hasil yang diharapkan, dan evaluasi.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-portfolio",
     "subjectId": "serkom",
     "group": "Bukti & Presentasi",
     "title": "README, Portofolio, Presentasi, dan Bukti Serkom",
-    "pages": "Jobsheet 35–39; Rangkuman 51–53",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Menyiapkan dokumentasi dan bukti kerja agar proses pembangunan, debugging, testing, dan hasil aplikasi dapat diverifikasi.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1371,7 +1338,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "README menjelaskan teknologi, cara menjalankan, fitur, dan struktur utama.",
@@ -1440,15 +1407,13 @@ export const serkomTopics = [
     "analogy": "Bukti yang rapi mempercepat verifikasi asesor/guru.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-asesor",
     "subjectId": "serkom",
     "group": "Bukti & Presentasi",
     "title": "Pertanyaan Lisan Asesor: Jawaban Ringkas dan Tepat",
-    "pages": "Rangkuman 54–56",
-    "level": "Lanjut",
+        "level": "Lanjut",
     "summary": "Melatih kemampuan menjelaskan alasan teknis di balik kode: migration, model, controller, route, Blade, validation, testing, dan debugging.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1456,7 +1421,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Jawaban kuat menyebut fungsi utama lalu mengaitkan ke proyek.",
@@ -1525,15 +1490,13 @@ export const serkomTopics = [
     "analogy": "Asesor dapat menilai pemahaman melalui alasan, bukan hanya keberhasilan demo.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   },
   {
     "id": "serkom-cheatsheet",
     "subjectId": "serkom",
     "group": "Kesiapan SERKOM",
     "title": "Cheat Sheet, Urutan Proyek, dan Latihan Mandiri",
-    "pages": "Rangkuman 57–58",
-    "level": "Menengah",
+        "level": "Menengah",
     "summary": "Mengintegrasikan urutan kerja proyek dari setup sampai dokumentasi dan menguji kesiapan tanpa melihat catatan.",
     "objectives": [
       "Menjelaskan konsep dengan kata sendiri.",
@@ -1541,7 +1504,7 @@ export const serkomTopics = [
       "Menunjukkan bukti atau langkah verifikasi yang sesuai."
     ],
     "prerequisites": [
-      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target jobsheet."
+      "HTML, CSS, PHP, database, dan Laravel dasar sesuai target latihan."
     ],
     "concepts": [
       "Urutan inti: cek environment → project/.env → database → model/migration → model → seeder → controller → route → views → CSS → run → test → debug → dokumentasi.",
@@ -1610,6 +1573,5 @@ export const serkomTopics = [
     "analogy": "Kesiapan meningkat ketika peserta dapat menjelaskan dan mempraktikkan urutan tanpa bergantung pada salinan solusi.",
     "example": "Peserta tidak hanya menyebut nama komponen, tetapi dapat menjelaskan mengapa komponen tersebut diperlukan.",
     "quiz": [],
-    "sourceLabel": "Jobsheet & Rangkuman SERKOM RPL Laravel 12"
   }
 ];
